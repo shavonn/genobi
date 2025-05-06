@@ -1,22 +1,22 @@
-import type { ConfigAPI } from "../../src";
-import type { GeneratorConfig } from "../../src/types/generator";
-import type { CreateOperation } from "../../src/types/operation";
+import type { ConfigAPI, CreateOperation, GeneratorConfig } from "../../src";
 import { getTmpDirPath } from "../test-utils";
 
 const selectionPrompt: string = "Welcome to my totally awesome generator. Pick from the menu below:";
 
 const configFilePath: string = "genobi.config.js";
 
+const themeData = {
+	theme: {
+		name: "denim",
+		primary: "denim-600",
+	},
+};
+
 const makeCreateOperation: (overrides?: object) => CreateOperation = (overrides = {}) => ({
 	type: "create",
 	filePath: "src/components/{{kebabCase name}}/{{kebabCase name}}.tsx",
 	templateFilePath: "templates/component.tsx.hbs",
-	data: {
-		theme: {
-			name: "wavy",
-			primary: "blue",
-		},
-	},
+	data: themeData,
 	...overrides,
 });
 
@@ -26,6 +26,10 @@ const component = {
 		description: "React component",
 		prompts: [{ type: "input", name: "name", message: "What is the name of this component?" }],
 		operations: [makeCreateOperation()],
+	} as GeneratorConfig,
+	generatorNoOps: {
+		description: "React component",
+		prompts: [{ type: "input", name: "name", message: "What is the name of this component?" }],
 	} as GeneratorConfig,
 };
 
@@ -40,6 +44,7 @@ const zeroConfigFunc = (_: ConfigAPI) => {};
 const testData = {
 	configFilePath,
 	selectionPrompt,
+	themeData,
 	component,
 	makeCreateOperation,
 	fullConfigFunc,

@@ -6,6 +6,8 @@ function configApi(): GenobiConfigAPI {
 		setConfigPath: store.setConfigFilePath,
 		getConfigPath: () => store.state().configFilePath,
 		getDestinationBasePath: () => store.state().destinationBasePath,
+		setSelectionPrompt: store.setSelectionPrompt,
+		getSelectionPrompt: () => store.state().selectionPrompt,
 	};
 }
 

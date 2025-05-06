@@ -1,10 +1,11 @@
-import type { StoreState } from "./types/store";
+import type { ConfigStoreState } from "./types/config-store";
 
 class ConfigStore {
 	#logDebug = false;
 	#logVerbose = false;
 	#configFilePath = "";
 	#destinationBasePath = "";
+	#selectionPrompt = "Select from available generators:";
 
 	enableDebugLogging: () => void = () => {
 		this.#logDebug = true;
@@ -22,12 +23,17 @@ class ConfigStore {
 		this.#destinationBasePath = path;
 	};
 
-	state: () => StoreState = () => {
+	setSelectionPrompt: (prompt: string) => void = (prompt) => {
+		this.#selectionPrompt = prompt;
+	};
+
+	state: () => ConfigStoreState = () => {
 		return {
 			logDebug: this.#logDebug,
 			logVerbose: this.#logVerbose,
 			configFilePath: this.#configFilePath,
 			destinationBasePath: this.#destinationBasePath,
+			selectionPrompt: this.#selectionPrompt,
 		};
 	};
 
@@ -36,6 +42,7 @@ class ConfigStore {
 		this.#logVerbose = false;
 		this.#configFilePath = "";
 		this.#destinationBasePath = "";
+		this.#selectionPrompt = "Select from available generators:";
 	};
 }
 

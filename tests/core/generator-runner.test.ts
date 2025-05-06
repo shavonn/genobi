@@ -4,7 +4,7 @@ import { expect } from "vitest";
 import { configAPI } from "../../src/config-api";
 import { store } from "../../src/config-store";
 import { generatorRunner } from "../../src/core/generator-runner";
-import { operations } from "../../src/core/operations";
+import { operations } from "../../src/core/operations/operation-runner";
 import { helperRegister } from "../../src/utils/helpers/helper-register";
 import { stringHelpers } from "../../src/utils/helpers/string-transformers";
 import { testData } from "../__fixtures__/test-data";
@@ -46,21 +46,14 @@ describe("runGenerator", () => {
 		testData.slimConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
 
+		vi.spyOn(operations, "runOperation");
+
 		await generatorRunner.run();
 
-		expect(operations.create).toHaveBeenNthCalledWith(1, testData.makeCreateOperation(), {
+		expect(operations.runOperation).toHaveBeenNthCalledWith(1, testData.makeCreateOperation(), {
 			...input,
 			...testData.themeData,
 		});
-	});
-
-	it("should execute operations from generator config by type", async () => {
-		testData.fullConfigFunc(configAPI.get());
-		store.setSelectedGenerator(testData.component.id);
-
-		await generatorRunner.run();
-
-		expect(operations.create).toHaveBeenCalled();
 	});
 
 	it("should throw error when no operations are found in generator config", async () => {

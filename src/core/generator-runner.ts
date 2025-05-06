@@ -1,7 +1,9 @@
 import inquirer from "inquirer";
 import { store } from "../config-store";
 import { helperRegister } from "../utils/helpers/helper-register";
-import { operations } from "./operations";
+import { stringHelpers } from "../utils/helpers/string-transformers";
+import { logger } from "../utils/logger";
+import { operations } from "./operations/operation-runner";
 
 async function runGenerator() {
 	helperRegister.register();
@@ -25,21 +27,13 @@ async function runGenerator() {
 			continue;
 		}
 
-		switch (operation.type) {
-			case "append":
-				await operations.append(operation, data);
-				break;
-			case "create":
-				await operations.create(operation, data);
-				break;
-			case "createAll":
-				console.log("createAll", operation, data);
-				break;
-			case "prepend":
-				await operations.prepend(operation, data);
-				break;
-			default:
-				throw new Error(`Unknown operation type: ${(operation as any).type}`);
+		try {
+			await operations.runOperation(operation, data);
+		} catch (err) {
+			logger.error(`${stringHelpers.titleCase(operation.type)} operation failed for:`, err);
+			if (operation.haltOnError) {
+				throw err;
+			}
 		}
 	}
 }

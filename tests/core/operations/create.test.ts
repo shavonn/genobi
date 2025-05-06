@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import { operations } from "../../../src/core/operations";
+import { operations } from "../../../src/core/operations/operation-runner";
 import { content } from "../../../src/utils/content";
 import { helperRegister } from "../../../src/utils/helpers/helper-register";
 import { logger } from "../../../src/utils/logger";

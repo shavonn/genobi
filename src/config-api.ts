@@ -1,8 +1,9 @@
+import type { HelperDelegate } from "handlebars";
 import { store } from "./config-store";
-import type { GenobiConfigAPI } from "./types/config-api";
+import type { ConfigAPI } from "./types/config-api";
 import type { GeneratorConfig } from "./types/generator";
 
-function configApi(): GenobiConfigAPI {
+function configApi(): ConfigAPI {
 	return {
 		setConfigPath: store.setConfigFilePath,
 		getConfigPath: () => store.state().configFilePath,
@@ -21,6 +22,18 @@ function configApi(): GenobiConfigAPI {
 			return generator;
 		},
 		getGenerators: (): Record<string, GeneratorConfig> => Object.fromEntries(store.state().generators),
+		addHelper: (name, helper: HelperDelegate): void => {
+			store.setHelper(name, helper);
+			Handlebars.registerHelper(name, helper);
+		},
+		getHelper: (name: string): HelperDelegate => {
+			const helper = store.state().helpers.get(name);
+			if (!helper) {
+				throw new Error(`Helper ${name} not found in loaded configuration.`);
+			}
+			return helper;
+		},
+		getHelpers: (): Record<string, HelperDelegate> => Object.fromEntries(store.state().helpers),
 	};
 }
 

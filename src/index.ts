@@ -1,3 +1,4 @@
-import type { GenobiConfigAPI } from "./types/config-api";
+import type { HelperDelegate } from "handlebars";
+import type { ConfigAPI } from "./types/config-api";
 
-export type { GenobiConfigAPI };
+export type { ConfigAPI, HelperDelegate };

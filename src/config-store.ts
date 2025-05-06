@@ -1,4 +1,5 @@
-import type { ConfigStoreState, ConfiguredGenerators } from "./types/config-store";
+import type { HelperDelegate } from "handlebars";
+import type { ConfigStoreState, ConfiguredGenerators, ConfiguredHelpers } from "./types/config-store";
 import type { GeneratorConfig } from "./types/generator";
 
 class ConfigStore {
@@ -8,6 +9,7 @@ class ConfigStore {
 	#destinationBasePath = "";
 	#selectionPrompt = "";
 	#generators: ConfiguredGenerators = new Map<string, GeneratorConfig>();
+	#helpers: ConfiguredHelpers = new Map<string, HelperDelegate>();
 
 	enableDebugLogging: () => void = () => {
 		this.#logDebug = true;
@@ -33,6 +35,10 @@ class ConfigStore {
 		this.#generators.set(id, generator);
 	};
 
+	setHelper: (id: string, helper: HelperDelegate) => void = (id, helper) => {
+		this.#helpers.set(id, helper);
+	};
+
 	state: () => ConfigStoreState = () => {
 		return {
 			logDebug: this.#logDebug,
@@ -41,6 +47,7 @@ class ConfigStore {
 			destinationBasePath: this.#destinationBasePath,
 			selectionPrompt: this.#selectionPrompt,
 			generators: this.#generators,
+			helpers: this.#helpers,
 		};
 	};
 
@@ -51,6 +58,7 @@ class ConfigStore {
 		this.#destinationBasePath = "";
 		this.#selectionPrompt = "Select from available generators:";
 		this.#generators = new Map<string, GeneratorConfig>();
+		this.#helpers = new Map<string, HelperDelegate>();
 	};
 }
 

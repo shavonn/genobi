@@ -13,7 +13,7 @@
     "publish-package": "changeset version && changeset publish"
   },
   "bin": {
-    "genobi":" dist/bin/cli.js"
+    "genobi": " dist/bin/cli.js"
   },
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -56,6 +56,7 @@
   },
   "dependencies": {
     "chalk": "4.1.2",
-    "commander": "^13.1.0"
+    "commander": "^13.1.0",
+    "handlebars": "^4.7.8"
   }
 }

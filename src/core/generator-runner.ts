@@ -27,7 +27,7 @@ async function runGenerator() {
 
 		switch (operation.type) {
 			case "append":
-				console.log("append", operation, data);
+				await operations.append(operation, data);
 				break;
 			case "create":
 				await operations.create(operation, data);
@@ -36,7 +36,7 @@ async function runGenerator() {
 				console.log("createAll", operation, data);
 				break;
 			case "prepend":
-				console.log("prepend", operation, data);
+				await operations.prepend(operation, data);
 				break;
 			default:
 				throw new Error(`Unknown operation type: ${(operation as any).type}`);

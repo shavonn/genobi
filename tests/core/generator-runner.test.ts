@@ -39,6 +39,7 @@ describe("runGenerator", () => {
 
 		expect(helperRegister.register).toHaveBeenCalled();
 		expect(Handlebars.registerHelper).toHaveBeenCalledWith("upperCase", stringHelpers.upperCase);
+		expect(Handlebars.registerHelper).toHaveBeenCalledWith("awwYeah", testData.AwwYeahHelper);
 	});
 
 	it("should merge input with operation data", async () => {

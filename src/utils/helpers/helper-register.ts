@@ -5,7 +5,7 @@ import { registerStringHelpers } from "./string-transformers";
 function registerHelpers() {
 	registerStringHelpers();
 
-	for (const [name, helper] of Object.entries(store.state().helpers)) {
+	for (const [name, helper] of store.state().helpers) {
 		Handlebars.registerHelper(name, helper);
 	}
 }

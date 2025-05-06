@@ -13,6 +13,10 @@ const themeData = {
 	},
 };
 
+const AwwYeahHelper = (str: any) => {
+	return `Aww, yeah! ${str}!`;
+};
+
 const makeCreateOperation: (overrides?: object) => CreateOperation = (overrides = {}) => ({
 	type: "create",
 	filePath: testFiles.component.filePath,
@@ -44,12 +48,14 @@ const fullConfigFunc = (genobi: ConfigAPI) => {
 	genobi.setConfigPath(getTmpDirPath(configFilePath));
 	genobi.setSelectionPrompt(selectionPrompt);
 	genobi.addGenerator(component.id, component.generator);
+	genobi.addHelper("awwYeah", AwwYeahHelper);
 };
 
 const slimConfigFunc = (genobi: ConfigAPI) => {
 	genobi.setConfigPath(getTmpDirPath(configFilePath));
 	genobi.setSelectionPrompt(selectionPrompt);
 	genobi.addGenerator(component.id, component.generator);
+	genobi.addHelper("awwYeah", AwwYeahHelper);
 };
 
 const zeroConfigFunc = (_: ConfigAPI) => {};
@@ -59,6 +65,7 @@ const testData = {
 	selectionPrompt,
 	themeData,
 	component,
+	AwwYeahHelper,
 	makeAmendOperation,
 	makeCreateOperation,
 	fullConfigFunc,

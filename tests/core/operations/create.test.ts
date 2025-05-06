@@ -9,8 +9,6 @@ import { testFiles } from "../../__fixtures__/test-files";
 import { getTmpDirPath, loadTestFiles, writeTestFile } from "../../test-utils";
 
 describe("create", () => {
-	let componentFilePath: string;
-
 	const mergedData = {
 		name: "page header",
 		...testData.themeData,
@@ -21,13 +19,16 @@ describe("create", () => {
 	});
 
 	beforeEach(async () => {
-		componentFilePath = getTmpDirPath("src/components/page-header/page-header.tsx");
-
 		await loadTestFiles(testFiles.existingFiles);
 	});
 
 	it("should create file using templateFile", async () => {
 		const operation = testData.makeCreateOperation();
+		const componentFilePath = getTmpDirPath("src/components/page-header/page-header.tsx");
+		const mergedData = {
+			name: "page header",
+			...testData.themeData,
+		};
 
 		await operations.create(operation, mergedData);
 
@@ -42,12 +43,16 @@ describe("create", () => {
 			filePath: testFiles.componentCss.filePath,
 			templateStr: testFiles.componentCss.templateStr,
 		});
-		const cssFilePath = getTmpDirPath("src/components/page-header/page-header.css");
+		const mergedData = {
+			name: "checkbox input",
+			...testData.themeData,
+		};
+		const cssFilePath = getTmpDirPath("src/components/checkbox-input/checkbox-input.css");
 
 		await operations.create(operation, mergedData);
 
 		const fileResult = await fs.readFile(cssFilePath, "utf8");
-		expect(fileResult).toContain(".page-header {");
+		expect(fileResult).toContain(".checkbox-input {");
 		expect(fileResult).toContain("background-color: denim-600;");
 	});
 
@@ -56,12 +61,11 @@ describe("create", () => {
 			templateFilePath: undefined,
 		});
 
-		vi.spyOn(fs, "readFile");
-
 		await loadTestFiles({
 			"src/components/page-header/page-header.tsx": "page header",
 		});
 
+		vi.spyOn(fs, "readFile");
 		vi.spyOn(pathDir, "fileExists");
 
 		await expect(operations.create(operation, mergedData)).rejects.toThrow();

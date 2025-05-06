@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import {logger} from "./logger";
+import { logger } from "./logger";
 
 export function processTemplate(template: string, data: Record<string, any>): string {
 	try {

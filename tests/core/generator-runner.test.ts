@@ -1,6 +1,5 @@
 import Handlebars from "handlebars";
 import inquirer from "inquirer";
-import { beforeEach } from "vitest";
 import { configAPI } from "../../src/config-api";
 import { store } from "../../src/config-store";
 import { generatorRunner } from "../../src/core/generator-runner";
@@ -13,6 +12,7 @@ vi.mock("inquirer");
 
 describe("runGenerator", () => {
 	const input = { name: "text input" };
+
 	beforeEach(() => {
 		vi.spyOn(operations, "create").mockResolvedValueOnce();
 		vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(input);

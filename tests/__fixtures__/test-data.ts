@@ -15,7 +15,7 @@ const themeData = {
 
 const makeCreateOperation: (overrides?: object) => CreateOperation = (overrides = {}) => ({
 	type: "create",
-	filePath: testFiles.css.filePath,
+	filePath: testFiles.component.filePath,
 	templateFilePath: testFiles.component.templateFilePath,
 	data: themeData,
 	...overrides,

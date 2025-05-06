@@ -13,6 +13,7 @@ describe("path and dir utils", () => {
 		it("should ignore EEXIST errors", async () => {
 			const error = new Error("Directory exists");
 			(error as NodeJS.ErrnoException).code = "EEXIST";
+
 			vi.spyOn(fs, "mkdir").mockRejectedValueOnce(error);
 
 			await expect(pathDir.ensureDirectoryExists("path/to/dir")).resolves.not.toThrow();

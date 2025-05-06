@@ -12,7 +12,9 @@ describe("content utils", () => {
 	describe("getSingleFileContent", () => {
 		const input = { name: "button" };
 
-		helperRegister.register();
+		beforeAll(() => {
+			helperRegister.register();
+		});
 
 		beforeEach(async () => {
 			vi.spyOn(pathDir, "getTemplateProcessedPath");
@@ -35,6 +37,7 @@ describe("content utils", () => {
 				...input,
 				...testData.themeData,
 			};
+
 			await loadTestFiles({
 				"templates/component.tsx.hbs": testFiles.component.templateFileContent,
 			});
@@ -66,7 +69,8 @@ describe("content utils", () => {
 				templateStr: undefined,
 				templateFilePath: "templates/style.css.hbs",
 			}) as PrependOperation;
-			vi.spyOn(fs, "readFile").mockRejectedValue(new Error());
+
+			vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error());
 
 			await expect(content.getSingleFileContent(operation, input)).rejects.toThrow();
 

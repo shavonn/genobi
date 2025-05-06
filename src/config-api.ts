@@ -1,4 +1,5 @@
 import type { HelperDelegate } from "handlebars";
+import Handlebars from "handlebars";
 import { store } from "./config-store";
 import type { ConfigAPI } from "./types/config-api";
 import type { GeneratorConfig } from "./types/generator";

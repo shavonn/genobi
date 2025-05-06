@@ -14,9 +14,9 @@ async function runCli() {
 		)
 		.option("-v --verbose <string>", "Logs operation activities as they are completed.");
 
-	program.parse(process.argv);
-
 	program.addOption(new Option("--debug").hideHelp());
+
+	program.parse(process.argv);
 
 	const { debug, destination, verbose } = program.opts();
 

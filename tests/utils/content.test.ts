@@ -6,7 +6,7 @@ import { logger } from "../../src/utils/logger";
 import { pathDir } from "../../src/utils/path-dir";
 import { testData } from "../__fixtures__/test-data";
 import { testFiles } from "../__fixtures__/test-files";
-import { getTmpDirPath } from "../test-utils";
+import { getTmpDirPath, loadTestFiles } from "../test-utils";
 
 describe("content utils", () => {
 	describe("getSingleFileContent", () => {
@@ -18,7 +18,7 @@ describe("content utils", () => {
 			vi.spyOn(pathDir, "getTemplateProcessedPath");
 		});
 
-		it("should return template content", async () => {
+		it("should return template content from templateStr", async () => {
 			const operation = testData.makeAmendOperation({
 				type: "prepend",
 			}) as PrependOperation;
@@ -27,6 +27,25 @@ describe("content utils", () => {
 
 			expect(result).toBe(testFiles.css.templateStr);
 			expect(pathDir.getTemplateProcessedPath).not.toHaveBeenCalled();
+		});
+
+		it("should return template content from templateFile", async () => {
+			const operation = testData.makeCreateOperation();
+			const mergedData = {
+				...input,
+				...testData.themeData,
+			};
+			await loadTestFiles({
+				"templates/component.tsx.hbs": testFiles.component.templateFileContent,
+			});
+
+			vi.spyOn(fs, "readFile");
+
+			const result = await content.getSingleFileContent(operation, mergedData);
+
+			expect(pathDir.getTemplateProcessedPath).toHaveBeenCalledWith(operation.templateFilePath, mergedData);
+			expect(result).toBe(testFiles.component.templateFileContent);
+			expect(fs.readFile).toHaveBeenCalledWith(getTmpDirPath(operation.templateFilePath), "utf8");
 		});
 
 		it("should throw error when no templateStr or templateFile found for single file operation", async () => {

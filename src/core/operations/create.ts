@@ -19,7 +19,7 @@ async function create(operation: CreateOperation, data: Record<string, any>): Pr
 			logger.warn(`File already exists: ${filePath}. Skipping.`);
 			return;
 		} else {
-			throw new Error(`File already exists: ${filePath}`);
+			throw new Error(`File already exists: ${filePath}.`);
 		}
 	}
 
@@ -29,9 +29,9 @@ async function create(operation: CreateOperation, data: Record<string, any>): Pr
 
 	try {
 		await fs.writeFile(filePath, processedContent);
-		logger.success(`Created file: ${filePath}`);
+		logger.success(`Created file: ${filePath}.`);
 	} catch (error) {
-		logger.error(`Error writing file: ${filePath}`);
+		logger.error(`Error writing file: ${filePath}.`);
 		throw error;
 	}
 }

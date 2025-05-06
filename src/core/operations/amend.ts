@@ -3,6 +3,7 @@ import path from "node:path";
 import type { AmendOperation } from "../../types/operation";
 import { common } from "../../utils/common";
 import { content } from "../../utils/content";
+import { stringHelpers } from "../../utils/helpers/string-transformers";
 import { logger } from "../../utils/logger";
 import { pathDir } from "../../utils/path-dir";
 import { templateProcessor } from "../../utils/template-processor";
@@ -45,7 +46,7 @@ const combiners = {
 async function amendFile(operation: AmendOperation, data: Record<string, any>): Promise<void> {
 	const combiner = combiners[operation.type];
 	if (!combiner) {
-		throw new Error(`Unknown amendment operation type: ${operation.type}`);
+		throw new Error(`Unknown amendment operation type: ${operation.type}.`);
 	}
 
 	const filePath = pathDir.getTemplateProcessedPath(operation.filePath, data);
@@ -62,13 +63,13 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 		try {
 			existingContent = await fs.readFile(filePath, "utf8");
 		} catch (error) {
-			logger.error(`Error reading file: ${filePath}`);
+			logger.error(`Error reading file: ${filePath}.`);
 			throw error;
 		}
 	}
 
 	if (operation.unique && existingContent.includes(processedContent)) {
-		logger.warn(`Content already exists in ${filePath}, skipping operation`);
+		logger.warn(`Content already exists in ${filePath}, skipping operation.`);
 		return;
 	}
 
@@ -86,7 +87,7 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 		if (match && match.index !== undefined) {
 			newContent = combiner.combine(existingContent, processedContent, operation.pattern, separator);
 		} else {
-			logger.warn(`Pattern not found in ${filePath}, ${combiner.patternNotFoundMessage}`);
+			logger.warn(`Pattern not found in ${filePath}, ${combiner.patternNotFoundMessage}.`);
 			newContent = combiner.defaultAction(existingContent, processedContent, separator);
 		}
 	} else {
@@ -95,9 +96,9 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 
 	try {
 		await fs.writeFile(filePath, newContent);
-		logger.debug(`File operation completed: ${filePath}`);
+		logger.success(`${stringHelpers.titleCase(operation.type)}ed to file: ${filePath}.`);
 	} catch (error) {
-		logger.error(`Error writing to file: ${filePath}`);
+		logger.error(`Error writing to file: ${filePath}.`);
 		throw error;
 	}
 }

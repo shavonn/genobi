@@ -1,5 +1,5 @@
 import type { HelperDelegate } from "handlebars";
-import type { ConfigStoreState, ConfiguredGenerators, ConfiguredHelpers } from "./types/config-store";
+import type { ConfigStoreState, ConfiguredGenerators, ConfiguredHelpers, SelectChoice } from "./types/config-store";
 import type { GeneratorConfig } from "./types/generator";
 
 class ConfigStore {
@@ -38,6 +38,14 @@ class ConfigStore {
 
 	setGenerator: (id: string, generator: GeneratorConfig) => void = (id, generator) => {
 		this.#generators.set(id, generator);
+	};
+
+	getGeneratorsList: () => SelectChoice[] = () => {
+		const list: SelectChoice[] = [];
+		this.#generators.forEach((generator: GeneratorConfig, id: string) => {
+			list.push({ value: id, name: generator.description });
+		});
+		return list;
 	};
 
 	setHelper: (id: string, helper: HelperDelegate) => void = (id, helper) => {

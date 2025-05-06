@@ -1,5 +1,6 @@
 import Handlebars from "handlebars";
 import inquirer from "inquirer";
+import { expect } from "vitest";
 import { configAPI } from "../../src/config-api";
 import { store } from "../../src/config-store";
 import { generatorRunner } from "../../src/core/generator-runner";
@@ -67,5 +68,26 @@ describe("runGenerator", () => {
 		store.setGenerator("no-op-component", testData.component.generatorNoOps);
 
 		await expect(generatorRunner.run()).rejects.toThrow(`No operations found for ${store.state().selectedGenerator}`);
+	});
+
+	it("should skip when provided function resolves to a truthy value", async () => {
+		testData.zeroConfigFunc(configAPI.get());
+		store.setSelectedGenerator("skipOpGen");
+		store.setGenerator(
+			"skipOpGen",
+			Object.assign(testData.component.generator, {
+				operations: [
+					testData.makeCreateOperation({
+						skip: () => true,
+					}),
+				],
+			}),
+		);
+
+		vi.spyOn(operations, "create");
+
+		await generatorRunner.run();
+
+		expect(operations.create).not.toHaveBeenCalled();
 	});
 });

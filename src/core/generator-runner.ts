@@ -21,6 +21,10 @@ async function runGenerator() {
 	for (const operation of generator.operations) {
 		const data = { ...input, ...(operation.data || {}) };
 
+		if (typeof operation.skip === "function" && operation.skip(data)) {
+			continue;
+		}
+
 		switch (operation.type) {
 			case "append":
 				console.log("append", operation, data);

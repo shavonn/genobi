@@ -7,7 +7,7 @@ import { generatorRunner } from "../../src/core/generator-runner";
 import { logger } from "../../src/utils/logger";
 import { testData } from "../__fixtures__/test-data";
 
-describe("run", () => {
+describe("runCli", () => {
 	beforeEach(() => {
 		vi.spyOn(configLoader, "load").mockResolvedValueOnce();
 		vi.spyOn(generatorResolver, "resolve").mockResolvedValueOnce();

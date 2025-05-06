@@ -39,6 +39,12 @@ const fullConfigFunc = (genobi: ConfigAPI) => {
 	genobi.addGenerator(component.id, component.generator);
 };
 
+const slimConfigFunc = (genobi: ConfigAPI) => {
+	genobi.setConfigPath(getTmpDirPath(configFilePath));
+	genobi.setSelectionPrompt(selectionPrompt);
+	genobi.addGenerator(component.id, component.generator);
+};
+
 const zeroConfigFunc = (_: ConfigAPI) => {};
 
 const testData = {
@@ -48,6 +54,7 @@ const testData = {
 	component,
 	makeCreateOperation,
 	fullConfigFunc,
+	slimConfigFunc,
 	zeroConfigFunc,
 };
 export { testData };

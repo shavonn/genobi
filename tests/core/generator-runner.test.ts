@@ -1,5 +1,6 @@
 import Handlebars from "handlebars";
 import inquirer from "inquirer";
+import { beforeEach } from "vitest";
 import { configAPI } from "../../src/config-api";
 import { store } from "../../src/config-store";
 import { generatorRunner } from "../../src/core/generator-runner";
@@ -12,11 +13,14 @@ vi.mock("inquirer");
 
 describe("runGenerator", () => {
 	const input = { name: "text input" };
+	beforeEach(() => {
+		vi.spyOn(operations, "create").mockResolvedValueOnce();
+		vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(input);
+	});
 
 	it("should prompt user for input when generator configured with prompts", async () => {
-		testData.fullConfigFunc(configAPI.get());
+		testData.slimConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
-		vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(input);
 
 		await generatorRunner.run();
 
@@ -24,9 +28,8 @@ describe("runGenerator", () => {
 	});
 
 	it("should register built-in helpers and user-configured helpers", async () => {
-		testData.fullConfigFunc(configAPI.get());
+		testData.slimConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
-		vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(input);
 
 		vi.spyOn(helperRegister, "register");
 		vi.spyOn(Handlebars, "registerHelper");
@@ -38,10 +41,8 @@ describe("runGenerator", () => {
 	});
 
 	it("should merge input with operation data", async () => {
-		testData.fullConfigFunc(configAPI.get());
+		testData.slimConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
-		vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(input);
-		vi.spyOn(operations, "create").mockResolvedValueOnce();
 
 		await generatorRunner.run();
 
@@ -54,8 +55,6 @@ describe("runGenerator", () => {
 	it("should execute operations from generator config by type", async () => {
 		testData.fullConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
-		vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(input);
-		vi.spyOn(operations, "create").mockResolvedValueOnce();
 
 		await generatorRunner.run();
 

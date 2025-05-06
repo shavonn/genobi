@@ -2,7 +2,10 @@
   "name": "genobi",
   "version": "0.0.0",
   "description": "Flat text file generator and modifier configured with your templates, prompt input, and instructions.",
-  "scripts": {},
+  "scripts": {
+    "change": "changeset",
+    "publish-package": "changeset version && changeset publish"
+  },
   "keywords": [
     "cli",
     "generator",
@@ -12,5 +15,8 @@
   ],
   "author": "Shavonn Brown <syskit@sysmatter.com>",
   "license": "MPL-2.0",
-  "packageManager": "pnpm@10.10.0"
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {
+    "@changesets/cli": "^2.29.3"
+  }
 }

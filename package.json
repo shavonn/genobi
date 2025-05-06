@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "description": "Flat text file generator and modifier configured with your templates, prompt input, and instructions.",
   "scripts": {
-    "dev": "ts-node src/index.ts",
     "lint": "biome check --write",
     "change": "changeset",
     "publish-package": "changeset version && changeset publish"
@@ -24,5 +23,8 @@
     "@types/node": "^22.15.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1"
   }
 }

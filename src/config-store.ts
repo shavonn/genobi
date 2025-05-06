@@ -1,11 +1,13 @@
-import type { ConfigStoreState } from "./types/config-store";
+import type { ConfigStoreState, ConfiguredGenerators } from "./types/config-store";
+import type { GeneratorConfig } from "./types/generator";
 
 class ConfigStore {
 	#logDebug = false;
 	#logVerbose = false;
 	#configFilePath = "";
 	#destinationBasePath = "";
-	#selectionPrompt = "Select from available generators:";
+	#selectionPrompt = "";
+	#generators: ConfiguredGenerators = new Map<string, GeneratorConfig>();
 
 	enableDebugLogging: () => void = () => {
 		this.#logDebug = true;
@@ -27,6 +29,10 @@ class ConfigStore {
 		this.#selectionPrompt = prompt;
 	};
 
+	setGenerator: (id: string, generator: GeneratorConfig) => void = (id, generator) => {
+		this.#generators.set(id, generator);
+	};
+
 	state: () => ConfigStoreState = () => {
 		return {
 			logDebug: this.#logDebug,
@@ -34,15 +40,17 @@ class ConfigStore {
 			configFilePath: this.#configFilePath,
 			destinationBasePath: this.#destinationBasePath,
 			selectionPrompt: this.#selectionPrompt,
+			generators: this.#generators,
 		};
 	};
 
-	reset: () => void = () => {
+	resetDefault: () => void = () => {
 		this.#logDebug = false;
 		this.#logVerbose = false;
 		this.#configFilePath = "";
 		this.#destinationBasePath = "";
 		this.#selectionPrompt = "Select from available generators:";
+		this.#generators = new Map<string, GeneratorConfig>();
 	};
 }
 

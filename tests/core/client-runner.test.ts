@@ -3,6 +3,7 @@ import { store } from "../../src/config-store";
 import { cli } from "../../src/core/client-runner";
 import { configLoader } from "../../src/core/config-loader";
 import { generatorResolver } from "../../src/core/generator-resolver";
+import { generatorRunner } from "../../src/core/generator-runner";
 import { logger } from "../../src/utils/logger";
 import { testData } from "../__fixtures__/test-data";
 
@@ -10,6 +11,7 @@ describe("run", () => {
 	beforeEach(() => {
 		vi.spyOn(configLoader, "load").mockResolvedValueOnce();
 		vi.spyOn(generatorResolver, "resolve").mockResolvedValueOnce();
+		vi.spyOn(generatorRunner, "run").mockResolvedValueOnce();
 	});
 
 	it("should setup commander and load config", async () => {

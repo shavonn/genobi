@@ -4,6 +4,7 @@ import { store } from "../config-store";
 import { logger } from "../utils/logger";
 import { configLoader } from "./config-loader";
 import { generatorResolver } from "./generator-resolver";
+import { generatorRunner } from "./generator-runner";
 
 async function runCli() {
 	const program = new Command(pkg.name);
@@ -50,6 +51,7 @@ async function runCli() {
 	try {
 		await configLoader.load(destination);
 		await generatorResolver.resolve();
+		await generatorRunner.run();
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		process.exit(1);

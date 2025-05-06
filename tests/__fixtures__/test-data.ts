@@ -1,5 +1,6 @@
-import type { ConfigAPI, CreateOperation, GeneratorConfig } from "../../src";
+import type { AmendOperation, ConfigAPI, CreateOperation, GeneratorConfig } from "../../src";
 import { getTmpDirPath } from "../test-utils";
+import { testFiles } from "./test-files";
 
 const selectionPrompt: string = "Welcome to my totally awesome generator. Pick from the menu below:";
 
@@ -14,9 +15,15 @@ const themeData = {
 
 const makeCreateOperation: (overrides?: object) => CreateOperation = (overrides = {}) => ({
 	type: "create",
-	filePath: "src/components/{{kebabCase name}}/{{kebabCase name}}.tsx",
-	templateFilePath: "templates/component.tsx.hbs",
+	filePath: testFiles.css.filePath,
+	templateFilePath: testFiles.component.templateFilePath,
 	data: themeData,
+	...overrides,
+});
+
+const makeAmendOperation: (overrides?: object) => Partial<AmendOperation> = (overrides = {}) => ({
+	filePath: testFiles.css.filePath,
+	templateStr: testFiles.css.templateStr,
 	...overrides,
 });
 
@@ -52,6 +59,7 @@ const testData = {
 	selectionPrompt,
 	themeData,
 	component,
+	makeAmendOperation,
 	makeCreateOperation,
 	fullConfigFunc,
 	slimConfigFunc,

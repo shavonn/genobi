@@ -1,6 +1,6 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { store } from "../src/config-store";
 
 export async function createTmpDir(prefix = "vitest-genobi-") {
@@ -32,4 +32,16 @@ export function getTmpDirPath(p?: any): string {
 		return p;
 	}
 	return resolve(join(getTmpDir(), p));
+}
+
+export async function loadTestFiles(files: Record<string, string>): Promise<void> {
+	const writePromises = Object.entries(files).map(([filePath, content]) => writeTestFile(filePath, content));
+	await Promise.all(writePromises);
+}
+
+export async function writeTestFile(filePath: string, content: string): Promise<void> {
+	const fullPath = getTmpDirPath(filePath);
+	const dirPath = dirname(fullPath);
+	await mkdir(dirPath, { recursive: true });
+	await writeFile(fullPath, content);
 }

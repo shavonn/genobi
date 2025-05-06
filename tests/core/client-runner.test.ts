@@ -1,11 +1,15 @@
 import { Command } from "commander";
+import { store } from "../../src/config-store";
 import { cli } from "../../src/core/client-runner";
 import { configLoader } from "../../src/core/config-loader";
+import { resolver } from "../../src/core/resolve-generator";
 import { logger } from "../../src/utils/logger";
+import { testData } from "../__fixtures__/test-data";
 
 describe("run", () => {
 	beforeEach(() => {
 		vi.spyOn(configLoader, "load").mockResolvedValueOnce();
+		vi.spyOn(resolver, "resolveGenerator").mockResolvedValueOnce();
 	});
 
 	it("should setup commander and load config", async () => {
@@ -30,5 +34,15 @@ describe("run", () => {
 		expect(logger.error).toHaveBeenCalledWith(
 			"Error: Config file not found. Create one to define your generators, helpers, and other options.",
 		);
+	});
+
+	it("should use generator arg when provided", async () => {
+		vi.spyOn(process, "argv", "get").mockReturnValueOnce(["", "", testData.component.id]);
+		vi.spyOn(store, "setSelectedGenerator");
+
+		await cli.run();
+
+		expect(store.setSelectedGenerator).toHaveBeenCalledWith(testData.component.id);
+		expect(logger.error).not.toHaveBeenCalled();
 	});
 });

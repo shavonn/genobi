@@ -2,14 +2,14 @@ import { Command } from "commander";
 import { store } from "../../src/config-store";
 import { cli } from "../../src/core/client-runner";
 import { configLoader } from "../../src/core/config-loader";
-import { resolver } from "../../src/core/resolve-generator";
+import { generatorResolver } from "../../src/core/generator-resolver";
 import { logger } from "../../src/utils/logger";
 import { testData } from "../__fixtures__/test-data";
 
 describe("run", () => {
 	beforeEach(() => {
 		vi.spyOn(configLoader, "load").mockResolvedValueOnce();
-		vi.spyOn(resolver, "resolveGenerator").mockResolvedValueOnce();
+		vi.spyOn(generatorResolver, "resolve").mockResolvedValueOnce();
 	});
 
 	it("should setup commander and load config", async () => {

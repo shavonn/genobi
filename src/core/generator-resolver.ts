@@ -29,7 +29,7 @@ async function resolveGenerator() {
 	logger.debug("Using selected generator:", store.state().selectedGenerator);
 }
 
-const resolver = {
-	resolveGenerator,
+const generatorResolver = {
+	resolve: resolveGenerator,
 };
-export { resolver };
+export { generatorResolver };

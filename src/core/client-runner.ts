@@ -3,7 +3,7 @@ import pkg from "../../package.json";
 import { store } from "../config-store";
 import { logger } from "../utils/logger";
 import { configLoader } from "./config-loader";
-import { resolver } from "./resolve-generator";
+import { generatorResolver } from "./generator-resolver";
 
 async function runCli() {
 	const program = new Command(pkg.name);
@@ -49,7 +49,7 @@ async function runCli() {
 
 	try {
 		await configLoader.load(destination);
-		await resolver.resolveGenerator();
+		await generatorResolver.resolve();
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		process.exit(1);

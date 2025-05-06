@@ -1,7 +1,7 @@
 import inquirer from "inquirer";
 import { configAPI } from "../../src/config-api";
 import { store } from "../../src/config-store";
-import { resolver } from "../../src/core/resolve-generator";
+import { generatorResolver } from "../../src/core/generator-resolver";
 import { logger } from "../../src/utils/logger";
 import { testData } from "../__fixtures__/test-data";
 
@@ -12,7 +12,7 @@ describe("resolveGenerator", () => {
 
 		vi.spyOn(store, "setSelectedGenerator");
 
-		await resolver.resolveGenerator();
+		await generatorResolver.resolve();
 
 		expect(store.state().selectionPrompt).toBe(testData.selectionPrompt);
 		expect(store.setSelectedGenerator).not.toHaveBeenCalled();
@@ -23,7 +23,7 @@ describe("resolveGenerator", () => {
 
 		vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(vi.fn());
 
-		await resolver.resolveGenerator();
+		await generatorResolver.resolve();
 
 		expect(inquirer.prompt).toHaveBeenCalledWith(
 			expect.arrayContaining([
@@ -42,7 +42,7 @@ describe("resolveGenerator", () => {
 
 		vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(vi.fn());
 
-		await resolver.resolveGenerator();
+		await generatorResolver.resolve();
 
 		expect(inquirer.prompt).toHaveBeenCalledWith(
 			expect.arrayContaining([
@@ -63,7 +63,7 @@ describe("resolveGenerator", () => {
 		vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(vi.fn());
 		vi.spyOn(store.state().generators, "has");
 
-		await resolver.resolveGenerator();
+		await generatorResolver.resolve();
 
 		expect(store.state().generators.has).toHaveReturnedWith(false);
 		expect(logger.error).toHaveBeenCalledWith(`Generator with ID "${missingGen}" not found.`);

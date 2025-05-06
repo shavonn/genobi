@@ -7,6 +7,7 @@ export interface ConfigStoreState {
 	configFilePath: string;
 	destinationBasePath: string;
 	selectionPrompt: string;
+	selectedGenerator: string;
 	generators: ConfiguredGenerators;
 	helpers: ConfiguredHelpers;
 }

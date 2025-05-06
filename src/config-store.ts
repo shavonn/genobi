@@ -8,6 +8,7 @@ class ConfigStore {
 	#configFilePath = "";
 	#destinationBasePath = "";
 	#selectionPrompt = "";
+	#selectedGenerator = "";
 	#generators: ConfiguredGenerators = new Map<string, GeneratorConfig>();
 	#helpers: ConfiguredHelpers = new Map<string, HelperDelegate>();
 
@@ -31,6 +32,10 @@ class ConfigStore {
 		this.#selectionPrompt = prompt;
 	};
 
+	setSelectedGenerator: (generatorId: string) => void = (generatorId) => {
+		this.#selectedGenerator = generatorId;
+	};
+
 	setGenerator: (id: string, generator: GeneratorConfig) => void = (id, generator) => {
 		this.#generators.set(id, generator);
 	};
@@ -45,6 +50,7 @@ class ConfigStore {
 			logVerbose: this.#logVerbose,
 			configFilePath: this.#configFilePath,
 			destinationBasePath: this.#destinationBasePath,
+			selectedGenerator: this.#selectedGenerator,
 			selectionPrompt: this.#selectionPrompt,
 			generators: this.#generators,
 			helpers: this.#helpers,
@@ -56,6 +62,7 @@ class ConfigStore {
 		this.#logVerbose = false;
 		this.#configFilePath = "";
 		this.#destinationBasePath = "";
+		this.#selectedGenerator = "";
 		this.#selectionPrompt = "Select from available generators:";
 		this.#generators = new Map<string, GeneratorConfig>();
 		this.#helpers = new Map<string, HelperDelegate>();

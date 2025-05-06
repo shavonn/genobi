@@ -2,6 +2,7 @@ import { Command, Option } from "commander";
 import pkg from "../../package.json";
 import { store } from "../config-store";
 import { logger } from "../utils/logger";
+import { configLoader } from "./config-loader";
 
 async function runCli() {
 	const program = new Command(pkg.name);
@@ -32,6 +33,13 @@ async function runCli() {
 	if (verbose) {
 		logger.debug("Verbose logging enabled");
 		store.enableVerboseLogging();
+	}
+
+	try {
+		await configLoader.load(destination);
+	} catch (err: any) {
+		logger.error(`Error: ${err.message}`);
+		process.exit(1);
 	}
 }
 

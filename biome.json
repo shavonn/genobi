@@ -1,0 +1,73 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"ignoreUnknown": false,
+		"ignore": ["./package.json"]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"indentWidth": 2,
+		"lineWidth": 120
+	},
+	"organizeImports": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"correctness": {
+				"noUnusedVariables": {
+					"level": "error"
+				},
+				"noUnusedFunctionParameters": {
+					"level": "error"
+				},
+				"noUnusedImports": {
+					"level": "error",
+					"fix": "safe"
+				},
+				"noConstAssign": {
+					"level": "error",
+					"fix": "unsafe"
+				}
+			},
+			"style": {
+				"useTemplate": {
+					"level": "warn",
+					"fix": "safe"
+				},
+				"noUselessElse": {
+					"level": "warn",
+					"fix": "safe"
+				},
+				"useNodejsImportProtocol": {
+					"level": "warn",
+					"fix": "safe"
+				},
+				"useImportType": {
+					"level": "warn",
+					"fix": "safe"
+				},
+				"noUnusedTemplateLiteral": {
+					"level": "warn",
+					"fix": "safe"
+				}
+			},
+			"suspicious": {
+				"noExplicitAny": "off"
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	}
+}

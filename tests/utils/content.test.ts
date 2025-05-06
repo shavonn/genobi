@@ -1,5 +1,4 @@
 import fs from "node:fs/promises";
-import type { PrependOperation } from "../../src";
 import { content } from "../../src/utils/content";
 import { helperRegister } from "../../src/utils/helpers/helper-register";
 import { logger } from "../../src/utils/logger";
@@ -23,11 +22,11 @@ describe("content utils", () => {
 		it("should return template content from templateStr", async () => {
 			const operation = testData.makeAmendOperation({
 				type: "prepend",
-			}) as PrependOperation;
+			});
 
 			const result = await content.getSingleFileContent(operation, input);
 
-			expect(result).toBe(testFiles.css.templateStr);
+			expect(result).toBe(testFiles.aggregateCss.templateStr);
 			expect(pathDir.getTemplateProcessedPath).not.toHaveBeenCalled();
 		});
 
@@ -53,7 +52,7 @@ describe("content utils", () => {
 
 		it("should throw error when no templateStr or templateFile found for single file operation", async () => {
 			const operation = {
-				type: "prepend" as const,
+				type: "prepend",
 				filePath: "src/css/file.css",
 			};
 
@@ -65,10 +64,10 @@ describe("content utils", () => {
 
 		it("should throw error when error encountered reading file", async () => {
 			const operation = testData.makeAmendOperation({
-				type: "prepend" as const,
+				type: "prepend",
 				templateStr: undefined,
 				templateFilePath: "templates/style.css.hbs",
-			}) as PrependOperation;
+			});
 
 			vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error());
 

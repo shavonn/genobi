@@ -1,0 +1,20 @@
+# dependencies
+node_modules
+
+# build
+dist
+
+# misc
+.DS_Store
+
+# debug
+.pnpm-debug.log*
+
+# typescript
+*.tsbuildinfo
+
+# ide
+.idea
+
+# tests
+coverage

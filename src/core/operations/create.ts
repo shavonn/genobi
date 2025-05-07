@@ -1,15 +1,13 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { OperationFileExistsError, OperationWriteError } from "../../errors";
 import type { CreateOperation } from "../../types/operation";
 import { content } from "../../utils/content";
 import { logger } from "../../utils/logger";
 import { pathDir } from "../../utils/path-dir";
 import { templateProcessor } from "../../utils/template-processor";
-import { operationDecorators } from "./operation-decorators";
 
-async function create(op: CreateOperation, data: Record<string, any>): Promise<void> {
-	const operation = operationDecorators.create(op);
-
+async function create(operation: CreateOperation, data: Record<string, any>): Promise<void> {
 	const filePath = pathDir.getTemplateProcessedPath(operation.filePath, data);
 
 	await pathDir.ensureDirectoryExists(path.dirname(filePath));
@@ -22,7 +20,7 @@ async function create(op: CreateOperation, data: Record<string, any>): Promise<v
 			logger.warn(`File already exists: ${filePath}. Skipping.`);
 			return;
 		} else {
-			throw new Error(`File already exists: ${filePath}.`);
+			throw new OperationFileExistsError(filePath);
 		}
 	}
 
@@ -34,8 +32,7 @@ async function create(op: CreateOperation, data: Record<string, any>): Promise<v
 		await fs.writeFile(filePath, processedContent);
 		logger.success(`Created file: ${filePath}.`);
 	} catch (error) {
-		logger.error(`Error writing file: ${filePath}.`);
-		throw error;
+		throw new OperationWriteError(filePath, error);
 	}
 }
 

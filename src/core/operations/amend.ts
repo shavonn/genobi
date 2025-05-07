@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { OperationReadError, OperationWriteError } from "../../errors";
 import type { AmendOperation } from "../../types/operation";
 import { common } from "../../utils/common";
 import { content } from "../../utils/content";
@@ -7,7 +8,6 @@ import { stringHelpers } from "../../utils/helpers/string-transformers";
 import { logger } from "../../utils/logger";
 import { pathDir } from "../../utils/path-dir";
 import { templateProcessor } from "../../utils/template-processor";
-import { operationDecorators } from "./operation-decorators";
 
 const combiners = {
 	append: {
@@ -44,9 +44,7 @@ const combiners = {
 	},
 };
 
-async function amendFile(op: AmendOperation, data: Record<string, any>): Promise<void> {
-	const operation = operationDecorators.amend(op);
-
+async function amendFile(operation: AmendOperation, data: Record<string, any>): Promise<void> {
 	const combiner = combiners[operation.type];
 	if (!combiner) {
 		throw new Error(`Unknown amendment operation type: ${operation.type}.`);
@@ -66,8 +64,7 @@ async function amendFile(op: AmendOperation, data: Record<string, any>): Promise
 		try {
 			existingContent = await fs.readFile(filePath, "utf8");
 		} catch (error) {
-			logger.error(`Error reading file: ${filePath}.`);
-			throw error;
+			throw new OperationReadError(filePath, error);
 		}
 	}
 
@@ -102,8 +99,7 @@ async function amendFile(op: AmendOperation, data: Record<string, any>): Promise
 		await fs.writeFile(filePath, newContent);
 		logger.success(`${stringHelpers.titleCase(operation.type)}ed to file: ${filePath}.`);
 	} catch (error) {
-		logger.error(`Error writing to file: ${filePath}.`);
-		throw error;
+		throw new OperationWriteError(filePath, error);
 	}
 }
 

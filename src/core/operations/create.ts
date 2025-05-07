@@ -5,8 +5,11 @@ import { content } from "../../utils/content";
 import { logger } from "../../utils/logger";
 import { pathDir } from "../../utils/path-dir";
 import { templateProcessor } from "../../utils/template-processor";
+import { operationDecorators } from "./operation-decorators";
 
-async function create(operation: CreateOperation, data: Record<string, any>): Promise<void> {
+async function create(op: CreateOperation, data: Record<string, any>): Promise<void> {
+	const operation = operationDecorators.create(op);
+
 	const filePath = pathDir.getTemplateProcessedPath(operation.filePath, data);
 
 	await pathDir.ensureDirectoryExists(path.dirname(filePath));

@@ -1,0 +1,47 @@
+import type { AmendOperation, CreateAllOperation, CreateOperation, Operation } from "../../types/operation";
+
+export function OpDecorator(operation: Operation) {
+	return Object.assign(
+		{
+			data: {},
+			haltOnError: true,
+		},
+		operation,
+	) as Operation;
+}
+
+export function createDecorator(operation: CreateOperation) {
+	return Object.assign(
+		{
+			skipIfExists: false,
+			overwrite: false,
+			skip: false,
+		},
+		OpDecorator(operation),
+	) as CreateOperation;
+}
+
+export function createAllDecorator(operation: CreateAllOperation) {
+	return Object.assign(
+		{
+			skipIfExists: false,
+			overwrite: false,
+			skip: false,
+			verbose: true,
+		},
+		OpDecorator(operation),
+	) as unknown as CreateAllOperation;
+}
+
+export function amendDecorator(operation: AmendOperation) {
+	return Object.assign(
+		{
+			unique: true,
+			separator: "\n",
+		},
+		OpDecorator(operation),
+	) as AmendOperation;
+}
+
+const operationDecorators = { create: createDecorator, createAll: createAllDecorator, amend: amendDecorator };
+export { operationDecorators };

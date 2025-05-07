@@ -7,6 +7,7 @@ import { stringHelpers } from "../../utils/helpers/string-transformers";
 import { logger } from "../../utils/logger";
 import { pathDir } from "../../utils/path-dir";
 import { templateProcessor } from "../../utils/template-processor";
+import { operationDecorators } from "./operation-decorators";
 
 const combiners = {
 	append: {
@@ -43,7 +44,9 @@ const combiners = {
 	},
 };
 
-async function amendFile(operation: AmendOperation, data: Record<string, any>): Promise<void> {
+async function amendFile(op: AmendOperation, data: Record<string, any>): Promise<void> {
+	const operation = operationDecorators.amend(op);
+
 	const combiner = combiners[operation.type];
 	if (!combiner) {
 		throw new Error(`Unknown amendment operation type: ${operation.type}.`);

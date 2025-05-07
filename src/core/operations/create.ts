@@ -1,18 +1,17 @@
-import fs from "node:fs/promises";
 import path from "node:path";
-import { OperationFileExistsError, OperationWriteError } from "../../errors";
+import { OperationFileExistsError } from "../../errors";
 import type { CreateOperation } from "../../types/operation";
 import { content } from "../../utils/content";
+import { fileSys } from "../../utils/file-sys";
 import { logger } from "../../utils/logger";
-import { pathDir } from "../../utils/path-dir";
 import { templateProcessor } from "../../utils/template-processor";
 
 async function create(operation: CreateOperation, data: Record<string, any>): Promise<void> {
-	const filePath = pathDir.getTemplateProcessedPath(operation.filePath, data);
+	const filePath = fileSys.getTemplateProcessedPath(operation.filePath, data);
 
-	await pathDir.ensureDirectoryExists(path.dirname(filePath));
+	await fileSys.ensureDirectoryExists(path.dirname(filePath));
 
-	const exists = await pathDir.fileExists(filePath);
+	const exists = await fileSys.fileExists(filePath);
 	if (exists) {
 		if (operation.overwrite) {
 			logger.warn(`Create file already exists: ${filePath}.`);
@@ -30,12 +29,8 @@ async function create(operation: CreateOperation, data: Record<string, any>): Pr
 		return templateProcessor.process(content, data);
 	});
 
-	try {
-		await fs.writeFile(filePath, processedContent);
-		logger.success(`File created: ${filePath}.`);
-	} catch (error) {
-		throw new OperationWriteError(filePath, error);
-	}
+	await fileSys.writeToFile(filePath, processedContent);
+	logger.success(`File created: ${filePath}.`);
 }
 
 export { create };

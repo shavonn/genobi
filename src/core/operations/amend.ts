@@ -1,12 +1,11 @@
-import fs from "node:fs/promises";
 import path from "node:path";
-import { GenobiError, OperationReadError, OperationWriteError } from "../../errors";
+import { GenobiError } from "../../errors";
 import type { AmendOperation } from "../../types/operation";
 import { common } from "../../utils/common";
 import { content } from "../../utils/content";
+import { fileSys } from "../../utils/file-sys";
 import { stringHelpers } from "../../utils/helpers/string-transformers";
 import { logger } from "../../utils/logger";
-import { pathDir } from "../../utils/path-dir";
 import { templateProcessor } from "../../utils/template-processor";
 
 const combiners = {
@@ -50,18 +49,14 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 		throw new GenobiError("UNKNOWN_TYPE", `Unknown amendment operation type: ${operation.type}.`);
 	}
 
-	const filePath = pathDir.getTemplateProcessedPath(operation.filePath, data);
+	const filePath = fileSys.getTemplateProcessedPath(operation.filePath, data);
 
-	await pathDir.ensureDirectoryExists(path.dirname(filePath));
+	await fileSys.ensureDirectoryExists(path.dirname(filePath));
 
 	let existingContent = "";
-	const exists = await pathDir.fileExists(filePath);
+	const exists = await fileSys.fileExists(filePath);
 	if (exists) {
-		try {
-			existingContent = await fs.readFile(filePath, "utf8");
-		} catch (error) {
-			throw new OperationReadError(filePath, error);
-		}
+		existingContent = await fileSys.readFromFile(filePath);
 	}
 
 	const processedContent = await content.getSingleFileContent(operation, data).then((content) => {
@@ -96,12 +91,8 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 		newContent = combiner.defaultAction(existingContent, processedContent, separator);
 	}
 
-	try {
-		await fs.writeFile(filePath, newContent);
-		logger.success(`File ${operation.type}ed: ${filePath}.`);
-	} catch (error) {
-		throw new OperationWriteError(filePath, error);
-	}
+	await fileSys.writeToFile(filePath, newContent);
+	logger.success(`File ${operation.type}ed: ${filePath}.`);
 }
 
 const append = (operation: AmendOperation, data: Record<string, any>) =>

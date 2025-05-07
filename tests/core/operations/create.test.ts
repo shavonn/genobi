@@ -2,8 +2,8 @@ import fs from "node:fs/promises";
 import { operationDecorators } from "../../../src/core/operations/operation-decorators";
 import { ops } from "../../../src/core/operations/ops";
 import { content } from "../../../src/utils/content";
+import { fileSys } from "../../../src/utils/file-sys";
 import { helperRegister } from "../../../src/utils/helpers/helper-register";
-import { pathDir } from "../../../src/utils/path-dir";
 import { testData } from "../../__fixtures__/test-data";
 import { testFiles } from "../../__fixtures__/test-files";
 import { getTmpDirPath, loadTestFiles, writeTestFile } from "../../test-utils";
@@ -70,11 +70,11 @@ describe("create", () => {
 		});
 
 		vi.spyOn(fs, "readFile");
-		vi.spyOn(pathDir, "fileExists");
+		vi.spyOn(fileSys, "fileExists");
 
 		await expect(ops.create(operation, mergedData)).rejects.toThrow();
 
-		expect(pathDir.fileExists).toHaveResolvedWith(true);
+		expect(fileSys.fileExists).toHaveResolvedWith(true);
 		expect(fs.readFile).not.toHaveBeenCalled();
 	});
 
@@ -93,7 +93,7 @@ describe("create", () => {
 
 		await ops.create(operation, mergedData);
 
-		expect(pathDir.fileExists).toHaveResolvedWith(true);
+		expect(fileSys.fileExists).toHaveResolvedWith(true);
 		expect(content.getSingleFileContent).not.toHaveBeenCalled();
 	});
 
@@ -121,7 +121,7 @@ describe("create", () => {
 		const newContentResult = await fs.readFile(alertFilePath, "utf8");
 		expect(newContentResult).not.toContain("overwritten");
 
-		expect(pathDir.fileExists).toHaveResolvedWith(true);
+		expect(fileSys.fileExists).toHaveResolvedWith(true);
 		expect(content.getSingleFileContent).toHaveBeenCalled();
 	});
 

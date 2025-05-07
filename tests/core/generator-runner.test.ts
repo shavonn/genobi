@@ -7,10 +7,10 @@ import { store } from "../../src/config-store";
 import { generatorRunner } from "../../src/core/generator-runner";
 import { operationDecorators } from "../../src/core/operations/operation-decorators";
 import { ops } from "../../src/core/operations/ops";
+import { fileSys } from "../../src/utils/file-sys";
 import { helperRegister } from "../../src/utils/helpers/helper-register";
 import { stringHelpers } from "../../src/utils/helpers/string-transformers";
 import { logger } from "../../src/utils/logger";
-import { pathDir } from "../../src/utils/path-dir";
 import { testData } from "../__fixtures__/test-data";
 import { testFiles } from "../__fixtures__/test-files";
 import { loadTestFiles } from "../test-utils";
@@ -117,7 +117,7 @@ describe("runGenerator", () => {
 		);
 		store.setSelectedGenerator("failOpGen");
 
-		vi.spyOn(pathDir, "fileExists").mockResolvedValueOnce(true);
+		vi.spyOn(fileSys, "fileExists").mockResolvedValueOnce(true);
 		vi.spyOn(generatorRunner, "run");
 
 		await expect(generatorRunner.run()).rejects.toThrow();
@@ -142,7 +142,7 @@ describe("runGenerator", () => {
 		);
 		store.setSelectedGenerator("fail-op-gen");
 
-		vi.spyOn(fs, "readFile").mockRejectedValue(new Error("Read error"));
+		vi.spyOn(fs, "readFile").mockRejectedValue(new Error("Error reading file"));
 		vi.spyOn(generatorRunner, "run");
 
 		await expect(generatorRunner.run()).rejects.toThrow();
@@ -167,7 +167,7 @@ describe("runGenerator", () => {
 		);
 		store.setSelectedGenerator("noFailGen");
 
-		vi.spyOn(pathDir, "fileExists").mockResolvedValueOnce(true);
+		vi.spyOn(fileSys, "fileExists").mockResolvedValueOnce(true);
 		vi.spyOn(generatorRunner, "run");
 
 		await expect(generatorRunner.run()).resolves.toBeUndefined();

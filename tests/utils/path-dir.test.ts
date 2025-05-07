@@ -1,11 +1,11 @@
 import fs from "node:fs/promises";
-import { pathDir } from "../../src/utils/path-dir";
+import { fileSys } from "../../src/utils/file-sys";
 import { getTmpDirPath, loadTestFiles } from "../test-utils";
 
 describe("path and dir utils", () => {
 	describe("ensureDirectoryExists", async () => {
 		it("should create a directory if it does not exist", async () => {
-			await pathDir.ensureDirectoryExists("path/to/dir");
+			await fileSys.ensureDirectoryExists("path/to/dir");
 
 			expect(await fs.access(getTmpDirPath("path/to/dir"), fs.constants.F_OK)).toBe(undefined);
 		});
@@ -16,13 +16,13 @@ describe("path and dir utils", () => {
 
 			vi.spyOn(fs, "mkdir").mockRejectedValueOnce(error);
 
-			await expect(pathDir.ensureDirectoryExists("path/to/dir")).resolves.not.toThrow();
+			await expect(fileSys.ensureDirectoryExists("path/to/dir")).resolves.not.toThrow();
 		});
 
 		it("should throw other errors when mkdir encounters an error", async () => {
 			vi.mocked(fs.mkdir).mockRejectedValueOnce(new Error());
 
-			await expect(pathDir.ensureDirectoryExists("path/to/dir")).rejects.toThrow();
+			await expect(fileSys.ensureDirectoryExists("path/to/dir")).rejects.toThrow();
 		});
 	});
 
@@ -34,13 +34,13 @@ describe("path and dir utils", () => {
 				"where/a/file/is.txt": "I think. Therefore, I am.",
 			});
 
-			const result = await pathDir.fileExists(file);
+			const result = await fileSys.fileExists(file);
 
 			expect(result).toBe(true);
 		});
 
 		it("should return false if file does not exist", async () => {
-			const result = await pathDir.fileExists("where/a/file/is/not.txt");
+			const result = await fileSys.fileExists("where/a/file/is/not.txt");
 
 			expect(result).toBe(false);
 		});
@@ -51,7 +51,7 @@ describe("path and dir utils", () => {
 			const template = "src/components/{{name}}/{{name}}.js";
 			const data = { name: "dropdown" };
 
-			const result = pathDir.getTemplateProcessedPath(template, data);
+			const result = fileSys.getTemplateProcessedPath(template, data);
 
 			expect(result).toBe(getTmpDirPath("src/components/dropdown/dropdown.js"));
 		});

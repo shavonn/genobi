@@ -1,9 +1,9 @@
 import fs from "node:fs/promises";
 import { operationDecorators } from "../../src/core/operations/operation-decorators";
 import { content } from "../../src/utils/content";
+import { fileSys } from "../../src/utils/file-sys";
 import { helperRegister } from "../../src/utils/helpers/helper-register";
 import { logger } from "../../src/utils/logger";
-import { pathDir } from "../../src/utils/path-dir";
 import { testData } from "../__fixtures__/test-data";
 import { testFiles } from "../__fixtures__/test-files";
 import { getTmpDirPath, loadTestFiles } from "../test-utils";
@@ -17,7 +17,7 @@ describe("content utils", () => {
 		});
 
 		beforeEach(async () => {
-			vi.spyOn(pathDir, "getTemplateProcessedPath");
+			vi.spyOn(fileSys, "getTemplateProcessedPath");
 		});
 
 		it("should return template content from templateStr", async () => {
@@ -30,7 +30,7 @@ describe("content utils", () => {
 			const result = await content.getSingleFileContent(operation, input);
 
 			expect(result).toBe(testFiles.aggregateCss.templateStr);
-			expect(pathDir.getTemplateProcessedPath).not.toHaveBeenCalled();
+			expect(fileSys.getTemplateProcessedPath).not.toHaveBeenCalled();
 		});
 
 		it("should return template content from templateFile", async () => {
@@ -48,7 +48,7 @@ describe("content utils", () => {
 
 			const result = await content.getSingleFileContent(operation, mergedData);
 
-			expect(pathDir.getTemplateProcessedPath).toHaveBeenCalledWith(operation.templateFilePath, mergedData);
+			expect(fileSys.getTemplateProcessedPath).toHaveBeenCalledWith(operation.templateFilePath, mergedData);
 			expect(result).toBe(testFiles.component.templateFileContent);
 			expect(fs.readFile).toHaveBeenCalledWith(getTmpDirPath(operation.templateFilePath), "utf8");
 		});
@@ -62,7 +62,7 @@ describe("content utils", () => {
 			await expect(content.getSingleFileContent(operation, input)).rejects.toThrow();
 
 			expect(logger.error).toBeCalledWith(expect.stringContaining("No template string or template file value found"));
-			expect(pathDir.getTemplateProcessedPath).not.toHaveBeenCalled();
+			expect(fileSys.getTemplateProcessedPath).not.toHaveBeenCalled();
 		});
 
 		it("should throw error when error encountered reading file", async () => {
@@ -78,7 +78,7 @@ describe("content utils", () => {
 
 			await expect(content.getSingleFileContent(operation, input)).rejects.toThrow();
 
-			expect(pathDir.getTemplateProcessedPath).toHaveBeenCalledWith(operation.templateFilePath, input);
+			expect(fileSys.getTemplateProcessedPath).toHaveBeenCalledWith(operation.templateFilePath, input);
 			expect(fs.readFile).toHaveBeenCalledWith(getTmpDirPath(operation.templateFilePath), "utf8");
 			expect(logger.error).toBeCalledWith(expect.stringContaining("Error reading template file"));
 		});

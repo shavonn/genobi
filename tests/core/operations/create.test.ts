@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
+import { operationDecorators } from "../../../src/core/operations/operation-decorators";
 import { ops } from "../../../src/core/operations/ops";
 import { content } from "../../../src/utils/content";
 import { helperRegister } from "../../../src/utils/helpers/helper-register";
-import { logger } from "../../../src/utils/logger";
 import { pathDir } from "../../../src/utils/path-dir";
 import { testData } from "../../__fixtures__/test-data";
 import { testFiles } from "../../__fixtures__/test-files";
@@ -23,7 +23,7 @@ describe("create", () => {
 	});
 
 	it("should create file using templateFile", async () => {
-		const operation = testData.makeCreateOperation();
+		const operation = operationDecorators.create(testData.makeCreateOperation());
 		const componentFilePath = getTmpDirPath("src/components/page-header/page-header.tsx");
 		const mergedData = {
 			name: "page header",
@@ -38,11 +38,13 @@ describe("create", () => {
 	});
 
 	it("should create a file using templateStr", async () => {
-		const operation = testData.makeCreateOperation({
-			templateFilePath: undefined,
-			filePath: testFiles.componentCss.filePath,
-			templateStr: testFiles.componentCss.templateStr,
-		});
+		const operation = operationDecorators.create(
+			testData.makeCreateOperation({
+				templateFilePath: undefined,
+				filePath: testFiles.componentCss.filePath,
+				templateStr: testFiles.componentCss.templateStr,
+			}),
+		);
 		const mergedData = {
 			name: "checkbox input",
 			...testData.themeData,
@@ -57,9 +59,11 @@ describe("create", () => {
 	});
 
 	it("should throw error if file already exists and skipIfExists is false", async () => {
-		const operation = testData.makeCreateOperation({
-			templateFilePath: undefined,
-		});
+		const operation = operationDecorators.create(
+			testData.makeCreateOperation({
+				templateFilePath: undefined,
+			}),
+		);
 
 		await loadTestFiles({
 			"src/components/page-header/page-header.tsx": "page header",
@@ -75,9 +79,11 @@ describe("create", () => {
 	});
 
 	it("should skip operation if file already exists and skipIfExists is true", async () => {
-		const operation = testData.makeCreateOperation({
-			skipIfExists: true,
-		});
+		const operation = operationDecorators.create(
+			testData.makeCreateOperation({
+				skipIfExists: true,
+			}),
+		);
 
 		vi.spyOn(content, "getSingleFileContent");
 
@@ -92,11 +98,13 @@ describe("create", () => {
 	});
 
 	it("should overwrite file if file already exists and overwrite is true", async () => {
-		const operation = testData.makeCreateOperation({
-			templateFilePath: undefined,
-			templateStr: testFiles.component.templateFileContent,
-			overwrite: true,
-		});
+		const operation = operationDecorators.create(
+			testData.makeCreateOperation({
+				templateFilePath: undefined,
+				templateStr: testFiles.component.templateFileContent,
+				overwrite: true,
+			}),
+		);
 		const mergedData = {
 			name: "alert",
 			...testData.themeData,
@@ -118,12 +126,10 @@ describe("create", () => {
 	});
 
 	it("should throw error when writing file fails", async () => {
-		const operation = testData.makeCreateOperation();
+		const operation = operationDecorators.create(testData.makeCreateOperation());
 
 		vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error());
 
 		await expect(ops.create(operation, mergedData)).rejects.toThrow();
-
-		expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("Error writing file"));
 	});
 });

@@ -1,5 +1,26 @@
 import type { AmendOperation, CreateAllOperation, CreateOperation, Operation } from "../../types/operation";
 
+function decorateOperation(operation: Operation): AmendOperation | CreateOperation | CreateAllOperation {
+	let decoratedOp: Operation;
+
+	switch (operation.type) {
+		case "append":
+		case "prepend":
+			decoratedOp = amendDecorator(operation);
+			break;
+		case "create":
+			decoratedOp = createDecorator(operation);
+			break;
+		case "createAll":
+			decoratedOp = createAllDecorator(operation);
+			break;
+		default:
+			throw new Error(`Unknown operation type: ${(operation as any).type}`);
+	}
+
+	return decoratedOp;
+}
+
 export function OpDecorator(operation: Operation) {
 	return Object.assign(
 		{
@@ -43,5 +64,10 @@ export function amendDecorator(operation: AmendOperation) {
 	) as AmendOperation;
 }
 
-const operationDecorators = { create: createDecorator, createAll: createAllDecorator, amend: amendDecorator };
+const operationDecorators = {
+	decorate: decorateOperation,
+	create: createDecorator,
+	createAll: createAllDecorator,
+	amend: amendDecorator,
+};
 export { operationDecorators };

@@ -6,7 +6,7 @@ export default defineConfig({
 		globals: true,
 		mockReset: true,
 		clearMocks: true,
-		setupFiles: ["./tests/setup.ts"],
+		setupFiles: ["./tests/setup-tmpdir.ts", "./tests/setup.ts"],
 		include: ["./tests/**/*.test.ts"],
 		coverage: {
 			provider: "istanbul",

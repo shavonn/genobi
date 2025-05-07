@@ -4,7 +4,7 @@ import { testFiles } from "./test-files";
 
 const selectionPrompt: string = "Welcome to my totally awesome generator. Pick from the menu below:";
 
-const configFilePath: string = "genobi.config.js";
+const configFilePath: string = "genobi.config.ts";
 
 const themeData = {
 	theme: {

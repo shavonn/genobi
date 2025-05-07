@@ -3,6 +3,7 @@ import { store } from "../../src/config-store";
 import { configLoader } from "../../src/core/config-loader";
 import { logger } from "../../src/utils/logger";
 import { testData } from "../__fixtures__/test-data";
+import { getTmpDirPath } from "../test-utils";
 
 vi.mock("cosmiconfig");
 
@@ -13,7 +14,7 @@ describe("loadConfig", () => {
 				return Promise.resolve({
 					isEmpty: false,
 					config: testData.fullConfigFunc,
-					filepath: testData.configFilePath,
+					filepath: getTmpDirPath(testData.configFilePath),
 				});
 			},
 		} as PublicExplorer);
@@ -43,13 +44,13 @@ describe("loadConfig", () => {
 				return Promise.resolve({
 					isEmpty: true,
 					config: "",
-					filepath: testData.configFilePath,
+					filepath: getTmpDirPath(testData.configFilePath),
 				});
 			},
 		} as PublicExplorer);
 
 		await expect(configLoader.load()).rejects.toThrow(
-			`Config file invalid. It must export a default function: ${testData.configFilePath}.`,
+			`Config file invalid. It must export a default function: ${getTmpDirPath(testData.configFilePath)}.`,
 		);
 	});
 
@@ -59,7 +60,7 @@ describe("loadConfig", () => {
 				return Promise.resolve({
 					isEmpty: false,
 					config: testData.zeroConfigFunc,
-					filepath: testData.configFilePath,
+					filepath: getTmpDirPath(testData.configFilePath),
 				});
 			},
 		} as PublicExplorer);

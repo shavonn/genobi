@@ -25,6 +25,8 @@ const aggregateCss = {
 const existingFiles = {
 	"templates/component.tsx.hbs": component.templateFileContent,
 	"src/css/components.css": aggregateCss.existing,
+	"templates/ui-kit-component/{{kebabCase name}}.tsx.hbs": component.templateFileContent,
+	"templates/ui-kit-component/{{kebabCase name}}.css.hbs": componentCss.templateStr,
 };
 
 const testFiles = {

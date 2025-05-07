@@ -37,7 +37,11 @@ const component = {
 	generator: {
 		description: "React component",
 		prompts: [{ type: "input", name: "name", message: "What is the name of this component?" }],
-		operations: [makeCreateOperation()],
+		operations: [
+			makeCreateOperation(),
+			makeAmendOperation({ type: "append" }),
+			makeAmendOperation({ type: "prepend" }),
+		],
 	} as GeneratorConfig,
 	generatorNoOps: {
 		description: "React component",

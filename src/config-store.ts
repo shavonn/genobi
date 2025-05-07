@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { HelperDelegate } from "handlebars";
 import type { ConfigStoreState, ConfiguredGenerators, ConfiguredHelpers, SelectChoice } from "./types/config-store";
 import type { GeneratorConfig } from "./types/generator";
@@ -20,12 +21,12 @@ class ConfigStore {
 		this.#logVerbose = true;
 	};
 
-	setConfigFilePath: (path: string) => void = (path) => {
-		this.#configFilePath = path;
+	setConfigFilePath: (configPath: string) => void = (configPath) => {
+		this.#configFilePath = path.dirname(configPath);
 	};
 
-	setDestinationBasePath: (path: string) => void = (path) => {
-		this.#destinationBasePath = path;
+	setDestinationBasePath: (destPath: string) => void = (destPath) => {
+		this.#destinationBasePath = destPath;
 	};
 
 	setSelectionPrompt: (prompt: string) => void = (prompt) => {

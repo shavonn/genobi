@@ -1,6 +1,7 @@
 import type { HelperDelegate } from "handlebars";
 import Handlebars from "handlebars";
 import { store } from "./config-store";
+import { GenobiError } from "./errors";
 import type { ConfigAPI } from "./types/config-api";
 import type { GeneratorConfig } from "./types/generator";
 
@@ -18,7 +19,7 @@ function configApi(): ConfigAPI {
 		getGenerator: (generatorId: string): GeneratorConfig => {
 			const generator = store.state().generators.get(generatorId);
 			if (!generator) {
-				throw new Error(`Generator ${generatorId} not found in loaded configuration.`);
+				throw new GenobiError("GENERATOR_NOT_FOUND", `Generator ${generatorId} not found in loaded configuration.`);
 			}
 			return generator;
 		},
@@ -30,7 +31,7 @@ function configApi(): ConfigAPI {
 		getHelper: (name: string): HelperDelegate => {
 			const helper = store.state().helpers.get(name);
 			if (!helper) {
-				throw new Error(`Helper ${name} not found in loaded configuration.`);
+				throw new GenobiError("HELPER_NOT_FOUND", `Helper ${name} not found in loaded configuration.`);
 			}
 			return helper;
 		},

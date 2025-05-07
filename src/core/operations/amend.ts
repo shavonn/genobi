@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { OperationReadError, OperationWriteError } from "../../errors";
+import { GenobiError, OperationReadError, OperationWriteError } from "../../errors";
 import type { AmendOperation } from "../../types/operation";
 import { common } from "../../utils/common";
 import { content } from "../../utils/content";
@@ -47,16 +47,12 @@ const combiners = {
 async function amendFile(operation: AmendOperation, data: Record<string, any>): Promise<void> {
 	const combiner = combiners[operation.type];
 	if (!combiner) {
-		throw new Error(`Unknown amendment operation type: ${operation.type}.`);
+		throw new GenobiError("UNKNOWN_TYPE", `Unknown amendment operation type: ${operation.type}.`);
 	}
 
 	const filePath = pathDir.getTemplateProcessedPath(operation.filePath, data);
 
 	await pathDir.ensureDirectoryExists(path.dirname(filePath));
-
-	const processedContent = await content.getSingleFileContent(operation, data).then((content) => {
-		return templateProcessor.process(content, data);
-	});
 
 	let existingContent = "";
 	const exists = await pathDir.fileExists(filePath);
@@ -68,8 +64,12 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 		}
 	}
 
+	const processedContent = await content.getSingleFileContent(operation, data).then((content) => {
+		return templateProcessor.process(content, data);
+	});
+
 	if (operation.unique && existingContent.includes(processedContent)) {
-		logger.warn(`Content already exists in ${filePath}, skipping operation.`);
+		logger.warn(`Content already exists in ${filePath}, skipping ${operation.type}.`);
 		return;
 	}
 
@@ -79,7 +79,8 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 
 	if (!existingContent) {
 		newContent = processedContent;
-		logger.warn(`File not found to ${operation.type}. Creating.`);
+		logger.warn(`${stringHelpers.titleCase(operation.type)} file not found: ${filePath}.`);
+		logger.warn("The file will be created.");
 	} else if (operation.pattern) {
 		const regex =
 			operation.pattern instanceof RegExp ? operation.pattern : new RegExp(common.escapeRegExp(operation.pattern));
@@ -97,7 +98,7 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 
 	try {
 		await fs.writeFile(filePath, newContent);
-		logger.success(`${stringHelpers.titleCase(operation.type)}ed to file: ${filePath}.`);
+		logger.success(`File ${operation.type}ed: ${filePath}.`);
 	} catch (error) {
 		throw new OperationWriteError(filePath, error);
 	}

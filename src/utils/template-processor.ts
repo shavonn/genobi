@@ -1,4 +1,5 @@
 import Handlebars from "handlebars";
+import { GenobiError } from "../errors";
 import { logger } from "./logger";
 
 export function processTemplate(template: string, data: Record<string, any>): string {
@@ -9,7 +10,7 @@ export function processTemplate(template: string, data: Record<string, any>): st
 		logger.error(`Error processing template: ${error.message}`);
 		logger.warn("Template:", template);
 		logger.warn("Data:", JSON.stringify(data, null, 2));
-		throw new Error(`Error processing template: ${error.message}`);
+		throw new GenobiError("TEMPLATE_PROCESSING_ERROR", `Error processing template: ${error.message}`);
 	}
 }
 

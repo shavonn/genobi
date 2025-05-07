@@ -15,9 +15,11 @@ async function create(operation: CreateOperation, data: Record<string, any>): Pr
 	const exists = await pathDir.fileExists(filePath);
 	if (exists) {
 		if (operation.overwrite) {
-			logger.warn(`File already exists: ${filePath}. Overwriting.`);
+			logger.warn(`Create file already exists: ${filePath}.`);
+			logger.warn("This file will be overwritten.");
 		} else if (operation.skipIfExists) {
-			logger.warn(`File already exists: ${filePath}. Skipping.`);
+			logger.warn(`Create file already exists: ${filePath}`);
+			logger.warn("This operation will be skipped.");
 			return;
 		} else {
 			throw new OperationFileExistsError(filePath);
@@ -30,7 +32,7 @@ async function create(operation: CreateOperation, data: Record<string, any>): Pr
 
 	try {
 		await fs.writeFile(filePath, processedContent);
-		logger.success(`Created file: ${filePath}.`);
+		logger.success(`File created: ${filePath}.`);
 	} catch (error) {
 		throw new OperationWriteError(filePath, error);
 	}

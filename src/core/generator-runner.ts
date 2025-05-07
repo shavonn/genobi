@@ -1,5 +1,6 @@
 import inquirer from "inquirer";
 import { store } from "../config-store";
+import { GenobiError } from "../errors";
 import { helperRegister } from "../utils/helpers/helper-register";
 import { stringHelpers } from "../utils/helpers/string-transformers";
 import { logger } from "../utils/logger";
@@ -18,7 +19,7 @@ async function runGenerator() {
 	}
 
 	if (!generator?.operations || generator.operations.length === 0) {
-		throw new Error(`No operations found for ${store.state().selectedGenerator}`);
+		throw new GenobiError("MISSING_OPERATIONS_ERROR", `No operations found for ${store.state().selectedGenerator}`);
 	}
 
 	for (const op of generator.operations) {

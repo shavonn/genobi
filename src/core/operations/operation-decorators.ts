@@ -1,3 +1,4 @@
+import { GenobiError } from "../../errors";
 import type { AmendOperation, CreateAllOperation, CreateOperation, Operation } from "../../types/operation";
 
 function decorateOperation(operation: Operation): AmendOperation | CreateOperation | CreateAllOperation {
@@ -15,7 +16,7 @@ function decorateOperation(operation: Operation): AmendOperation | CreateOperati
 			decoratedOp = createAllDecorator(operation);
 			break;
 		default:
-			throw new Error(`Unknown operation type: ${(operation as any).type}`);
+			throw new GenobiError("UNKNOWN_TYPE", `Unknown operation type: ${(operation as any).type}`);
 	}
 
 	return decoratedOp;

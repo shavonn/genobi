@@ -23,7 +23,6 @@ describe("runGenerator", () => {
 	beforeEach(async () => {
 		await loadTestFiles(testFiles.existingFiles);
 
-		// vi.spyOn(operationRunner, "run").mockResolvedValueOnce();
 		vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(input);
 	});
 
@@ -108,19 +107,15 @@ describe("runGenerator", () => {
 		expect(ops.create).not.toHaveBeenCalled();
 	});
 
-	it("should stop process when an operation error is caught and haltOnError is true", async () => {
+	it("should throw error when an operation error is caught and haltOnError is true", async () => {
 		testData.zeroConfigFunc(configAPI.get());
 		store.setGenerator(
-			"failGen",
+			"failOpGen",
 			Object.assign(testData.component.generator, {
-				operations: [
-					testData.makeCreateOperation({
-						haltOnError: true,
-					}),
-				],
+				operations: [testData.makeCreateOperation()],
 			}),
 		);
-		store.setSelectedGenerator("failGen");
+		store.setSelectedGenerator("failOpGen");
 
 		vi.spyOn(pathDir, "fileExists").mockResolvedValueOnce(true);
 		vi.spyOn(generatorRunner, "run");
@@ -133,22 +128,32 @@ describe("runGenerator", () => {
 		);
 	});
 
-	it("should stop process when an operation error is caught and haltOnError is true TWO", async () => {
+	it("should throw error when an operation error is caught and haltOnError is true, additional check", async () => {
 		testData.fullConfigFunc(configAPI.get());
-		store.setSelectedGenerator(testData.component.id);
+		store.setGenerator(
+			"fail-op-gen",
+			Object.assign(testData.component.generator, {
+				operations: [
+					testData.makeAmendOperation({
+						type: "append",
+					}),
+				],
+			}),
+		);
+		store.setSelectedGenerator("fail-op-gen");
 
-		vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error("Write error"));
+		vi.spyOn(fs, "readFile").mockRejectedValue(new Error("Read error"));
 		vi.spyOn(generatorRunner, "run");
 
 		await expect(generatorRunner.run()).rejects.toThrow();
 
 		expect(logger.error).toHaveBeenCalledWith(
-			expect.stringContaining("Create operation failed"),
-			expect.stringContaining("Error writing file"),
+			expect.stringContaining("Append operation failed"),
+			expect.stringContaining("Error reading file"),
 		);
 	});
 
-	it("should stop process when an operation error is caught and haltOnError is false", async () => {
+	it("should throw error when an operation error is caught and haltOnError is false", async () => {
 		testData.zeroConfigFunc(configAPI.get());
 		store.setGenerator(
 			"noFailGen",

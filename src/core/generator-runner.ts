@@ -1,6 +1,6 @@
 import inquirer from "inquirer";
 import { store } from "../config-store";
-import { GenobiError } from "../errors";
+import { GenobiError, UnknownOperationType } from "../errors";
 import { helperRegister } from "../utils/helpers/helper-register";
 import { stringHelpers } from "../utils/helpers/string-transformers";
 import { logger } from "../utils/logger";
@@ -34,15 +34,14 @@ async function runGenerator() {
 		try {
 			if (operation.type === "append") {
 				await ops.append(operation, data);
-			}
-			if (operation.type === "create") {
+			} else if (operation.type === "create") {
 				await ops.create(operation, data);
-			}
-			if (operation.type === "createAll") {
+			} else if (operation.type === "createAll") {
 				await ops.createAll(operation, data);
-			}
-			if (operation.type === "prepend") {
+			} else if (operation.type === "prepend") {
 				await ops.prepend(operation, data);
+			} else {
+				throw new UnknownOperationType((operation as any).type);
 			}
 		} catch (err: any) {
 			logger.error(`${stringHelpers.titleCase(operation.type)} operation failed.`, err.message);

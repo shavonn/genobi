@@ -3,7 +3,7 @@ type ErrorName =
 	| "MISSING_OPERATIONS_ERROR"
 	| "GENERATOR_NOT_FOUND"
 	| "HELPER_NOT_FOUND"
-	| "UNKNOWN_TYPE"
+	| "UNKNOWN_OPERATION_TYPE"
 	| "NO_TEMPLATE_FOUND"
 	| "READ_ERROR"
 	| "WRITE_ERROR"
@@ -44,5 +44,11 @@ export class OperationReadError extends GenobiError {
 export class ConfigError extends GenobiError {
 	constructor(message: string) {
 		super("CONFIG_ERROR", message);
+	}
+}
+
+export class UnknownOperationType extends GenobiError {
+	constructor(type: string) {
+		super("UNKNOWN_OPERATION_TYPE", `Unknown amendment operation type: ${type}.`);
 	}
 }

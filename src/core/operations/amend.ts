@@ -46,7 +46,7 @@ const combiners = {
 async function amendFile(operation: AmendOperation, data: Record<string, any>): Promise<void> {
 	const combiner = combiners[operation.type];
 	if (!combiner) {
-		throw new GenobiError("UNKNOWN_TYPE", `Unknown amendment operation type: ${operation.type}.`);
+		throw new GenobiError("UNKNOWN_OPERATION_TYPE", `Unknown amendment operation type: ${operation.type}.`);
 	}
 
 	const filePath = fileSys.getTemplateProcessedPath(operation.filePath, data);

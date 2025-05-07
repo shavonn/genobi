@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import { operations } from "../../../src/core/operations/operation-runner";
+import { ops } from "../../../src/core/operations/ops";
 import { content } from "../../../src/utils/content";
 import { helperRegister } from "../../../src/utils/helpers/helper-register";
 import { logger } from "../../../src/utils/logger";
@@ -30,7 +30,7 @@ describe("create", () => {
 			...testData.themeData,
 		};
 
-		await operations.create(operation, mergedData);
+		await ops.create(operation, mergedData);
 
 		const fileResult = await fs.readFile(componentFilePath, "utf8");
 		expect(fileResult).toContain("PageHeader()");
@@ -49,7 +49,7 @@ describe("create", () => {
 		};
 		const cssFilePath = getTmpDirPath("src/components/checkbox-input/checkbox-input.css");
 
-		await operations.create(operation, mergedData);
+		await ops.create(operation, mergedData);
 
 		const fileResult = await fs.readFile(cssFilePath, "utf8");
 		expect(fileResult).toContain(".checkbox-input {");
@@ -68,7 +68,7 @@ describe("create", () => {
 		vi.spyOn(fs, "readFile");
 		vi.spyOn(pathDir, "fileExists");
 
-		await expect(operations.create(operation, mergedData)).rejects.toThrow();
+		await expect(ops.create(operation, mergedData)).rejects.toThrow();
 
 		expect(pathDir.fileExists).toHaveResolvedWith(true);
 		expect(fs.readFile).not.toHaveBeenCalled();
@@ -85,7 +85,7 @@ describe("create", () => {
 			"src/components/page-header/page-header.tsx": "page header",
 		});
 
-		await operations.create(operation, mergedData);
+		await ops.create(operation, mergedData);
 
 		expect(pathDir.fileExists).toHaveResolvedWith(true);
 		expect(content.getSingleFileContent).not.toHaveBeenCalled();
@@ -108,7 +108,7 @@ describe("create", () => {
 		const existingFileResult = await fs.readFile(alertFilePath, "utf8");
 		expect(existingFileResult).toContain("overwritten");
 
-		await operations.create(operation, mergedData);
+		await ops.create(operation, mergedData);
 
 		const newContentResult = await fs.readFile(alertFilePath, "utf8");
 		expect(newContentResult).not.toContain("overwritten");
@@ -122,7 +122,7 @@ describe("create", () => {
 
 		vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error());
 
-		await expect(operations.create(operation, mergedData)).rejects.toThrow();
+		await expect(ops.create(operation, mergedData)).rejects.toThrow();
 
 		expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("Error writing file"));
 	});

@@ -25,11 +25,12 @@ const makeCreateOperation: (overrides?: object) => CreateOperation = (overrides 
 	...overrides,
 });
 
-const makeAmendOperation: (overrides?: object) => Partial<AmendOperation> = (overrides = {}) => ({
-	filePath: testFiles.css.filePath,
-	templateStr: testFiles.css.templateStr,
-	...overrides,
-});
+const makeAmendOperation: (overrides?: object) => AmendOperation = (overrides = {}) =>
+	({
+		filePath: testFiles.aggregateCss.filePath,
+		templateStr: testFiles.aggregateCss.templateStr,
+		...overrides,
+	}) as AmendOperation;
 
 const component = {
 	id: "react-component",

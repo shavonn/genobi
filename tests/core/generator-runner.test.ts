@@ -1,21 +1,29 @@
+import fs from "node:fs/promises";
 import Handlebars from "handlebars";
 import inquirer from "inquirer";
 import { expect } from "vitest";
 import { configAPI } from "../../src/config-api";
 import { store } from "../../src/config-store";
 import { generatorRunner } from "../../src/core/generator-runner";
-import { operations } from "../../src/core/operations/operation-runner";
+import { operationDecorators } from "../../src/core/operations/operation-decorators";
+import { ops } from "../../src/core/operations/ops";
 import { helperRegister } from "../../src/utils/helpers/helper-register";
 import { stringHelpers } from "../../src/utils/helpers/string-transformers";
+import { logger } from "../../src/utils/logger";
+import { pathDir } from "../../src/utils/path-dir";
 import { testData } from "../__fixtures__/test-data";
+import { testFiles } from "../__fixtures__/test-files";
+import { loadTestFiles } from "../test-utils";
 
 vi.mock("inquirer");
 
 describe("runGenerator", () => {
 	const input = { name: "text input" };
 
-	beforeEach(() => {
-		vi.spyOn(operations, "create").mockResolvedValueOnce();
+	beforeEach(async () => {
+		await loadTestFiles(testFiles.existingFiles);
+
+		// vi.spyOn(operationRunner, "run").mockResolvedValueOnce();
 		vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(input);
 	});
 
@@ -46,14 +54,29 @@ describe("runGenerator", () => {
 		testData.slimConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
 
-		vi.spyOn(operations, "runOperation");
+		vi.spyOn(ops, "create");
 
 		await generatorRunner.run();
 
-		expect(operations.runOperation).toHaveBeenNthCalledWith(1, testData.makeCreateOperation(), {
+		expect(ops.create).toHaveBeenNthCalledWith(1, operationDecorators.decorate(testData.makeCreateOperation()), {
 			...input,
 			...testData.themeData,
 		});
+	});
+
+	it("should call appropriate operation function", async () => {
+		testData.slimConfigFunc(configAPI.get());
+		store.setSelectedGenerator(testData.component.id);
+
+		vi.spyOn(ops, "create");
+		vi.spyOn(ops, "append");
+		vi.spyOn(ops, "prepend");
+
+		await generatorRunner.run();
+
+		expect(ops.create).toHaveBeenCalled();
+		expect(ops.append).toHaveBeenCalled();
+		expect(ops.prepend).toHaveBeenCalled();
 	});
 
 	it("should throw error when no operations are found in generator config", async () => {
@@ -78,10 +101,72 @@ describe("runGenerator", () => {
 			}),
 		);
 
-		vi.spyOn(operations, "create");
+		vi.spyOn(ops, "create");
 
 		await generatorRunner.run();
 
-		expect(operations.create).not.toHaveBeenCalled();
+		expect(ops.create).not.toHaveBeenCalled();
+	});
+
+	it("should stop process when an operation error is caught and haltOnError is true", async () => {
+		testData.zeroConfigFunc(configAPI.get());
+		store.setGenerator(
+			"failGen",
+			Object.assign(testData.component.generator, {
+				operations: [
+					testData.makeCreateOperation({
+						haltOnError: true,
+					}),
+				],
+			}),
+		);
+		store.setSelectedGenerator("failGen");
+
+		vi.spyOn(pathDir, "fileExists").mockResolvedValueOnce(true);
+		vi.spyOn(generatorRunner, "run");
+
+		await expect(generatorRunner.run()).rejects.toThrow();
+
+		expect(logger.error).toHaveBeenCalledWith(
+			expect.stringContaining("Create operation failed"),
+			expect.stringContaining("File already exists"),
+		);
+	});
+
+	it("should stop process when an operation error is caught and haltOnError is true TWO", async () => {
+		testData.fullConfigFunc(configAPI.get());
+		store.setSelectedGenerator(testData.component.id);
+
+		vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error("Write error"));
+		vi.spyOn(generatorRunner, "run");
+
+		await expect(generatorRunner.run()).rejects.toThrow();
+
+		expect(logger.error).toHaveBeenCalledWith(
+			expect.stringContaining("Create operation failed"),
+			expect.stringContaining("Error writing file"),
+		);
+	});
+
+	it("should stop process when an operation error is caught and haltOnError is false", async () => {
+		testData.zeroConfigFunc(configAPI.get());
+		store.setGenerator(
+			"noFailGen",
+			Object.assign(testData.component.generator, {
+				operations: [
+					testData.makeCreateOperation({
+						haltOnError: false,
+					}),
+				],
+			}),
+		);
+		store.setSelectedGenerator("noFailGen");
+
+		vi.spyOn(pathDir, "fileExists").mockResolvedValueOnce(true);
+		vi.spyOn(generatorRunner, "run");
+
+		await expect(generatorRunner.run()).resolves.toBeUndefined();
+
+		expect(logger.error).toHaveBeenCalledTimes(1);
 	});
 });

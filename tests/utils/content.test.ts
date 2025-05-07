@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { operationDecorators } from "../../src/core/operations/operation-decorators";
 import { content } from "../../src/utils/content";
 import { helperRegister } from "../../src/utils/helpers/helper-register";
 import { logger } from "../../src/utils/logger";
@@ -20,9 +21,11 @@ describe("content utils", () => {
 		});
 
 		it("should return template content from templateStr", async () => {
-			const operation = testData.makeAmendOperation({
-				type: "prepend",
-			});
+			const operation = operationDecorators.amend(
+				testData.makeAmendOperation({
+					type: "prepend",
+				}),
+			);
 
 			const result = await content.getSingleFileContent(operation, input);
 
@@ -31,7 +34,7 @@ describe("content utils", () => {
 		});
 
 		it("should return template content from templateFile", async () => {
-			const operation = testData.makeCreateOperation();
+			const operation = operationDecorators.create(testData.makeCreateOperation());
 			const mergedData = {
 				...input,
 				...testData.themeData,
@@ -63,11 +66,13 @@ describe("content utils", () => {
 		});
 
 		it("should throw error when error encountered reading file", async () => {
-			const operation = testData.makeAmendOperation({
-				type: "prepend",
-				templateStr: undefined,
-				templateFilePath: "templates/style.css.hbs",
-			});
+			const operation = operationDecorators.amend(
+				testData.makeAmendOperation({
+					type: "prepend",
+					templateStr: undefined,
+					templateFilePath: "templates/style.css.hbs",
+				}),
+			);
 
 			vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error());
 

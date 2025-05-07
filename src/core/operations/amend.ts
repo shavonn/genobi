@@ -79,6 +79,7 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 
 	if (!existingContent) {
 		newContent = processedContent;
+		logger.warn(`File not found to ${operation.type}. Creating.`);
 	} else if (operation.pattern) {
 		const regex =
 			operation.pattern instanceof RegExp ? operation.pattern : new RegExp(common.escapeRegExp(operation.pattern));

@@ -4,6 +4,7 @@ import type { GeneratorConfig } from "./generator";
 export interface ConfigStoreState {
 	logDebug: boolean;
 	logVerbose: boolean;
+	configPath: string;
 	configFilePath: string;
 	destinationBasePath: string;
 	selectionPrompt: string;

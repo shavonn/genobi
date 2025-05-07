@@ -7,6 +7,7 @@ class ConfigStore {
 	#logDebug = false;
 	#logVerbose = false;
 	#configFilePath = "";
+	#configPath = "";
 	#destinationBasePath = "";
 	#selectionPrompt = "";
 	#selectedGenerator = "";
@@ -21,8 +22,9 @@ class ConfigStore {
 		this.#logVerbose = true;
 	};
 
-	setConfigFilePath: (configPath: string) => void = (configPath) => {
-		this.#configFilePath = path.dirname(configPath);
+	setConfigFilePath: (configFilePath: string) => void = (configFilePath) => {
+		this.#configPath = path.dirname(configFilePath);
+		this.#configFilePath = configFilePath;
 	};
 
 	setDestinationBasePath: (destPath: string) => void = (destPath) => {
@@ -57,6 +59,7 @@ class ConfigStore {
 		return {
 			logDebug: this.#logDebug,
 			logVerbose: this.#logVerbose,
+			configPath: this.#configPath,
 			configFilePath: this.#configFilePath,
 			destinationBasePath: this.#destinationBasePath,
 			selectedGenerator: this.#selectedGenerator,
@@ -69,6 +72,7 @@ class ConfigStore {
 	resetDefault: () => void = () => {
 		this.#logDebug = false;
 		this.#logVerbose = false;
+		this.#configPath = "";
 		this.#configFilePath = "";
 		this.#destinationBasePath = "";
 		this.#selectedGenerator = "";

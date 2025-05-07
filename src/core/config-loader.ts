@@ -28,7 +28,7 @@ async function loadConfig(destination?: string) {
 	}
 
 	store.setConfigFilePath(filepath);
-	store.setDestinationBasePath(destination || store.state().configFilePath);
+	store.setDestinationBasePath(destination || store.state().configPath);
 	await loadConfig(configAPI.get());
 
 	const generators = store.getGeneratorsList();

@@ -4,9 +4,9 @@ import { store } from "../config-store";
 import { OperationReadError, OperationWriteError } from "../errors";
 import { templateProcessor } from "./template-processor";
 
-function getTemplateProcessedPath(templatePath: string, data: Record<string, any>): string {
+function getTemplateProcessedPath(templatePath: string, data: Record<string, any>, rootPath: string): string {
 	const processed = templateProcessor.process(templatePath, data);
-	return path.resolve(store.state().destinationBasePath, processed);
+	return path.resolve(rootPath, processed);
 }
 
 async function fileExists(filePath: string): Promise<boolean> {

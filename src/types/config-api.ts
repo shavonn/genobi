@@ -2,8 +2,8 @@ import type { HelperDelegate } from "handlebars";
 import type { GeneratorConfig } from "./generator";
 
 export interface ConfigAPI {
-	setConfigPath(path: string): void;
-	getConfigPath(): string;
+	setConfigFilePath(path: string): void;
+	getConfigFilePath(): string;
 	getDestinationBasePath(): string;
 	setSelectionPrompt(prompt: string): void;
 	getSelectionPrompt(): string;

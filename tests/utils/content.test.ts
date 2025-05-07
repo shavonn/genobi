@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { store } from "../../src/config-store";
 import { operationDecorators } from "../../src/core/operations/operation-decorators";
 import { content } from "../../src/utils/content";
 import { fileSys } from "../../src/utils/file-sys";
@@ -48,7 +49,11 @@ describe("content utils", () => {
 
 			const result = await content.getSingleFileContent(operation, mergedData);
 
-			expect(fileSys.getTemplateProcessedPath).toHaveBeenCalledWith(operation.templateFilePath, mergedData);
+			expect(fileSys.getTemplateProcessedPath).toHaveBeenCalledWith(
+				operation.templateFilePath,
+				mergedData,
+				store.state().configPath,
+			);
 			expect(result).toBe(testFiles.component.templateFileContent);
 			expect(fs.readFile).toHaveBeenCalledWith(getTmpDirPath(operation.templateFilePath), "utf8");
 		});
@@ -78,7 +83,11 @@ describe("content utils", () => {
 
 			await expect(content.getSingleFileContent(operation, input)).rejects.toThrow();
 
-			expect(fileSys.getTemplateProcessedPath).toHaveBeenCalledWith(operation.templateFilePath, input);
+			expect(fileSys.getTemplateProcessedPath).toHaveBeenCalledWith(
+				operation.templateFilePath,
+				input,
+				store.state().configPath,
+			);
 			expect(fs.readFile).toHaveBeenCalledWith(getTmpDirPath(operation.templateFilePath), "utf8");
 			expect(logger.error).toBeCalledWith(expect.stringContaining("Error reading template file"));
 		});

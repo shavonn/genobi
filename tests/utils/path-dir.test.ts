@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { store } from "../../src/config-store";
 import { fileSys } from "../../src/utils/file-sys";
 import { getTmpDirPath, loadTestFiles } from "../test-utils";
 
@@ -51,7 +52,7 @@ describe("path and dir utils", () => {
 			const template = "src/components/{{name}}/{{name}}.js";
 			const data = { name: "dropdown" };
 
-			const result = fileSys.getTemplateProcessedPath(template, data);
+			const result = fileSys.getTemplateProcessedPath(template, data, store.state().destinationBasePath);
 
 			expect(result).toBe(getTmpDirPath("src/components/dropdown/dropdown.js"));
 		});

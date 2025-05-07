@@ -1,4 +1,5 @@
 import path from "node:path";
+import { store } from "../../config-store";
 import { OperationFileExistsError } from "../../errors";
 import type { CreateOperation } from "../../types/operation";
 import { content } from "../../utils/content";
@@ -7,7 +8,7 @@ import { logger } from "../../utils/logger";
 import { templateProcessor } from "../../utils/template-processor";
 
 async function create(operation: CreateOperation, data: Record<string, any>): Promise<void> {
-	const filePath = fileSys.getTemplateProcessedPath(operation.filePath, data);
+	const filePath = fileSys.getTemplateProcessedPath(operation.filePath, data, store.state().destinationBasePath);
 
 	await fileSys.ensureDirectoryExists(path.dirname(filePath));
 

@@ -1,4 +1,5 @@
 import path from "node:path";
+import { store } from "../../config-store";
 import { GenobiError } from "../../errors";
 import type { AmendOperation } from "../../types/operation";
 import { common } from "../../utils/common";
@@ -49,7 +50,7 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 		throw new GenobiError("UNKNOWN_OPERATION_TYPE", `Unknown amendment operation type: ${operation.type}.`);
 	}
 
-	const filePath = fileSys.getTemplateProcessedPath(operation.filePath, data);
+	const filePath = fileSys.getTemplateProcessedPath(operation.filePath, data, store.state().destinationBasePath);
 
 	await fileSys.ensureDirectoryExists(path.dirname(filePath));
 

@@ -7,8 +7,8 @@ import type { GeneratorConfig } from "./types/generator";
 
 function configApi(): ConfigAPI {
 	return {
-		setConfigPath: store.setConfigFilePath,
-		getConfigPath: () => store.state().configFilePath,
+		setConfigFilePath: store.setConfigFilePath,
+		getConfigFilePath: () => store.state().configFilePath,
 		getDestinationBasePath: () => store.state().destinationBasePath,
 		setSelectionPrompt: store.setSelectionPrompt,
 		getSelectionPrompt: () => store.state().selectionPrompt,

@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { store } from "../config-store";
 import { GenobiError } from "../errors";
 import type { SingleFileOperation } from "../types/operation";
 import { fileSys } from "./file-sys";
@@ -8,7 +9,8 @@ export async function getSingleFileContent(operation: SingleFileOperation, data:
 	let content: string;
 
 	if (operation.templateFilePath) {
-		const templatePath = fileSys.getTemplateProcessedPath(operation.templateFilePath, data);
+		const templatePath = fileSys.getTemplateProcessedPath(operation.templateFilePath, data, store.state().configPath);
+
 		try {
 			content = await fs.readFile(templatePath, "utf8");
 		} catch (err) {

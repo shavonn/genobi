@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { glob } from "glob";
 import { store } from "../../config-store";
-import { GenobiError, OperationFileExistsError } from "../../errors";
+import { FileExistsError, GenobiError } from "../../errors";
 import type { CreateAllOperation } from "../../types/operation";
 import { fileSys } from "../../utils/file-sys";
 import { logger } from "../../utils/logger";
@@ -53,7 +53,7 @@ async function createAll(operation: CreateAllOperation, data: Record<string, any
 					logger.warn("This file will be skipped.");
 					continue;
 				} else {
-					throw new OperationFileExistsError(filePath);
+					throw new FileExistsError(filePath);
 				}
 			}
 

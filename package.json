@@ -43,6 +43,9 @@
   ],
   "author": "Shavonn Brown <syskit@sysmatter.com>",
   "license": "MPL-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "packageManager": "pnpm@10.10.0",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

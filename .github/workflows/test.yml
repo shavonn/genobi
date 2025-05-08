@@ -18,12 +18,12 @@ jobs:
         run: pnpm run build
 
       - name: Run Unit Tests
-        run: pnpm test
+        run: pnpm test:ci
 
       - name: Publish Results Badge
         uses: wjervis7/vitest-badge-action@v1.0.0
         if: success() || failure() # run whether steps succeed or not
         with:
-          summary-path: /home/runner/work/genobi/coverage/coverage-summary.json
+          summary-path: ./coverage/coverage-summary.json
           result-type: lines
           badge-path: coverage-badge.svg

@@ -34,12 +34,7 @@ const makeCreateAllOperation: (overrides?: object) => CreateAllOperation = (over
 	destinationPath: "src/components/{{kebabCase name}}",
 	templateFileGlob: "templates/ui-kit-component/*.hbs",
 	templateBasePath: "templates/ui-kit-component/",
-	data: {
-		theme: {
-			name: "wavy",
-			primary: "blue",
-		},
-	},
+	data: themeData,
 	...overrides,
 });
 
@@ -67,6 +62,20 @@ const component = {
 	} as GeneratorConfig,
 };
 
+const layout = {
+	id: "next-layout",
+	generator: {
+		description: "Next layout",
+		prompts: [{ type: "input", name: "path", message: "What dir? (relative from app)" }],
+		operations: [
+			makeCreateOperation({
+				filePath: "src/app/{{path}}/layout.tsx",
+				templateFile: "templates/Layout.tsx.hbs",
+			}),
+		],
+	} as GeneratorConfig,
+};
+
 const fullConfigFunc = (genobi: ConfigAPI) => {
 	genobi.setConfigFilePath(getTmpDirPath(configFilePath));
 	genobi.setSelectionPrompt(selectionPrompt);
@@ -89,7 +98,9 @@ const testData = {
 	selectionPrompt,
 	themeData,
 	component,
+	layout,
 	AwwYeahHelper,
+	MicDropHelper,
 	makeAmendOperation,
 	makeCreateOperation,
 	makeCreateAllOperation,

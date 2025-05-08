@@ -112,20 +112,25 @@ describe("runGenerator", () => {
 		store.setGenerator(
 			"failOpGen",
 			Object.assign(testData.component.generator, {
-				operations: [testData.makeCreateOperation()],
+				operations: [testData.makeCreateAllOperation()],
 			}),
 		);
 		store.setSelectedGenerator("failOpGen");
 
 		vi.spyOn(fileSys, "fileExists").mockResolvedValueOnce(true);
 		vi.spyOn(generatorRunner, "run");
+		vi.spyOn(ops, "createAll");
 
 		await expect(generatorRunner.run()).rejects.toThrow();
 
 		expect(logger.error).toHaveBeenCalledWith(
-			expect.stringContaining("Create operation failed"),
+			expect.stringContaining("Create all operation failed"),
 			expect.stringContaining("File already exists"),
 		);
+		expect(ops.createAll).toHaveBeenCalledWith(operationDecorators.createAll(testData.makeCreateAllOperation()), {
+			...input,
+			...testData.themeData,
+		});
 	});
 
 	it("should throw error when an operation error is caught and haltOnError is true, additional check", async () => {

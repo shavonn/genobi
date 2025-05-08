@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { combiners } from "../../../src/core/operations/amend";
 import { operationDecorators } from "../../../src/core/operations/operation-decorators";
 import { ops } from "../../../src/core/operations/ops";
 import { helperRegister } from "../../../src/utils/helpers/helper-register";
@@ -26,7 +27,7 @@ describe("amend", () => {
 			const input = { name: "label" };
 			const processed = `@import "../components/label/label.css";`;
 
-			await ops.amendFile(appendOp, input);
+			await ops.append(appendOp, input);
 
 			const fileResult = await fs.readFile(componentCssFilePath, "utf8");
 			expect(fileResult).toBe(`${testFiles.aggregateCss.existing}\n${processed}`);
@@ -37,7 +38,7 @@ describe("amend", () => {
 			const input = { name: "navbar" };
 			const processed = `@import "../components/navbar/navbar.css";`;
 
-			await ops.amendFile(prependOp, input);
+			await ops.prepend(prependOp, input);
 
 			const fileResult = await fs.readFile(componentCssFilePath, "utf8");
 			expect(fileResult).toBe(`${processed}\n\n${testFiles.aggregateCss.existing}`);
@@ -99,10 +100,15 @@ describe("amend", () => {
 			const input = { name: "foo" };
 			const processed = `@import "../components/foo/foo.css";`;
 
+			const combiner = vi.spyOn(combiners.append, "combine");
+
 			await ops.amendFile(operation, input);
 
 			const fileResult = await fs.readFile(componentCssFilePath, "utf8");
 			expect(fileResult).toBe(
+				`@import "../components/header/header.css";\n@import "../components/table/table.css";\n${processed}\n@import "../components/switch/switch.css";\n@import "../components/radio/radio.css";`,
+			);
+			expect(combiner).toHaveReturnedWith(
 				`@import "../components/header/header.css";\n@import "../components/table/table.css";\n${processed}\n@import "../components/switch/switch.css";\n@import "../components/radio/radio.css";`,
 			);
 		});
@@ -117,10 +123,15 @@ describe("amend", () => {
 			const input = { name: "bar" };
 			const processed = `@import "../components/bar/bar.css";`;
 
+			const combiner = vi.spyOn(combiners.prepend, "combine");
+
 			await ops.amendFile(operation, input);
 
 			const fileResult = await fs.readFile(componentCssFilePath, "utf8");
 			expect(fileResult).toBe(
+				`@import "../components/header/header.css";\n@import "../components/table/table.css";\n@import "../components/switch/switch.css";\n${processed}\n@import "../components/radio/radio.css";`,
+			);
+			expect(combiner).toHaveReturnedWith(
 				`@import "../components/header/header.css";\n@import "../components/table/table.css";\n@import "../components/switch/switch.css";\n${processed}\n@import "../components/radio/radio.css";`,
 			);
 		});

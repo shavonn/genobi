@@ -1,0 +1,26 @@
+name: Setup
+description: Setup pnpm, Node and install packages
+inputs:
+  node-auth-token: # id of input
+    description: 'NODE_AUTH_TOKEN'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10.8.0
+        run_install: false
+
+    - name: Setup Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+
+    - name: Install Dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.node-auth-token }}

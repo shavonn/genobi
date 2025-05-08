@@ -32,7 +32,7 @@ const makeCreateOperation: (overrides?: object) => CreateOperation = (overrides 
 const makeCreateAllOperation: (overrides?: object) => CreateAllOperation = (overrides = {}) => ({
 	type: "createAll",
 	destinationPath: "src/components/{{kebabCase name}}",
-	templateFileGlob: "templates/ui-kit-component/*.hbs",
+	templateFilesGlob: "templates/ui-kit-component/*.hbs",
 	templateBasePath: "templates/ui-kit-component/",
 	data: themeData,
 	...overrides,

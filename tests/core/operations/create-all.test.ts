@@ -59,7 +59,7 @@ describe("createAll", async () => {
 	it("should throw error if no files are found with glob", async () => {
 		const operation = operationDecorators.createAll(
 			testData.makeCreateAllOperation({
-				templateFileGlob: "templates/components/*.hbs",
+				templateFilesGlob: "templates/components/*.hbs",
 			}),
 		);
 

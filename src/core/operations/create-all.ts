@@ -15,7 +15,7 @@ async function createAll(operation: CreateAllOperation, data: Record<string, any
 		store.state().destinationBasePath,
 	);
 
-	let templateGlob = templateProcessor.process(operation.templateFileGlob, data);
+	let templateGlob = templateProcessor.process(operation.templateFilesGlob, data);
 
 	const templateBasePath = operation.templateBasePath
 		? path.resolve(store.state().configPath, operation.templateBasePath)

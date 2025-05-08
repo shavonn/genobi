@@ -37,7 +37,7 @@ export interface CreateOperation extends SingleFileOperation {
 export interface CreateAllOperation extends BaseOperation {
 	type: "createAll";
 	destinationPath: string;
-	templateFileGlob: string;
+	templateFilesGlob: string;
 	templateBasePath?: string;
 	verbose?: boolean;
 	skipIfExists?: boolean;

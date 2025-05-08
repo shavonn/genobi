@@ -1,12 +1,10 @@
 # genobi
 
 <p style="text-align:center;">
-  <img src="https://img.shields.io/npm/v/genobi" alt="npm version">
-  <img src="https://github.com/shavonn/genobi/actions/workflows/release.yml/badge.svg?branch=main
-" alt="release status">
-  <img src="https://github.com/shavonn/genobi/actions/workflows/test.yml/badge.svg?branch=main
-" alt="test status">
-  <img src="https://img.shields.io/npm/l/genobi" alt="license">
+    <img src="https://img.shields.io/npm/v/genobi" alt="npm version">
+    <img alt="GitHub Actions Release Workflow Status" src="https://img.shields.io/github/actions/workflow/status/shavonn/genobi/release.yml?label=Build">
+    <img alt="GitHub Actions Test Workflow Status" src="https://img.shields.io/github/actions/workflow/status/shavonn/genobi/test.yml?label=Test">
+    <img src="https://img.shields.io/npm/l/genobi" alt="license">
 </p>
 
 > Help me Obi-Wan genobi, you're our only hope.

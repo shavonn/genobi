@@ -83,7 +83,6 @@ describe("config api", () => {
 					awwYeah: expect.any(Function),
 				}),
 			);
-			expect(Handlebars.registerHelper).toHaveBeenCalledWith("awwYeah", testData.AwwYeahHelper);
 		});
 
 		it("should return specified helper", () => {

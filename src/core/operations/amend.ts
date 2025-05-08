@@ -75,7 +75,7 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 
 	if (!existingContent) {
 		newContent = processedContent;
-		logger.warn(`${stringHelpers.titleCase(operation.type)} file not found: ${filePath}.`);
+		logger.warn(`${stringHelpers.sentenceCase(operation.type)} file not found: ${filePath}.`);
 		logger.warn("The file will be created.");
 	} else if (operation.pattern) {
 		const regex =
@@ -93,7 +93,7 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 	}
 
 	await fileSys.writeToFile(filePath, newContent);
-	logger.success(`File ${operation.type}ed: ${filePath}.`);
+	logger.success(`File ${stringHelpers.sentenceCase(operation.type)}ed: ${filePath}.`);
 }
 
 const append = (operation: AmendOperation, data: Record<string, any>) =>
@@ -102,4 +102,4 @@ const append = (operation: AmendOperation, data: Record<string, any>) =>
 const prepend = (operation: AmendOperation, data: Record<string, any>) =>
 	amendFile({ ...operation, type: "prepend" }, data);
 
-export { amendFile, append, prepend };
+export { amendFile, append, prepend, combiners };

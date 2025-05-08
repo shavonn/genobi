@@ -44,7 +44,7 @@ async function runGenerator() {
 				throw new UnknownOperationType((operation as any).type);
 			}
 		} catch (err: any) {
-			logger.error(`${stringHelpers.titleCase(operation.type)} operation failed.`, err.message);
+			logger.error(`${stringHelpers.sentenceCase(operation.type)} operation failed.`, err.message);
 			if (err.cause) {
 				logger.error(err.cause.message);
 			}

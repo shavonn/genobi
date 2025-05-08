@@ -28,7 +28,7 @@ describe("createAll", async () => {
 		await loadTestFiles(testFiles.existingFiles);
 	});
 
-	it("should create files matching glob", async () => {
+	it("should create files matching glob, removing template base path", async () => {
 		const operation = operationDecorators.createAll(testData.makeCreateAllOperation());
 
 		await ops.createAll(operation, mergedData);
@@ -39,7 +39,34 @@ describe("createAll", async () => {
 		expect(await fs.access(cssFilePath, fs.constants.F_OK)).toBe(undefined);
 	});
 
-	it("should fail if file already exists when skipIfExists is false", async () => {
+	it("should continue creating if and error is thrown and haltOnError is false", async () => {
+		const operation = operationDecorators.createAll(
+			testData.makeCreateAllOperation({
+				haltOnError: false,
+			}),
+		);
+
+		vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error("Read error"));
+
+		await ops.createAll(operation, mergedData);
+
+		const fileResult = await fs.readFile(cssFilePath, "utf8");
+		expect(fileResult).toContain(".checkbox-input {");
+		await expect(fs.access(componentFilePath, fs.constants.F_OK)).rejects.toThrow();
+		expect(await fs.access(cssFilePath, fs.constants.F_OK)).toBe(undefined);
+	});
+
+	it("should throw error if no files are found with glob", async () => {
+		const operation = operationDecorators.createAll(
+			testData.makeCreateAllOperation({
+				templateFileGlob: "templates/components/*.hbs",
+			}),
+		);
+
+		await expect(ops.createAll(operation, mergedData)).rejects.toThrow();
+	});
+
+	it("should throw error if file already exists when skipIfExists is false", async () => {
 		const operation = operationDecorators.createAll(testData.makeCreateAllOperation());
 
 		await loadTestFiles({

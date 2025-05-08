@@ -27,3 +27,6 @@ jobs:
           summary-path: ./coverage/coverage-summary.json
           result-type: lines
           badge-path: coverage-badge.svg
+          gist-token: ${{ secrets.GIST_TOKEN }} # if you want to upload badge to gist
+          gist-url: https://gist.github.com/shavonn/genobi-vitest-coverage
+          upload-badge: ${{ github.base_ref == 'refs/heads/main' }}

@@ -23,8 +23,8 @@ class ConfigStore {
 	};
 
 	setConfigFilePath: (configFilePath: string) => void = (configFilePath) => {
-		this.#configPath = path.dirname(configFilePath);
 		this.#configFilePath = configFilePath;
+		this.#configPath = path.dirname(configFilePath);
 	};
 
 	setDestinationBasePath: (destPath: string) => void = (destPath) => {

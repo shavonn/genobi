@@ -10,7 +10,7 @@ export default defineConfig({
 		include: ["./tests/**/*.test.ts"],
 		coverage: {
 			provider: "istanbul",
-			reporter: ["html"],
+			reporter: ["html", "json-summary"],
 			reportsDirectory: "./coverage",
 		},
 	},

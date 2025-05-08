@@ -14,5 +14,19 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - run: pnpm run build
-      - run: pnpm test
+      - name: Build
+        run: pnpm run build
+
+      - name: Run Unit Tests
+        run: pnpm test:ci
+
+      - name: Publish Results Badge
+        uses: wjervis7/vitest-badge-action@v1.0.0
+        if: success() || failure() # run whether steps succeed or not
+        with:
+          summary-path: ./coverage/coverage-summary.json
+          result-type: lines
+          badge-path: coverage-badge.svg
+          gist-token: ${{ secrets.GIST_TOKEN }} # if you want to upload badge to gist
+          gist-url: https://gist.github.com/shavonn/genobi-vitest-coverage
+          upload-badge: ${{ github.base_ref == 'refs/heads/main' }}

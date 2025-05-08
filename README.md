@@ -1,7 +1,11 @@
 # genobi
 
-<p>
+<p style="text-align:center;">
   <img src="https://img.shields.io/npm/v/genobi" alt="npm version">
+  <img src="https://github.com/shavonn/genobi/actions/workflows/release.yaml/badge.svg?branch=main
+" alt="release status">
+  <img src="https://github.com/shavonn/genobi/actions/workflows/test.yml/badge.svg?branch=main
+" alt="test status">
   <img src="https://img.shields.io/npm/l/genobi" alt="license">
 </p>
 

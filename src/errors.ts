@@ -24,19 +24,19 @@ export class GenobiError extends Error {
 	}
 }
 
-export class OperationWriteError extends GenobiError {
+export class WriteError extends GenobiError {
 	constructor(filePath: string, cause?: any) {
 		super("WRITE_ERROR", `Error writing file: ${filePath}`, cause);
 	}
 }
 
-export class OperationFileExistsError extends GenobiError {
+export class FileExistsError extends GenobiError {
 	constructor(filePath: string) {
 		super("FILE_EXISTS", `File already exists: ${filePath}`);
 	}
 }
 
-export class OperationReadError extends GenobiError {
+export class ReadError extends GenobiError {
 	constructor(filePath: string, cause?: any) {
 		super("READ_ERROR", `Error reading file: ${filePath}`, cause);
 	}

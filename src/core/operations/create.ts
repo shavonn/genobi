@@ -1,6 +1,6 @@
 import path from "node:path";
 import { store } from "../../config-store";
-import { OperationFileExistsError } from "../../errors";
+import { FileExistsError } from "../../errors";
 import type { CreateOperation } from "../../types/operation";
 import { content } from "../../utils/content";
 import { fileSys } from "../../utils/file-sys";
@@ -22,7 +22,7 @@ async function create(operation: CreateOperation, data: Record<string, any>): Pr
 			logger.warn("This operation will be skipped.");
 			return;
 		} else {
-			throw new OperationFileExistsError(filePath);
+			throw new FileExistsError(filePath);
 		}
 	}
 

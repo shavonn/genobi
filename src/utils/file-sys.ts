@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { store } from "../config-store";
-import { OperationReadError, OperationWriteError } from "../errors";
+import { ReadError, WriteError } from "../errors";
 import { templateProcessor } from "./template-processor";
 
 function getTemplateProcessedPath(templatePath: string, data: Record<string, any>, rootPath: string): string {
@@ -32,7 +32,7 @@ async function writeToFile(filePath: string, content: string): Promise<void> {
 	try {
 		await fs.writeFile(filePath, content);
 	} catch (err) {
-		throw new OperationWriteError(filePath, err);
+		throw new WriteError(filePath, err);
 	}
 }
 
@@ -42,7 +42,7 @@ async function readFromFile(filePath: string): Promise<string> {
 		content = await fs.readFile(filePath, "utf8");
 		return content;
 	} catch (err) {
-		throw new OperationReadError(filePath, err);
+		throw new ReadError(filePath, err);
 	}
 }
 

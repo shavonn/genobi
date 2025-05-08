@@ -1,0 +1,21 @@
+name: Setup
+description: Setup pnpm, Node and install packages
+
+runs:
+  using: composite
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10.10.0
+        run_install: false
+        package_json_file: '/home/runner/work/genobi/package.json'
+
+    - name: Setup Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.x'
+
+    - name: Install Dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile

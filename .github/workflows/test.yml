@@ -8,21 +8,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout Repo
+        uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.10.0
-          run_install: false
-          package_json_file: '/home/runner/work/genobi/package.json'
+      - name: Setup
+        uses: ./.github/actions/setup
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.x'
-
-      - run: pnpm install --frozen-lockfile
       - run: pnpm run build
       - run: pnpm test

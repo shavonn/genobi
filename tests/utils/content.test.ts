@@ -3,8 +3,8 @@ import { store } from "../../src/config-store";
 import { operationDecorators } from "../../src/core/operations/operation-decorators";
 import { content } from "../../src/utils/content";
 import { fileSys } from "../../src/utils/file-sys";
-import { helperRegister } from "../../src/utils/helpers/helper-register";
 import { logger } from "../../src/utils/logger";
+import { templateAssetRegister } from "../../src/utils/template-asset-register";
 import { testData } from "../__fixtures__/test-data";
 import { testFiles } from "../__fixtures__/test-files";
 import { getTmpDirPath, loadTestFiles } from "../test-utils";
@@ -14,7 +14,7 @@ describe("content utils", () => {
 		const input = { name: "button" };
 
 		beforeAll(() => {
-			helperRegister.register();
+			templateAssetRegister.register();
 		});
 
 		beforeEach(async () => {

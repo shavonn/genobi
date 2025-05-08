@@ -2,8 +2,8 @@ import fs from "node:fs/promises";
 import { combiners } from "../../../src/core/operations/amend";
 import { operationDecorators } from "../../../src/core/operations/operation-decorators";
 import { ops } from "../../../src/core/operations/ops";
-import { helperRegister } from "../../../src/utils/helpers/helper-register";
 import { logger } from "../../../src/utils/logger";
+import { templateAssetRegister } from "../../../src/utils/template-asset-register";
 import { testData } from "../../__fixtures__/test-data";
 import { testFiles } from "../../__fixtures__/test-files";
 import { getTmpDirPath, loadTestFiles, writeTestFile } from "../../test-utils";
@@ -12,7 +12,7 @@ describe("amend", () => {
 	let componentCssFilePath: string;
 
 	beforeAll(async () => {
-		helperRegister.register();
+		templateAssetRegister.register();
 	});
 
 	beforeEach(async () => {

@@ -1,14 +1,14 @@
 import inquirer from "inquirer";
 import { store } from "../config-store";
 import { GenobiError, UnknownOperationType } from "../errors";
-import { helperRegister } from "../utils/helpers/helper-register";
 import { stringHelpers } from "../utils/helpers/string-transformers";
 import { logger } from "../utils/logger";
+import { templateAssetRegister } from "../utils/template-asset-register";
 import { operationDecorators } from "./operations/operation-decorators";
 import { ops } from "./operations/ops";
 
 async function runGenerator() {
-	helperRegister.register();
+	templateAssetRegister.register();
 
 	const generator = store.state().generators.get(store.state().selectedGenerator);
 

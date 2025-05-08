@@ -3,7 +3,7 @@ import { expect } from "vitest";
 import { operationDecorators } from "../../../src/core/operations/operation-decorators";
 import { ops } from "../../../src/core/operations/ops";
 import { fileSys } from "../../../src/utils/file-sys";
-import { helperRegister } from "../../../src/utils/helpers/helper-register";
+import { templateAssetRegister } from "../../../src/utils/template-asset-register";
 import { testData } from "../../__fixtures__/test-data";
 import { testFiles } from "../../__fixtures__/test-files";
 import { getTmpDirPath, loadTestFiles } from "../../test-utils";
@@ -18,7 +18,7 @@ describe("createAll", async () => {
 	};
 
 	beforeAll(async () => {
-		helperRegister.register();
+		templateAssetRegister.register();
 	});
 
 	beforeEach(async () => {

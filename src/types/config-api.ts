@@ -1,4 +1,4 @@
-import type { HelperDelegate } from "handlebars";
+import type { HelperDelegate, Template } from "handlebars";
 import type { GeneratorConfig } from "./generator";
 
 export interface ConfigAPI {
@@ -13,4 +13,8 @@ export interface ConfigAPI {
 	addHelper(name: string, helper: HelperDelegate): void;
 	getHelper(name: string): HelperDelegate;
 	getHelpers(): Record<string, HelperDelegate>;
+	addPartial(name: string, partial: Template): void;
+	addPartialFromFile(name: string, filePath: string): void;
+	getPartial(name: string): Template;
+	getPartials(): Record<string, Template>;
 }

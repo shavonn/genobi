@@ -4,6 +4,7 @@ import { store } from "./config-store";
 import { GenobiError } from "./errors";
 import type { ConfigAPI } from "./types/config-api";
 import type { GeneratorConfig } from "./types/generator";
+import { fileSys } from "./utils/file-sys";
 
 function configApi(): ConfigAPI {
 	return {
@@ -36,6 +37,21 @@ function configApi(): ConfigAPI {
 			return helper;
 		},
 		getHelpers: (): Record<string, HelperDelegate> => Object.fromEntries(store.state().helpers),
+		addPartial: (name: string, templateStr: Handlebars.Template) => {
+			store.setPartial(name, templateStr);
+		},
+		addPartialFromFile: async (name: string, templateFilePath: string) => {
+			const fileResult = await fileSys.readFromFile(templateFilePath);
+			store.setPartial(name, fileResult);
+		},
+		getPartial: (name: string): Handlebars.Template => {
+			const partial = store.state().partials.get(name);
+			if (!partial) {
+				throw new GenobiError("PARTIAL_NOT_FOUND", `Template partial "${name}" not found in loaded configuration.`);
+			}
+			return partial;
+		},
+		getPartials: (): Record<string, Handlebars.Template> => Object.fromEntries(store.state().partials),
 	};
 }
 

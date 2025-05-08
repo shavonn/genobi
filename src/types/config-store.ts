@@ -11,10 +11,12 @@ export interface ConfigStoreState {
 	selectedGenerator: string;
 	generators: ConfiguredGenerators;
 	helpers: ConfiguredHelpers;
+	partials: ConfiguredPartials;
 }
 
 export type ConfiguredGenerators = Map<string, GeneratorConfig>;
 export type ConfiguredHelpers = Map<string, HelperDelegate>;
+export type ConfiguredPartials = Map<string, Handlebars.Template>;
 
 export interface SelectChoice {
 	name: string;

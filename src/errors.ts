@@ -9,7 +9,8 @@ type ErrorName =
 	| "WRITE_ERROR"
 	| "FILE_EXISTS"
 	| "TEMPLATE_PROCESSING_ERROR"
-	| "NO_GLOB_MATCHES";
+	| "NO_GLOB_MATCHES"
+	| "PARTIAL_NOT_FOUND";
 
 export class GenobiError extends Error {
 	name: ErrorName;

@@ -1,11 +1,11 @@
 import Handlebars from "handlebars";
-import { helperRegister } from "../../../src/utils/helpers/helper-register";
+import { includedHelpersRegister } from "../../../src/utils/helpers/included-helpers-register";
 
 describe("registerHelpers", () => {
 	it("should register all included Handlebars helpers", () => {
 		vi.spyOn(Handlebars, "registerHelper");
 
-		helperRegister.register();
+		includedHelpersRegister.register();
 
 		expect(Handlebars.registerHelper).toHaveBeenCalledTimes(17);
 	});

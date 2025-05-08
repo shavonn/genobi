@@ -8,9 +8,9 @@ import { generatorRunner } from "../../src/core/generator-runner";
 import { operationDecorators } from "../../src/core/operations/operation-decorators";
 import { ops } from "../../src/core/operations/ops";
 import { fileSys } from "../../src/utils/file-sys";
-import { helperRegister } from "../../src/utils/helpers/helper-register";
 import { stringHelpers } from "../../src/utils/helpers/string-transformers";
 import { logger } from "../../src/utils/logger";
+import { templateAssetRegister } from "../../src/utils/template-asset-register";
 import { testData } from "../__fixtures__/test-data";
 import { testFiles } from "../__fixtures__/test-files";
 import { loadTestFiles } from "../test-utils";
@@ -39,12 +39,12 @@ describe("runGenerator", () => {
 		testData.slimConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
 
-		vi.spyOn(helperRegister, "register");
+		vi.spyOn(templateAssetRegister, "register");
 		vi.spyOn(Handlebars, "registerHelper");
 
 		await generatorRunner.run();
 
-		expect(helperRegister.register).toHaveBeenCalled();
+		expect(templateAssetRegister.register).toHaveBeenCalled();
 		expect(Handlebars.registerHelper).toHaveBeenCalledWith("upperCase", stringHelpers.upperCase);
 		expect(Handlebars.registerHelper).toHaveBeenCalledWith("awwYeah", testData.AwwYeahHelper);
 	});

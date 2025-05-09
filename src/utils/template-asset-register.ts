@@ -8,10 +8,17 @@ function registerConfiguredHelpers() {
 	}
 }
 
+function registerConfiguredPartials() {
+	for (const [name, partial] of store.state().partials) {
+		Handlebars.registerPartial(name, partial);
+	}
+}
+
 const templateAssetRegister = {
 	register: () => {
 		includedHelpersRegister.register();
 		registerConfiguredHelpers();
+		registerConfiguredPartials();
 	},
 };
 export { templateAssetRegister };

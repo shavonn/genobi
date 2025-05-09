@@ -24,6 +24,13 @@ const aggregateCss = {
 	templateStr: `@import "../components/{{kebabCase name}}/{{kebabCase name}}.css";`,
 };
 
+const componentPropsPartial = {
+	filePath: "templates/partials/component-props.hbs",
+	template: `export type {{pascalcase name}}Props = {
+    className?: string;
+};`,
+};
+
 const loadExistingFiles = async () => {
 	await loadTestFiles({
 		"templates/component.tsx.hbs": component.templateFileContent,
@@ -37,6 +44,7 @@ const loadExistingFiles = async () => {
 const testFiles = {
 	component,
 	componentCss,
+	componentPropsPartial,
 	aggregateCss,
 	loadExistingFiles,
 };

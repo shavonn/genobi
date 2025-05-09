@@ -2,6 +2,7 @@ import Handlebars from "handlebars";
 import { configAPI } from "../src/config-api";
 import { store } from "../src/config-store";
 import { testData } from "./__fixtures__/test-data";
+import { testFiles } from "./__fixtures__/test-files";
 
 describe("config api", () => {
 	describe("config file path", () => {
@@ -104,6 +105,68 @@ describe("config api", () => {
 			expect(configAPI.get().getHelpers()).toStrictEqual({
 				micDropHelper: testData.MicDropHelper,
 				awwYeah: testData.AwwYeahHelper,
+			});
+		});
+	});
+
+	describe("partials", () => {
+		it("should add partial from template string", () => {
+			vi.spyOn(Handlebars, "registerPartial");
+
+			configAPI.get().addPartial("newPar", testFiles.componentPropsPartial.template);
+
+			expect(configAPI.get().getPartials()).toStrictEqual(
+				expect.objectContaining({
+					newPar: testFiles.componentPropsPartial.template,
+				}),
+			);
+		});
+
+		it("should add partial from template func", () => {
+			vi.spyOn(Handlebars, "registerPartial");
+
+			configAPI.get().addPartial("newParFunc", testData.partialFunc);
+
+			expect(configAPI.get().getPartials()).toStrictEqual(
+				expect.objectContaining({
+					newParFunc: testData.partialFunc,
+				}),
+			);
+		});
+
+		it("should add partial from template file", async () => {
+			vi.spyOn(Handlebars, "registerPartial");
+
+			await configAPI.get().addPartialFromFile("componentProps", testFiles.componentPropsPartial.filePath);
+
+			expect(configAPI.get().getPartials()).toStrictEqual(
+				expect.objectContaining({
+					componentProps: testFiles.componentPropsPartial.template,
+				}),
+			);
+		});
+
+		it("should return specified partial", () => {
+			configAPI.get().addPartial("componentCss", testFiles.componentCss.templateStr);
+
+			expect(configAPI.get().getPartial("componentCss")).toBe(testFiles.componentCss.templateStr);
+		});
+
+		it("should throw error when specified partial not configured", () => {
+			expect(() => configAPI.get().getPartial("not-there-partial")).toThrow(
+				`Template partial "not-there-partial" not found in loaded configuration.`,
+			);
+		});
+
+		it("should get all partials", () => {
+			configAPI.get().addPartial("componentCss", testFiles.componentCss.templateStr);
+			configAPI.get().addPartial("newPar", testFiles.componentPropsPartial.template);
+			configAPI.get().addPartial("newParFunc", testData.partialFunc);
+
+			expect(configAPI.get().getPartials()).toStrictEqual({
+				componentCss: testFiles.componentCss.templateStr,
+				newPar: testFiles.componentPropsPartial.template,
+				newParFunc: testData.partialFunc,
 			});
 		});
 	});

@@ -5,8 +5,8 @@ import type {
 	ConfiguredGenerators,
 	ConfiguredHelpers,
 	ConfiguredPartials,
-	SelectChoice,
 } from "./types/config-store";
+import type { SelectChoice } from "./types/general";
 import type { GeneratorConfig } from "./types/generator";
 
 class ConfigStore {

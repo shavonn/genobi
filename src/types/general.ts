@@ -1,0 +1,19 @@
+export interface SelectChoice {
+	name: string;
+	value: string;
+}
+
+export type ErrorName =
+	| "CONFIG_LOAD_ERROR"
+	| "MISSING_OPERATIONS_ERROR"
+	| "GENERATOR_NOT_FOUND"
+	| "HELPER_NOT_FOUND"
+	| "UNKNOWN_OPERATION_TYPE"
+	| "NO_TEMPLATE_FOUND"
+	| "READ_ERROR"
+	| "WRITE_ERROR"
+	| "FILE_EXISTS"
+	| "TEMPLATE_PROCESSING_ERROR"
+	| "NO_GLOB_MATCHES"
+	| "PARTIAL_NOT_FOUND"
+	| "MKDIR_DIR_ERROR";

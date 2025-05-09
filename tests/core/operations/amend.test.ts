@@ -3,7 +3,7 @@ import { combiners } from "../../../src/core/operations/amend";
 import { operationDecorator } from "../../../src/core/operations/operation-decorator";
 import { ops } from "../../../src/core/operations/ops";
 import { logger } from "../../../src/utils/logger";
-import { templateAssetRegister } from "../../../src/utils/template-asset-register";
+import { templates } from "../../../src/utils/templates";
 import { testData } from "../../__fixtures__/test-data";
 import { testFiles } from "../../__fixtures__/test-files";
 import { getTmpDirPath, writeTestFile } from "../../test-utils";
@@ -12,7 +12,7 @@ describe("amend", () => {
 	let componentCssFilePath: string;
 
 	beforeAll(async () => {
-		templateAssetRegister.register();
+		templates.registerComponents();
 	});
 
 	beforeEach(async () => {

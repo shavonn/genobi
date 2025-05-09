@@ -2,10 +2,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { store } from "../config-store";
 import { MakeDirError, ReadError, WriteError } from "../errors";
-import { templateProcessor } from "./template-processor";
+import { templates } from "./templates";
 
 function getTemplateProcessedPath(templatePath: string, data: Record<string, any>, rootPath: string): string {
-	const processed = templateProcessor.process(templatePath, data);
+	const processed = templates.process(templatePath, data);
 	return path.resolve(rootPath, processed);
 }
 

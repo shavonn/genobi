@@ -1,6 +1,20 @@
 import Handlebars from "handlebars";
+import { store } from "../config-store";
 import { GenobiError } from "../errors";
+import { includedHelpersRegister } from "./helpers/included-helpers-register";
 import { logger } from "./logger";
+
+function registerConfiguredHelpers() {
+	for (const [name, helper] of store.state().helpers) {
+		Handlebars.registerHelper(name, helper);
+	}
+}
+
+function registerConfiguredPartials() {
+	for (const [name, partial] of store.state().partials) {
+		Handlebars.registerPartial(name, partial);
+	}
+}
 
 export function processTemplate(template: string, data: Record<string, any>): string {
 	try {
@@ -14,7 +28,12 @@ export function processTemplate(template: string, data: Record<string, any>): st
 	}
 }
 
-const templateProcessor = {
+const templates = {
 	process: processTemplate,
+	registerComponents: () => {
+		includedHelpersRegister.register();
+		registerConfiguredHelpers();
+		registerConfiguredPartials();
+	},
 };
-export { templateProcessor };
+export { templates };

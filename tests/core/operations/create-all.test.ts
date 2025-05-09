@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import { operationDecorator } from "../../../src/core/operations/operation-decorator";
 import { ops } from "../../../src/core/operations/ops";
 import { fileSys } from "../../../src/utils/file-sys";
-import { templateAssetRegister } from "../../../src/utils/template-asset-register";
+import { templates } from "../../../src/utils/templates";
 import { testData } from "../../__fixtures__/test-data";
 import { getTmpDirPath, loadTestFiles } from "../../test-utils";
 
@@ -16,7 +16,7 @@ describe("createAll", async () => {
 	};
 
 	beforeAll(async () => {
-		templateAssetRegister.register();
+		templates.registerComponents();
 	});
 
 	beforeEach(async () => {

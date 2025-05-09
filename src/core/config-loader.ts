@@ -22,14 +22,21 @@ async function loadConfig(destination?: string) {
 	}
 
 	const { config: loadConfig, filepath, isEmpty } = result;
-
 	if (isEmpty || typeof loadConfig !== "function") {
 		throw new ConfigError(`Config file invalid. It must export a default function: ${filepath}.`);
 	}
 
 	store.setConfigFilePath(filepath);
 	store.setDestinationBasePath(destination || store.state().configPath);
-	await loadConfig(configAPI.get());
+	try {
+		await loadConfig(configAPI.get());
+	} catch (error: any) {
+		const enhancedError = new ConfigError(`Error in config loading. ${error.message}`);
+		enhancedError.cause = error;
+
+		logger.debug("Original error stack:", error.stack);
+		throw enhancedError;
+	}
 
 	const generators = store.getGeneratorsList();
 	if (generators.length === 0) {

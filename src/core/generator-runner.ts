@@ -3,12 +3,12 @@ import { store } from "../config-store";
 import { GenobiError } from "../errors";
 import { stringHelpers } from "../utils/helpers/string-transformers";
 import { logger } from "../utils/logger";
-import { templateAssetRegister } from "../utils/template-asset-register";
+import { templates } from "../utils/templates";
 import { operationHandler } from "./operation-handler";
 import { operationDecorator } from "./operations/operation-decorator";
 
 async function runGenerator() {
-	templateAssetRegister.register();
+	templates.registerComponents();
 
 	const generator = store.state().generators.get(store.state().selectedGenerator);
 

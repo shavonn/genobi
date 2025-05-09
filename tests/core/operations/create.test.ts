@@ -3,7 +3,7 @@ import { operationDecorator } from "../../../src/core/operations/operation-decor
 import { ops } from "../../../src/core/operations/ops";
 import { content } from "../../../src/utils/content";
 import { fileSys } from "../../../src/utils/file-sys";
-import { templateAssetRegister } from "../../../src/utils/template-asset-register";
+import { templates } from "../../../src/utils/templates";
 import { testData } from "../../__fixtures__/test-data";
 import { testFiles } from "../../__fixtures__/test-files";
 import { getTmpDirPath, loadTestFiles, writeTestFile } from "../../test-utils";
@@ -15,7 +15,7 @@ describe("create", () => {
 	};
 
 	beforeAll(async () => {
-		templateAssetRegister.register();
+		templates.registerComponents();
 	});
 
 	it("should create file using templateFile", async () => {

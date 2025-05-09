@@ -9,7 +9,7 @@ import { ops } from "../../src/core/operations/ops";
 import { fileSys } from "../../src/utils/file-sys";
 import { stringHelpers } from "../../src/utils/helpers/string-transformers";
 import { logger } from "../../src/utils/logger";
-import { templateAssetRegister } from "../../src/utils/template-asset-register";
+import { templates } from "../../src/utils/templates";
 import { testData } from "../__fixtures__/test-data";
 
 vi.mock("inquirer");
@@ -34,12 +34,12 @@ describe("runGenerator", () => {
 		await testData.slimConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
 
-		vi.spyOn(templateAssetRegister, "register");
+		vi.spyOn(templates, "registerComponents");
 		vi.spyOn(Handlebars, "registerHelper");
 
 		await generatorRunner.run();
 
-		expect(templateAssetRegister.register).toHaveBeenCalled();
+		expect(templates.registerComponents).toHaveBeenCalled();
 		expect(Handlebars.registerHelper).toHaveBeenCalledWith("upperCase", stringHelpers.upperCase);
 		expect(Handlebars.registerHelper).toHaveBeenCalledWith("awwYeah", testData.AwwYeahHelper);
 	});

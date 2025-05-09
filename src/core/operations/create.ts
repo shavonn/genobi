@@ -5,7 +5,7 @@ import type { CreateOperation } from "../../types/operation";
 import { content } from "../../utils/content";
 import { fileSys } from "../../utils/file-sys";
 import { logger } from "../../utils/logger";
-import { templateProcessor } from "../../utils/template-processor";
+import { templates } from "../../utils/templates";
 
 async function create(operation: CreateOperation, data: Record<string, any>): Promise<void> {
 	const filePath = fileSys.getTemplateProcessedPath(operation.filePath, data, store.state().destinationBasePath);
@@ -27,7 +27,7 @@ async function create(operation: CreateOperation, data: Record<string, any>): Pr
 	}
 
 	const processedContent = await content.getSingleFileContent(operation, data).then((content) => {
-		return templateProcessor.process(content, data);
+		return templates.process(content, data);
 	});
 
 	await fileSys.writeToFile(filePath, processedContent);

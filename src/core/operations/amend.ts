@@ -7,7 +7,7 @@ import { content } from "../../utils/content";
 import { fileSys } from "../../utils/file-sys";
 import { stringHelpers } from "../../utils/helpers/string-transformers";
 import { logger } from "../../utils/logger";
-import { templateProcessor } from "../../utils/template-processor";
+import { templates } from "../../utils/templates";
 
 const combiners = {
 	append: {
@@ -52,7 +52,7 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 	}
 
 	const processedContent = await content.getSingleFileContent(operation, data).then((content) => {
-		return templateProcessor.process(content, data);
+		return templates.process(content, data);
 	});
 
 	if (operation.unique && existingContent.includes(processedContent)) {

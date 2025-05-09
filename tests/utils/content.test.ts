@@ -4,7 +4,7 @@ import { operationDecorator } from "../../src/core/operations/operation-decorato
 import { content } from "../../src/utils/content";
 import { fileSys } from "../../src/utils/file-sys";
 import { logger } from "../../src/utils/logger";
-import { templateAssetRegister } from "../../src/utils/template-asset-register";
+import { templates } from "../../src/utils/templates";
 import { testData } from "../__fixtures__/test-data";
 import { testFiles } from "../__fixtures__/test-files";
 import { getTmpDirPath, loadTestFiles } from "../test-utils";
@@ -14,7 +14,7 @@ describe("content utils", () => {
 		const input = { name: "button" };
 
 		beforeAll(() => {
-			templateAssetRegister.register();
+			templates.registerComponents();
 		});
 
 		beforeEach(async () => {

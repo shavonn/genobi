@@ -1,5 +1,5 @@
 import { logger } from "../../src/utils/logger";
-import { templateProcessor } from "../../src/utils/template-processor";
+import { templates } from "../../src/utils/templates";
 
 describe("template processor", () => {
 	describe("processTemplate", () => {
@@ -7,7 +7,7 @@ describe("template processor", () => {
 			const template = "Hello, {{name}}!";
 			const data = { name: "World" };
 
-			const result = templateProcessor.process(template, data);
+			const result = templates.process(template, data);
 
 			expect(result).toBe("Hello, World!");
 		});
@@ -17,15 +17,15 @@ describe("template processor", () => {
 			const dataTrue = { condition: true };
 			const dataFalse = { condition: false };
 
-			expect(templateProcessor.process(template, dataTrue)).toBe("True");
-			expect(templateProcessor.process(template, dataFalse)).toBe("False");
+			expect(templates.process(template, dataTrue)).toBe("True");
+			expect(templates.process(template, dataFalse)).toBe("False");
 		});
 
 		it("should handle nested properties", () => {
 			const template = "{{user.profile.name}}";
 			const data = { user: { profile: { name: "John" } } };
 
-			const result = templateProcessor.process(template, data);
+			const result = templates.process(template, data);
 
 			expect(result).toBe("John");
 		});
@@ -34,7 +34,7 @@ describe("template processor", () => {
 			const template = "Hello {{#each items}}{{this}}{{/if}}";
 			const data = { items: ["one", "two"] };
 
-			expect(() => templateProcessor.process(template, data)).toThrowError(/Error processing template/);
+			expect(() => templates.process(template, data)).toThrowError(/Error processing template/);
 			expect(logger.warn).toHaveBeenCalledTimes(2);
 			expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("Error processing template"));
 			expect(logger.warn).toHaveBeenCalledWith("Template:", template);

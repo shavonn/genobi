@@ -5,7 +5,7 @@ import { FileExistsError, GenobiError } from "../../errors";
 import type { CreateAllOperation } from "../../types/operation";
 import { fileSys } from "../../utils/file-sys";
 import { logger } from "../../utils/logger";
-import { templateProcessor } from "../../utils/template-processor";
+import { templates } from "../../utils/templates";
 
 async function createAll(operation: CreateAllOperation, data: Record<string, any>): Promise<void> {
 	const destinationPath = fileSys.getTemplateProcessedPath(
@@ -14,7 +14,7 @@ async function createAll(operation: CreateAllOperation, data: Record<string, any
 		store.state().destinationBasePath,
 	);
 
-	let templateGlob = templateProcessor.process(operation.templateFilesGlob, data);
+	let templateGlob = templates.process(operation.templateFilesGlob, data);
 
 	const templateBasePath = operation.templateBasePath
 		? path.resolve(store.state().configPath, operation.templateBasePath)
@@ -56,7 +56,7 @@ async function createAll(operation: CreateAllOperation, data: Record<string, any
 
 			await fileSys.ensureDirectoryExists(path.dirname(filePath));
 
-			const processedContent = templateProcessor.process(content, data);
+			const processedContent = templates.process(content, data);
 
 			await fileSys.writeToFile(filePath, processedContent);
 		} catch (err: any) {

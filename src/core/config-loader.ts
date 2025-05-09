@@ -3,6 +3,7 @@ import pkg from "../../package.json";
 import { configAPI } from "../config-api";
 import { store } from "../config-store";
 import { ConfigLoadError } from "../errors";
+import { common } from "../utils/common";
 import { logger } from "../utils/logger";
 
 const packageName = pkg.name;
@@ -11,7 +12,7 @@ const configFilePatterns = [`${packageName}.js`, `${packageName}.ts`, `${package
 
 async function loadConfig(destination?: string) {
 	const explorer = cosmiconfig(packageName, {
-		searchStrategy: "project",
+		searchStrategy: common.isGlobalInstall() ? "global" : "project",
 		searchPlaces: configFilePatterns,
 	});
 

@@ -6,11 +6,11 @@ export function processTemplate(template: string, data: Record<string, any>): st
 	try {
 		const compiledTemplate = Handlebars.compile(template);
 		return compiledTemplate(data);
-	} catch (error: any) {
-		logger.error(`Error processing template: ${error.message}`);
+	} catch (err: any) {
+		logger.error(`Error processing template: ${err.message}`);
 		logger.warn("Template:", template);
 		logger.warn("Data:", JSON.stringify(data, null, 2));
-		throw new GenobiError("TEMPLATE_PROCESSING_ERROR", `Error processing template: ${error.message}`);
+		throw new GenobiError("TEMPLATE_PROCESSING_ERROR", `Error processing template: ${err.message}`, err);
 	}
 }
 

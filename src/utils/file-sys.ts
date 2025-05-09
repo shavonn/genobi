@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { store } from "../config-store";
-import { ReadError, WriteError } from "../errors";
+import { MakeDirError, ReadError, WriteError } from "../errors";
 import { templateProcessor } from "./template-processor";
 
 function getTemplateProcessedPath(templatePath: string, data: Record<string, any>, rootPath: string): string {
@@ -19,11 +19,12 @@ async function fileExists(filePath: string): Promise<boolean> {
 }
 
 async function ensureDirectoryExists(dirPath: string): Promise<void> {
+	const resolvedPath = path.resolve(store.state().destinationBasePath, dirPath);
 	try {
-		await fs.mkdir(path.resolve(store.state().destinationBasePath, dirPath), { recursive: true });
+		await fs.mkdir(resolvedPath, { recursive: true });
 	} catch (err) {
 		if ((err as NodeJS.ErrnoException).code !== "EEXIST") {
-			throw err;
+			throw new MakeDirError(resolvedPath);
 		}
 	}
 }

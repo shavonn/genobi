@@ -7,7 +7,6 @@
     "build": "tsup --tsconfig tsconfig.json",
     "prepare": "pnpm build",
     "test": "vitest",
-    "test:ci": "vitest --coverage --run",
     "test:coverage": "vitest run --coverage",
     "lint": "biome check --write",
     "change": "changeset",

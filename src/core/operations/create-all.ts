@@ -44,9 +44,9 @@ async function createAll(operation: CreateAllOperation, data: Record<string, any
 			if (exists) {
 				if (operation.overwrite) {
 					logger.warn(`File already exists: ${filePath}.`);
-					logger.warn("This file will be overwritten.");
+					logger.warn("It will be overwritten.");
 				} else if (operation.skipIfExists) {
-					logger.warn(`File already exists: ${filePath}`);
+					logger.warn(`File already exists: ${filePath}.`);
 					logger.warn("This file will be skipped.");
 					continue;
 				} else {

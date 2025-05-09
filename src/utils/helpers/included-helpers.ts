@@ -4,7 +4,7 @@ function registerIncludedHelpers() {
 	registerStringHelpers();
 }
 
-const includedHelpersRegister = {
+const includedHelpers = {
 	register: registerIncludedHelpers,
 };
-export { includedHelpersRegister };
+export { includedHelpers };

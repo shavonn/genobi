@@ -4,7 +4,7 @@ import inquirer from "inquirer";
 import { configAPI } from "../../src/config-api";
 import { store } from "../../src/config-store";
 import { generatorRunner } from "../../src/core/generator-runner";
-import { operationDecorators } from "../../src/core/operations/operation-decorators";
+import { operationDecorator } from "../../src/core/operations/operation-decorator";
 import { ops } from "../../src/core/operations/ops";
 import { fileSys } from "../../src/utils/file-sys";
 import { stringHelpers } from "../../src/utils/helpers/string-transformers";
@@ -52,7 +52,7 @@ describe("runGenerator", () => {
 
 		await generatorRunner.run();
 
-		expect(ops.create).toHaveBeenNthCalledWith(1, operationDecorators.decorate(testData.makeCreateOperation()), {
+		expect(ops.create).toHaveBeenNthCalledWith(1, operationDecorator.decorate(testData.makeCreateOperation()), {
 			...input,
 			...testData.themeData,
 		});
@@ -122,7 +122,7 @@ describe("runGenerator", () => {
 			expect.stringContaining("Create all operation failed"),
 			expect.stringContaining("File already exists"),
 		);
-		expect(ops.createAll).toHaveBeenCalledWith(operationDecorators.createAll(testData.makeCreateAllOperation()), {
+		expect(ops.createAll).toHaveBeenCalledWith(operationDecorator.createAll(testData.makeCreateAllOperation()), {
 			...input,
 			...testData.themeData,
 		});

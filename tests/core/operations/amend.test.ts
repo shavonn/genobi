@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import { combiners } from "../../../src/core/operations/amend";
-import { operationDecorators } from "../../../src/core/operations/operation-decorators";
+import { operationDecorator } from "../../../src/core/operations/operation-decorator";
 import { ops } from "../../../src/core/operations/ops";
 import { logger } from "../../../src/utils/logger";
 import { templateAssetRegister } from "../../../src/utils/template-asset-register";
@@ -21,7 +21,7 @@ describe("amend", () => {
 
 	describe("amend operations", () => {
 		it("should handle append operation", async () => {
-			const appendOp = operationDecorators.amend(testData.makeAmendOperation({ type: "append" }));
+			const appendOp = operationDecorator.amend(testData.makeAmendOperation({ type: "append" }));
 			const input = { name: "label" };
 			const processed = `@import "../components/label/label.css";`;
 
@@ -32,7 +32,7 @@ describe("amend", () => {
 		});
 
 		it("should handle prepend operation", async () => {
-			const prependOp = operationDecorators.amend(testData.makeAmendOperation({ type: "prepend", separator: "\n\n" }));
+			const prependOp = operationDecorator.amend(testData.makeAmendOperation({ type: "prepend", separator: "\n\n" }));
 			const input = { name: "navbar" };
 			const processed = `@import "../components/navbar/navbar.css";`;
 
@@ -43,7 +43,7 @@ describe("amend", () => {
 		});
 
 		it("should skip if content already exists and unique is true", async () => {
-			const operation = operationDecorators.amend(
+			const operation = operationDecorator.amend(
 				testData.makeAmendOperation({
 					type: "append",
 					unique: true,
@@ -63,7 +63,7 @@ describe("amend", () => {
 		});
 
 		it("should create a file if it doesn't exist", async () => {
-			const operation = operationDecorators.amend(
+			const operation = operationDecorator.amend(
 				testData.makeAmendOperation({ type: "append", filePath: "src/css/components-too.css" }),
 			);
 			const input = { name: "caption" };
@@ -77,7 +77,7 @@ describe("amend", () => {
 		});
 
 		it("should throw error for unknown amendment type", async () => {
-			const operation = operationDecorators.amend(
+			const operation = operationDecorator.amend(
 				testData.makeAmendOperation({
 					type: "unknown-type",
 				}),
@@ -89,7 +89,7 @@ describe("amend", () => {
 
 	describe("pattern matching", () => {
 		it("should append after a regex pattern match", async () => {
-			const operation = operationDecorators.amend(
+			const operation = operationDecorator.amend(
 				testData.makeAmendOperation({
 					type: "append",
 					pattern: `table.css";`,
@@ -112,7 +112,7 @@ describe("amend", () => {
 		});
 
 		it("should prepend before a regex pattern match", async () => {
-			const operation = operationDecorators.amend(
+			const operation = operationDecorator.amend(
 				testData.makeAmendOperation({
 					type: "prepend",
 					pattern: `@import "../components/radio/radio.css";`,
@@ -135,7 +135,7 @@ describe("amend", () => {
 		});
 
 		it("should append at the end if pattern is not found", async () => {
-			const operation = operationDecorators.amend(
+			const operation = operationDecorator.amend(
 				testData.makeAmendOperation({
 					type: "append",
 					pattern: "not-found-pattern",
@@ -152,7 +152,7 @@ describe("amend", () => {
 		});
 
 		it("should prepend at the beginning if pattern is not found", async () => {
-			const operation = operationDecorators.amend(
+			const operation = operationDecorator.amend(
 				testData.makeAmendOperation({
 					type: "prepend",
 					pattern: "not-found-pattern",
@@ -171,7 +171,7 @@ describe("amend", () => {
 
 	describe("error handling", () => {
 		it("should throw error when reading file fails", async () => {
-			const operation = operationDecorators.amend(testData.makeAmendOperation({ type: "append" }));
+			const operation = operationDecorator.amend(testData.makeAmendOperation({ type: "append" }));
 			const input = { name: "world" };
 
 			vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error("Simulated read error"));
@@ -180,7 +180,7 @@ describe("amend", () => {
 		});
 
 		it("should throw error when writing file fails", async () => {
-			const operation = operationDecorators.amend(testData.makeAmendOperation({ type: "append" }));
+			const operation = operationDecorator.amend(testData.makeAmendOperation({ type: "append" }));
 			const input = { name: "hello world" };
 
 			vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error("Simulated write error"));
@@ -191,7 +191,7 @@ describe("amend", () => {
 
 	describe("convenience functions", () => {
 		it("append function should set type to append", async () => {
-			const operation = operationDecorators.amend(testData.makeAmendOperation());
+			const operation = operationDecorator.amend(testData.makeAmendOperation());
 			const input = { name: "hero" };
 			const processed = `@import "../components/hero/hero.css";`;
 
@@ -204,7 +204,7 @@ describe("amend", () => {
 		});
 
 		it("prepend function should set type to prepend", async () => {
-			const operation = operationDecorators.amend(testData.makeAmendOperation());
+			const operation = operationDecorator.amend(testData.makeAmendOperation());
 			const input = { name: "tabs" };
 			const processed = `@import "../components/tabs/tabs.css";`;
 

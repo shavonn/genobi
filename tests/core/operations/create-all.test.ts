@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import { operationDecorators } from "../../../src/core/operations/operation-decorators";
+import { operationDecorator } from "../../../src/core/operations/operation-decorator";
 import { ops } from "../../../src/core/operations/ops";
 import { fileSys } from "../../../src/utils/file-sys";
 import { templateAssetRegister } from "../../../src/utils/template-asset-register";
@@ -25,7 +25,7 @@ describe("createAll", async () => {
 	});
 
 	it("should create files matching glob, removing template base path", async () => {
-		const operation = operationDecorators.createAll(testData.makeCreateAllOperation());
+		const operation = operationDecorator.createAll(testData.makeCreateAllOperation());
 
 		await ops.createAll(operation, mergedData);
 
@@ -36,7 +36,7 @@ describe("createAll", async () => {
 	});
 
 	it("should continue creating if and error is thrown and haltOnError is false", async () => {
-		const operation = operationDecorators.createAll(
+		const operation = operationDecorator.createAll(
 			testData.makeCreateAllOperation({
 				haltOnError: false,
 			}),
@@ -53,7 +53,7 @@ describe("createAll", async () => {
 	});
 
 	it("should throw error if no files are found with glob", async () => {
-		const operation = operationDecorators.createAll(
+		const operation = operationDecorator.createAll(
 			testData.makeCreateAllOperation({
 				templateFilesGlob: "templates/components/*.hbs",
 			}),
@@ -63,7 +63,7 @@ describe("createAll", async () => {
 	});
 
 	it("should throw error if file already exists when skipIfExists is false", async () => {
-		const operation = operationDecorators.createAll(testData.makeCreateAllOperation());
+		const operation = operationDecorator.createAll(testData.makeCreateAllOperation());
 
 		await loadTestFiles({
 			"src/components/checkbox-input/checkbox-input.tsx": "exists",
@@ -79,7 +79,7 @@ describe("createAll", async () => {
 	});
 
 	it("should skip if file already exists when skipIfExists is true", async () => {
-		const operation = operationDecorators.createAll(
+		const operation = operationDecorator.createAll(
 			testData.makeCreateAllOperation({
 				skipIfExists: true,
 			}),
@@ -99,7 +99,7 @@ describe("createAll", async () => {
 	});
 
 	it("should overwrite if file already exists when overwrite is true", async () => {
-		const operation = operationDecorators.createAll(
+		const operation = operationDecorator.createAll(
 			testData.makeCreateAllOperation({
 				overwrite: true,
 			}),

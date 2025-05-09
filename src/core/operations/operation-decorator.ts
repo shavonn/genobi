@@ -1,27 +1,6 @@
 import { UnknownOperationType } from "../../errors";
 import type { AmendOperation, CreateAllOperation, CreateOperation, Operation } from "../../types/operation";
 
-function decorateOperation(operation: Operation): AmendOperation | CreateOperation | CreateAllOperation {
-	let decoratedOp: Operation;
-
-	switch (operation.type) {
-		case "append":
-		case "prepend":
-			decoratedOp = amendDecorator(operation);
-			break;
-		case "create":
-			decoratedOp = createDecorator(operation);
-			break;
-		case "createAll":
-			decoratedOp = createAllDecorator(operation);
-			break;
-		default:
-			throw new UnknownOperationType((operation as any).type);
-	}
-
-	return decoratedOp;
-}
-
 export function OpDecorator(operation: Operation) {
 	return Object.assign(
 		{
@@ -66,9 +45,27 @@ export function amendDecorator(operation: AmendOperation) {
 }
 
 const operationDecorators = {
+	append: (operation: AmendOperation) => amendDecorator(operation),
+	prepend: (operation: AmendOperation) => amendDecorator(operation),
+	create: (operation: CreateOperation) => createDecorator(operation),
+	createAll: (operation: CreateAllOperation) => createAllDecorator(operation),
+};
+
+function isValidOperationType(type: string): type is keyof typeof operationDecorators {
+	return type in operationDecorators;
+}
+
+function decorateOperation(operation: Operation) {
+	if (isValidOperationType(operation.type)) {
+		return operationDecorators[operation.type](operation as any);
+	}
+	throw new UnknownOperationType(operation.type);
+}
+
+const operationDecorator = {
 	decorate: decorateOperation,
 	create: createDecorator,
 	createAll: createAllDecorator,
 	amend: amendDecorator,
 };
-export { operationDecorators };
+export { operationDecorator };

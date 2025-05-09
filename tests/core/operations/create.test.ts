@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import { operationDecorators } from "../../../src/core/operations/operation-decorators";
+import { operationDecorator } from "../../../src/core/operations/operation-decorator";
 import { ops } from "../../../src/core/operations/ops";
 import { content } from "../../../src/utils/content";
 import { fileSys } from "../../../src/utils/file-sys";
@@ -19,7 +19,7 @@ describe("create", () => {
 	});
 
 	it("should create file using templateFile", async () => {
-		const operation = operationDecorators.create(testData.makeCreateOperation());
+		const operation = operationDecorator.create(testData.makeCreateOperation());
 		const componentFilePath = getTmpDirPath("src/components/page-header/page-header.tsx");
 		const mergedData = {
 			name: "page header",
@@ -34,7 +34,7 @@ describe("create", () => {
 	});
 
 	it("should create a file using templateStr", async () => {
-		const operation = operationDecorators.create(
+		const operation = operationDecorator.create(
 			testData.makeCreateOperation({
 				templateFilePath: undefined,
 				filePath: testFiles.componentCss.filePath,
@@ -55,7 +55,7 @@ describe("create", () => {
 	});
 
 	it("should throw error if file already exists and skipIfExists is false", async () => {
-		const operation = operationDecorators.create(
+		const operation = operationDecorator.create(
 			testData.makeCreateOperation({
 				templateFilePath: undefined,
 			}),
@@ -75,7 +75,7 @@ describe("create", () => {
 	});
 
 	it("should skip operation if file already exists and skipIfExists is true", async () => {
-		const operation = operationDecorators.create(
+		const operation = operationDecorator.create(
 			testData.makeCreateOperation({
 				skipIfExists: true,
 			}),
@@ -94,7 +94,7 @@ describe("create", () => {
 	});
 
 	it("should overwrite file if file already exists and overwrite is true", async () => {
-		const operation = operationDecorators.create(
+		const operation = operationDecorator.create(
 			testData.makeCreateOperation({
 				templateFilePath: undefined,
 				templateStr: testFiles.component.templateFileContent,
@@ -122,7 +122,7 @@ describe("create", () => {
 	});
 
 	it("should throw error when writing file fails", async () => {
-		const operation = operationDecorators.create(testData.makeCreateOperation());
+		const operation = operationDecorator.create(testData.makeCreateOperation());
 
 		vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error("Simulated write error"));
 

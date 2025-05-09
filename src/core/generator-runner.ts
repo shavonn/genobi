@@ -1,11 +1,11 @@
 import inquirer from "inquirer";
 import { store } from "../config-store";
-import { GenobiError, UnknownOperationType } from "../errors";
+import { GenobiError } from "../errors";
 import { stringHelpers } from "../utils/helpers/string-transformers";
 import { logger } from "../utils/logger";
 import { templateAssetRegister } from "../utils/template-asset-register";
-import { operationDecorators } from "./operations/operation-decorators";
-import { ops } from "./operations/ops";
+import { operationHandler } from "./operation-handler";
+import { operationDecorator } from "./operations/operation-decorator";
 
 async function runGenerator() {
 	templateAssetRegister.register();
@@ -23,7 +23,7 @@ async function runGenerator() {
 	}
 
 	for (const op of generator.operations) {
-		const operation = operationDecorators.decorate(op);
+		const operation = operationDecorator.decorate(op);
 
 		const data = { ...input, ...(operation.data || {}) };
 
@@ -32,17 +32,7 @@ async function runGenerator() {
 		}
 
 		try {
-			if (operation.type === "append") {
-				await ops.append(operation, data);
-			} else if (operation.type === "create") {
-				await ops.create(operation, data);
-			} else if (operation.type === "createAll") {
-				await ops.createAll(operation, data);
-			} else if (operation.type === "prepend") {
-				await ops.prepend(operation, data);
-			} else {
-				throw new UnknownOperationType((operation as any).type);
-			}
+			await operationHandler.handle(operation, data);
 		} catch (err: any) {
 			logger.error(`${stringHelpers.sentenceCase(operation.type)} operation failed.`, err.message);
 			if (err.cause) {

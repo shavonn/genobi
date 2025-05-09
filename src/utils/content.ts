@@ -9,8 +9,7 @@ export async function getSingleFileContent(operation: SingleFileOperation, data:
 
 	if (operation.templateFilePath) {
 		const templatePath = fileSys.getTemplateProcessedPath(operation.templateFilePath, data, store.state().configPath);
-
-		content = fileSys.readFromFile(templatePath);
+		content = await fileSys.readFromFile(templatePath);
 	} else if (operation.templateStr) {
 		content = operation.templateStr;
 	} else {

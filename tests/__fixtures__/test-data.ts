@@ -76,22 +76,34 @@ const layout = {
 	} as GeneratorConfig,
 };
 
-const fullConfigFunc = (genobi: ConfigAPI) => {
+const partialFunc = () => `<div class="bingo">{{name}}</div>`;
+
+const fullConfigFunc = async (genobi: ConfigAPI) => {
 	genobi.setConfigFilePath(getTmpDirPath(configFilePath));
 	genobi.setSelectionPrompt(selectionPrompt);
 	genobi.addGenerator(component.id, component.generator);
 	genobi.addHelper("awwYeah", AwwYeahHelper);
 	genobi.addHelper("micDrop", MicDropHelper);
+	genobi.addPartial("importComponentCss", testFiles.aggregateCss.templateStr);
+	genobi.addPartial("nameDiv", partialFunc);
+	await genobi.addPartialFromFile("componentProps", testFiles.componentPropsPartial.filePath);
 };
 
-const slimConfigFunc = (genobi: ConfigAPI) => {
+const slimConfigFunc = async (genobi: ConfigAPI) => {
 	genobi.setConfigFilePath(getTmpDirPath(configFilePath));
 	genobi.setSelectionPrompt(selectionPrompt);
 	genobi.addGenerator(component.id, component.generator);
 	genobi.addHelper("awwYeah", AwwYeahHelper);
+	genobi.addPartial("importComponentCss", testFiles.aggregateCss.templateStr);
+	await genobi.addPartialFromFile("componentProps", testFiles.componentPropsPartial.filePath);
 };
 
 const zeroConfigFunc = (_: ConfigAPI) => {};
+
+const errConfigFunc = async (genobi: ConfigAPI) => {
+	await genobi.addPartialFromFile("newPartials", "templates/partials/new-partial.hbs");
+	genobi.addGenerator(component.id, component.generator);
+};
 
 const testData = {
 	configFilePath,
@@ -107,5 +119,7 @@ const testData = {
 	fullConfigFunc,
 	slimConfigFunc,
 	zeroConfigFunc,
+	errConfigFunc,
+	partialFunc,
 };
 export { testData };

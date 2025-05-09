@@ -34,7 +34,10 @@ async function runGenerator() {
 		try {
 			await operationHandler.handle(operation, data);
 		} catch (err: any) {
-			logger.error(`${stringHelpers.sentenceCase(operation.type)} operation failed.`, err.message);
+			logger.error(
+				`[${stringHelpers.upperCase(stringHelpers.sentenceCase(operation.type))}] Operation failed.`,
+				err.message,
+			);
 			if (err.cause) {
 				logger.error(err.cause.message);
 			}

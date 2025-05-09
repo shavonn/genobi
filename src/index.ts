@@ -1,4 +1,4 @@
-import type { HelperDelegate } from "handlebars";
+import type { HelperDelegate, Template, TemplateDelegate } from "handlebars";
 import type { DistinctQuestion } from "inquirer";
 import type { ConfigAPI } from "./types/config-api";
 import type { GeneratorConfig } from "./types/generator";
@@ -14,6 +14,8 @@ import type {
 export type {
 	ConfigAPI,
 	HelperDelegate,
+	Template,
+	TemplateDelegate,
 	DistinctQuestion,
 	GeneratorConfig,
 	Operation,

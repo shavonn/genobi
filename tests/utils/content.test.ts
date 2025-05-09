@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import { store } from "../../src/config-store";
-import { operationDecorators } from "../../src/core/operations/operation-decorators";
+import { operationDecorator } from "../../src/core/operations/operation-decorator";
 import { content } from "../../src/utils/content";
 import { fileSys } from "../../src/utils/file-sys";
 import { logger } from "../../src/utils/logger";
@@ -22,7 +22,7 @@ describe("content utils", () => {
 		});
 
 		it("should return template content from templateStr", async () => {
-			const operation = operationDecorators.amend(
+			const operation = operationDecorator.amend(
 				testData.makeAmendOperation({
 					type: "prepend",
 				}),
@@ -35,7 +35,7 @@ describe("content utils", () => {
 		});
 
 		it("should return template content from templateFile", async () => {
-			const operation = operationDecorators.create(testData.makeCreateOperation());
+			const operation = operationDecorator.create(testData.makeCreateOperation());
 			const mergedData = {
 				...input,
 				...testData.themeData,
@@ -71,7 +71,7 @@ describe("content utils", () => {
 		});
 
 		it("should throw error when error encountered reading file", async () => {
-			const operation = operationDecorators.amend(
+			const operation = operationDecorator.amend(
 				testData.makeAmendOperation({
 					type: "prepend",
 					templateStr: undefined,

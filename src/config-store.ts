@@ -1,5 +1,5 @@
 import path from "node:path";
-import type { HelperDelegate } from "handlebars";
+import type { HelperDelegate, Template, TemplateDelegate } from "handlebars";
 import type {
 	ConfigStoreState,
 	ConfiguredGenerators,
@@ -19,7 +19,7 @@ class ConfigStore {
 	#selectedGenerator = "";
 	#generators: ConfiguredGenerators = new Map<string, GeneratorConfig>();
 	#helpers: ConfiguredHelpers = new Map<string, HelperDelegate>();
-	#partials: ConfiguredPartials = new Map<string, Handlebars.Template>();
+	#partials: ConfiguredPartials = new Map<string, Template>();
 
 	enableDebugLogging: () => void = () => {
 		this.#logDebug = true;
@@ -62,7 +62,7 @@ class ConfigStore {
 		this.#helpers.set(name, helper);
 	};
 
-	setPartial: (name: string, templateStr: Handlebars.Template) => void = (name, templateStr) => {
+	setPartial: (name: string, templateStr: Template | TemplateDelegate) => void = (name, templateStr) => {
 		this.#partials.set(name, templateStr);
 	};
 
@@ -91,7 +91,7 @@ class ConfigStore {
 		this.#selectionPrompt = "Select from available generators:";
 		this.#generators = new Map<string, GeneratorConfig>();
 		this.#helpers = new Map<string, HelperDelegate>();
-		this.#partials = new Map<string, Handlebars.Template>();
+		this.#partials = new Map<string, Template | TemplateDelegate>();
 	};
 }
 

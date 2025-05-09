@@ -1,4 +1,4 @@
-import type { HelperDelegate } from "handlebars";
+import type { HelperDelegate, Template, TemplateDelegate } from "handlebars";
 import type { GeneratorConfig } from "./generator";
 
 export interface ConfigStoreState {
@@ -16,7 +16,7 @@ export interface ConfigStoreState {
 
 export type ConfiguredGenerators = Map<string, GeneratorConfig>;
 export type ConfiguredHelpers = Map<string, HelperDelegate>;
-export type ConfiguredPartials = Map<string, Handlebars.Template>;
+export type ConfiguredPartials = Map<string, Template | TemplateDelegate>;
 
 export interface SelectChoice {
 	name: string;

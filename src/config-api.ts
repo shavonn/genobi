@@ -1,5 +1,5 @@
 import path from "node:path";
-import type { HelperDelegate } from "handlebars";
+import type { HelperDelegate, Template, TemplateDelegate } from "handlebars";
 import Handlebars from "handlebars";
 import { store } from "./config-store";
 import { GenobiError } from "./errors";
@@ -38,21 +38,21 @@ function configApi(): ConfigAPI {
 			return helper;
 		},
 		getHelpers: (): Record<string, HelperDelegate> => Object.fromEntries(store.state().helpers),
-		addPartial: (name: string, templateStr: Handlebars.Template) => {
+		addPartial: (name: string, templateStr: Template | TemplateDelegate) => {
 			store.setPartial(name, templateStr);
 		},
 		addPartialFromFile: async (name: string, templateFilePath: string) => {
 			const fileResult = await fileSys.readFromFile(path.resolve(store.state().configPath, templateFilePath));
 			store.setPartial(name, fileResult);
 		},
-		getPartial: (name: string): Handlebars.Template => {
+		getPartial: (name: string): Template | TemplateDelegate => {
 			const partial = store.state().partials.get(name);
 			if (!partial) {
 				throw new GenobiError("PARTIAL_NOT_FOUND", `Template partial "${name}" not found in loaded configuration.`);
 			}
 			return partial;
 		},
-		getPartials: (): Record<string, Handlebars.Template> => Object.fromEntries(store.state().partials),
+		getPartials: (): Record<string, Template | TemplateDelegate> => Object.fromEntries(store.state().partials),
 	};
 }
 

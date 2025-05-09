@@ -30,11 +30,11 @@ async function loadConfig(destination?: string) {
 	store.setDestinationBasePath(destination || store.state().configPath);
 	try {
 		await loadConfig(configAPI.get());
-	} catch (error: any) {
-		const enhancedError = new ConfigError(`Error in config loading. ${error.message}`);
-		enhancedError.cause = error;
+	} catch (err: any) {
+		const enhancedError = new ConfigError(`Error in config loading. ${err.message}`);
+		enhancedError.cause = err;
 
-		logger.debug("Original error stack:", error.stack);
+		logger.debug("Original error stack:", err.stack);
 		throw enhancedError;
 	}
 

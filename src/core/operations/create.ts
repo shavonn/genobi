@@ -15,10 +15,10 @@ async function create(operation: CreateOperation, data: Record<string, any>): Pr
 	const exists = await fileSys.fileExists(filePath);
 	if (exists) {
 		if (operation.overwrite) {
-			logger.warn(`Create file already exists: ${filePath}.`);
-			logger.warn("This file will be overwritten.");
+			logger.warn(`File already exists: ${filePath}.`);
+			logger.warn("It will be overwritten.");
 		} else if (operation.skipIfExists) {
-			logger.warn(`Create file already exists: ${filePath}`);
+			logger.warn(`File already exists: ${filePath}.`);
 			logger.warn("This operation will be skipped.");
 			return;
 		} else {

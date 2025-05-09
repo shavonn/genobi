@@ -1,16 +1,4 @@
-type ErrorName =
-	| "CONFIG_ERROR"
-	| "MISSING_OPERATIONS_ERROR"
-	| "GENERATOR_NOT_FOUND"
-	| "HELPER_NOT_FOUND"
-	| "UNKNOWN_OPERATION_TYPE"
-	| "NO_TEMPLATE_FOUND"
-	| "READ_ERROR"
-	| "WRITE_ERROR"
-	| "FILE_EXISTS"
-	| "TEMPLATE_PROCESSING_ERROR"
-	| "NO_GLOB_MATCHES"
-	| "PARTIAL_NOT_FOUND";
+import type { ErrorName } from "./types/general";
 
 export class GenobiError extends Error {
 	name: ErrorName;
@@ -51,7 +39,7 @@ export class ReadError extends GenobiError {
 
 export class ConfigLoadError extends GenobiError {
 	constructor(message: string, cause?: any) {
-		super("CONFIG_ERROR", message, cause);
+		super("CONFIG_LOAD_ERROR", message, cause);
 	}
 }
 

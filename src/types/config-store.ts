@@ -17,8 +17,3 @@ export interface ConfigStoreState {
 export type ConfiguredGenerators = Map<string, GeneratorConfig>;
 export type ConfiguredHelpers = Map<string, HelperDelegate>;
 export type ConfiguredPartials = Map<string, Template | TemplateDelegate>;
-
-export interface SelectChoice {
-	name: string;
-	value: string;
-}

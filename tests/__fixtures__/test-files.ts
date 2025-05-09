@@ -1,3 +1,5 @@
+import { loadTestFiles } from "../test-utils";
+
 const component = {
 	filePath: "src/components/{{kebabCase name}}/{{kebabCase name}}.tsx",
 	templateFilePath: "templates/component.tsx.hbs",
@@ -22,17 +24,20 @@ const aggregateCss = {
 	templateStr: `@import "../components/{{kebabCase name}}/{{kebabCase name}}.css";`,
 };
 
-const existingFiles = {
-	"templates/component.tsx.hbs": component.templateFileContent,
-	"src/css/components.css": aggregateCss.existing,
-	"templates/ui-kit-component/{{kebabCase name}}.tsx.hbs": component.templateFileContent,
-	"templates/ui-kit-component/{{kebabCase name}}.css.hbs": componentCss.templateStr,
+const loadExistingFiles = async () => {
+	await loadTestFiles({
+		"templates/component.tsx.hbs": component.templateFileContent,
+		"templates/partials/component-props.hbs": componentPropsPartial.template,
+		"templates/ui-kit-component/{{kebabCase name}}.tsx.hbs": component.templateFileContent,
+		"templates/ui-kit-component/{{kebabCase name}}.css.hbs": componentCss.templateStr,
+		"src/css/components.css": aggregateCss.existing,
+	});
 };
 
 const testFiles = {
 	component,
 	componentCss,
 	aggregateCss,
-	existingFiles,
+	loadExistingFiles,
 };
 export { testFiles };

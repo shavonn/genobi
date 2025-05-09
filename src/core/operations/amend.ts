@@ -11,36 +11,34 @@ import { templateProcessor } from "../../utils/template-processor";
 
 const combiners = {
 	append: {
-		combine: (existingContent: string, newContent: string, pattern?: string | RegExp, separator = "\n") => {
-			const regex = pattern instanceof RegExp ? pattern : new RegExp(common.escapeRegExp(pattern as string));
-			const match = existingContent.match(regex);
-			if (match && match.index !== undefined) {
-				const matchEnd = match.index + match[0].length;
-				return existingContent.substring(0, matchEnd) + separator + newContent + existingContent.substring(matchEnd);
+		process: (existingContent: string, newContent: string, pattern?: string | RegExp, separator = "\n") => {
+			if (pattern) {
+				const regex = pattern instanceof RegExp ? pattern : new RegExp(common.escapeRegExp(pattern as string));
+				const match = existingContent.match(regex);
+				if (match && match.index !== undefined) {
+					const matchEnd = match.index + match[0].length;
+					return existingContent.substring(0, matchEnd) + separator + newContent + existingContent.substring(matchEnd);
+				}
+				logger.warn("Pattern not found, appending to end instead.");
 			}
 			return existingContent + separator + newContent;
 		},
-		defaultAction: (existingContent: string, newContent: string, separator = "\n") => {
-			return existingContent + separator + newContent;
-		},
-		patternNotFoundMessage: "appending to end instead",
 	},
 
 	prepend: {
-		combine: (existingContent: string, newContent: string, pattern?: string | RegExp, separator = "\n") => {
-			const regex = pattern instanceof RegExp ? pattern : new RegExp(common.escapeRegExp(pattern as string));
-			const match = existingContent.match(regex);
-			if (match && match.index !== undefined) {
-				return (
-					existingContent.substring(0, match.index) + newContent + separator + existingContent.substring(match.index)
-				);
+		process: (existingContent: string, newContent: string, pattern?: string | RegExp, separator = "\n") => {
+			if (pattern) {
+				const regex = pattern instanceof RegExp ? pattern : new RegExp(common.escapeRegExp(pattern as string));
+				const match = existingContent.match(regex);
+				if (match && match.index !== undefined) {
+					return (
+						existingContent.substring(0, match.index) + newContent + separator + existingContent.substring(match.index)
+					);
+				}
+				logger.warn("Pattern not found, prepending to beginning instead.");
 			}
 			return newContent + separator + existingContent;
 		},
-		defaultAction: (existingContent: string, newContent: string, separator = "\n") => {
-			return newContent + separator + existingContent;
-		},
-		patternNotFoundMessage: "prepending to beginning instead",
 	},
 };
 
@@ -70,26 +68,16 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 	}
 
 	const separator = operation.separator || "\n";
-
 	let newContent: string;
 
+	// Handle empty file case
 	if (!existingContent) {
 		newContent = processedContent;
 		logger.warn(`${stringHelpers.sentenceCase(operation.type)} file not found: ${filePath}.`);
 		logger.warn("The file will be created.");
-	} else if (operation.pattern) {
-		const regex =
-			operation.pattern instanceof RegExp ? operation.pattern : new RegExp(common.escapeRegExp(operation.pattern));
-
-		const match = existingContent.match(regex);
-		if (match && match.index !== undefined) {
-			newContent = combiner.combine(existingContent, processedContent, operation.pattern, separator);
-		} else {
-			logger.warn(`Pattern not found in ${filePath}, ${combiner.patternNotFoundMessage}.`);
-			newContent = combiner.defaultAction(existingContent, processedContent, separator);
-		}
 	} else {
-		newContent = combiner.defaultAction(existingContent, processedContent, separator);
+		// Process with or without pattern
+		newContent = combiner.process(existingContent, processedContent, operation.pattern, separator);
 	}
 
 	await fileSys.writeToFile(filePath, newContent);

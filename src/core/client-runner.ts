@@ -54,6 +54,15 @@ async function runCli() {
 		await generatorRunner.run();
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
+
+		if (err.cause) {
+			if (err.cause.message) {
+				logger.error(`Caused by: ${err.cause.message}`);
+			}
+			if (err.cause.message) {
+				logger.debug(`Original error stack: ${err.cause.stack}`);
+			}
+		}
 		process.exit(1);
 	}
 }

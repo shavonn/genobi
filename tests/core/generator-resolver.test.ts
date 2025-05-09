@@ -7,7 +7,7 @@ import { testData } from "../__fixtures__/test-data";
 
 describe("resolveGenerator", () => {
 	it("should use generator ID arg when provided", async () => {
-		testData.fullConfigFunc(configAPI.get());
+		await testData.fullConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
 
 		vi.spyOn(store, "setSelectedGenerator");

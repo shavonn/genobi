@@ -18,10 +18,6 @@ describe("create", () => {
 		templateAssetRegister.register();
 	});
 
-	beforeEach(async () => {
-		await loadTestFiles(testFiles.existingFiles);
-	});
-
 	it("should create file using templateFile", async () => {
 		const operation = operationDecorators.create(testData.makeCreateOperation());
 		const componentFilePath = getTmpDirPath("src/components/page-header/page-header.tsx");
@@ -128,7 +124,7 @@ describe("create", () => {
 	it("should throw error when writing file fails", async () => {
 		const operation = operationDecorators.create(testData.makeCreateOperation());
 
-		vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error());
+		vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error("Simulated write error"));
 
 		await expect(ops.create(operation, mergedData)).rejects.toThrow();
 	});

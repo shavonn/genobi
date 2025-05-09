@@ -6,7 +6,7 @@ import { logger } from "../../../src/utils/logger";
 import { templateAssetRegister } from "../../../src/utils/template-asset-register";
 import { testData } from "../../__fixtures__/test-data";
 import { testFiles } from "../../__fixtures__/test-files";
-import { getTmpDirPath, loadTestFiles, writeTestFile } from "../../test-utils";
+import { getTmpDirPath, writeTestFile } from "../../test-utils";
 
 describe("amend", () => {
 	let componentCssFilePath: string;
@@ -17,8 +17,6 @@ describe("amend", () => {
 
 	beforeEach(async () => {
 		componentCssFilePath = getTmpDirPath("src/css/components.css");
-
-		await loadTestFiles(testFiles.existingFiles);
 	});
 
 	describe("amend operations", () => {
@@ -176,7 +174,7 @@ describe("amend", () => {
 			const operation = operationDecorators.amend(testData.makeAmendOperation({ type: "append" }));
 			const input = { name: "world" };
 
-			vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error());
+			vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error("Simulated read error"));
 
 			await expect(ops.amendFile(operation, input)).rejects.toThrow();
 		});
@@ -185,7 +183,7 @@ describe("amend", () => {
 			const operation = operationDecorators.amend(testData.makeAmendOperation({ type: "append" }));
 			const input = { name: "hello world" };
 
-			vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error());
+			vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error("Simulated write error"));
 
 			await expect(ops.amendFile(operation, input)).rejects.toThrow();
 		});

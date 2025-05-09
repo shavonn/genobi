@@ -11,34 +11,27 @@ import { templateProcessor } from "../../utils/template-processor";
 
 const combiners = {
 	append: {
-		process: (existingContent: string, newContent: string, pattern?: string | RegExp, separator = "\n") => {
-			if (pattern) {
-				const regex = pattern instanceof RegExp ? pattern : new RegExp(common.escapeRegExp(pattern as string));
-				const match = existingContent.match(regex);
-				if (match && match.index !== undefined) {
-					const matchEnd = match.index + match[0].length;
-					return existingContent.substring(0, matchEnd) + separator + newContent + existingContent.substring(matchEnd);
-				}
-				logger.warn("Pattern not found, appending to end instead.");
-			}
+		process: (existingContent: string, newContent: string, placementIdx: number, separator = "\n") => {
+			return (
+				existingContent.substring(0, placementIdx) + separator + newContent + existingContent.substring(placementIdx)
+			);
+		},
+		defaultAction: (existingContent: string, newContent: string, separator = "\n") => {
 			return existingContent + separator + newContent;
 		},
+		patternNotFoundMessage: "appending to end instead",
 	},
 
 	prepend: {
-		process: (existingContent: string, newContent: string, pattern?: string | RegExp, separator = "\n") => {
-			if (pattern) {
-				const regex = pattern instanceof RegExp ? pattern : new RegExp(common.escapeRegExp(pattern as string));
-				const match = existingContent.match(regex);
-				if (match && match.index !== undefined) {
-					return (
-						existingContent.substring(0, match.index) + newContent + separator + existingContent.substring(match.index)
-					);
-				}
-				logger.warn("Pattern not found, prepending to beginning instead.");
-			}
+		process: (existingContent: string, newContent: string, placementIdx: number, separator = "\n") => {
+			return (
+				existingContent.substring(0, placementIdx) + newContent + separator + existingContent.substring(placementIdx)
+			);
+		},
+		defaultAction: (existingContent: string, newContent: string, separator = "\n") => {
 			return newContent + separator + existingContent;
 		},
+		patternNotFoundMessage: "prepending to beginning instead",
 	},
 };
 
@@ -68,16 +61,35 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
 	}
 
 	const separator = operation.separator || "\n";
-	let newContent: string;
+	let newContent = "";
 
-	// Handle empty file case
 	if (!existingContent) {
 		newContent = processedContent;
 		logger.warn(`${stringHelpers.sentenceCase(operation.type)} file not found: ${filePath}.`);
 		logger.warn("The file will be created.");
 	} else {
-		// Process with or without pattern
-		newContent = combiner.process(existingContent, processedContent, operation.pattern, separator);
+		if (operation.pattern) {
+			const regex =
+				operation.pattern instanceof RegExp
+					? operation.pattern
+					: new RegExp(common.escapeRegExp(operation.pattern as string));
+
+			const match = existingContent.match(regex);
+			if (match && match.index !== undefined) {
+				newContent = combiner.process(
+					existingContent,
+					processedContent,
+					operation.type === "append" ? match.index + match[0].length : match.index,
+					separator,
+				);
+			} else {
+				logger.warn(`Pattern not found in ${filePath}, ${combiner.patternNotFoundMessage}.`);
+			}
+		}
+
+		if (!newContent) {
+			newContent = combiner.defaultAction(existingContent, processedContent, separator);
+		}
 	}
 
 	await fileSys.writeToFile(filePath, newContent);

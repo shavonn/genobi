@@ -44,8 +44,8 @@ export class ReadError extends GenobiError {
 }
 
 export class ConfigError extends GenobiError {
-	constructor(message: string) {
-		super("CONFIG_ERROR", message);
+	constructor(message: string, cause?: any) {
+		super("CONFIG_ERROR", message, cause);
 	}
 }
 

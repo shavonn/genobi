@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { HelperDelegate } from "handlebars";
 import Handlebars from "handlebars";
 import { store } from "./config-store";
@@ -41,7 +42,7 @@ function configApi(): ConfigAPI {
 			store.setPartial(name, templateStr);
 		},
 		addPartialFromFile: async (name: string, templateFilePath: string) => {
-			const fileResult = await fileSys.readFromFile(templateFilePath);
+			const fileResult = await fileSys.readFromFile(path.resolve(store.state().configPath, templateFilePath));
 			store.setPartial(name, fileResult);
 		},
 		getPartial: (name: string): Handlebars.Template => {

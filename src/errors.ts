@@ -37,6 +37,12 @@ export class FileExistsError extends GenobiError {
 	}
 }
 
+export class MakeDirError extends GenobiError {
+	constructor(dirPath: string) {
+		super("MKDIR_DIR_ERROR", `Error creating directory: ${dirPath}`);
+	}
+}
+
 export class ReadError extends GenobiError {
 	constructor(filePath: string, cause?: any) {
 		super("READ_ERROR", `Error reading file: ${filePath}`, cause);

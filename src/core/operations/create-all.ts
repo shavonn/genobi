@@ -1,4 +1,3 @@
-import fs from "node:fs/promises";
 import path from "node:path";
 import { glob } from "glob";
 import { store } from "../../config-store";
@@ -32,16 +31,14 @@ async function createAll(operation: CreateAllOperation, data: Record<string, any
 
 	for (const templatePath of templatePaths) {
 		try {
-			const content = await fs.readFile(templatePath, "utf8");
+			const content = await fileSys.readFromFile(templatePath);
 
 			let relativePath = path.relative(templateBasePath, templatePath);
 			if (relativePath.endsWith(".hbs")) {
 				relativePath = relativePath.slice(0, -4);
 			}
 
-			const processedFileName = templateProcessor.process(relativePath, data);
-
-			const filePath = path.join(destinationPath, processedFileName);
+			const filePath = fileSys.getTemplateProcessedPath(relativePath, data, destinationPath);
 
 			const exists = await fileSys.fileExists(filePath);
 			if (exists) {

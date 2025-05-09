@@ -1,4 +1,4 @@
-# genobi
+# Genobi
 
 <p style="text-align:center;">
     <img src="https://img.shields.io/npm/v/genobi" alt="npm version">
@@ -7,13 +7,13 @@
     <img src="https://img.shields.io/npm/l/genobi" alt="license">
 </p>
 
-> Help me Obi-Wan genobi, you're our only hope.
+> Help me Obi-Wan Genobi, you're our only hope.
 
-genobi is a flexible, customizable file generator and modifier tool designed to streamline your development workflow. It
+Genobi is a flexible, customizable file generator and modifier tool designed to streamline your development workflow. It
 allows you to generate and modify text files through templates, prompts, and operations configured to your specific
 needs.
 
-## Why genobi?
+## Why Genobi?
 
 I like to work smarter. I like tools that make my life easier. I started out
 using [plopjs](https://github.com/plopjs/plop), but then, I wanted to do more and differently.
@@ -22,7 +22,7 @@ To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
 
 ## Installation
 
-Install genobi globally:
+Install Genobi globally:
 
 ```bash
 npm install -g genobi
@@ -36,8 +36,7 @@ npm install -D genobi
 
 ## Usage
 
-genobi is configured via a `genobi.config.js` file in the root of your project. This file exports a function that
-receives the genobi API as its parameter:
+Genobi is configured via a `genobi.config.js` file in the root of your project. This file exports a function that receives the Genobi API as its parameter:
 
 ```javascript
 // genobi.config.js
@@ -83,6 +82,9 @@ Or with a specific generator:
 genobi react-component
 ```
 
+### Inside
+Genobi uses [Inquirer.js](https://github.com/SBoudrias/Inquirer.js) for prompts and [Handlebars](https://handlebarsjs.com/) for templates.
+
 ## Configuration
 
 ### Config File
@@ -91,21 +93,27 @@ Create a `genobi.config.js` file in the root of your project. The extension can 
 
 ### Config API
 
-The genobi API provides the following methods:
+The Genobi API provides the following methods:
 
-| Method                   | Parameters                               | Return Type                       | Description                                                  |
-|--------------------------|------------------------------------------|-----------------------------------|--------------------------------------------------------------|
-| `setSelectionPrompt`     | `(message: string)`                      | `void`                            | Sets the prompt message displayed during generator selection |
-| `getSelectionPrompt`     | `()`                                     | `string`                          | Returns the current prompt message                           |
-| `addGenerator`           | `(id: string, config: GeneratorConfig)`  | `void`                            | Adds a new generator to the configuration                    |
-| `getGenerator`           | `(generatorId: string)`                  | `GeneratorConfig`                 | Returns a specific generator by ID                           |
-| `getGenerators`          | `()`                                     | `Record<string, GeneratorConfig>` | Returns all registered generators                            |
-| `addHelper`              | `(name: string, helper: HelperDelegate)` | `void`                            | Adds a custom Handlebars helper                              |
-| `getHelper`              | `(name: string)`                         | `HelperDelegate`                  | Returns a specific helper by name                            |
-| `getHelpers`             | `()`                                     | `Record<string, HelperDelegate>`  | Returns all registered helpers                               |
-| `setConfigFilePath`      | `(configFilePath: string)`               | `void`                            | Sets the path to the config file                             |
-| `getConfigFilePath`      | `()`                                     | `string`                          | Returns the current config file path                         |
-| `getDestinationBasePath` | `()`                                     | `string`                          | Returns the base directory for generating files              |
+| Method                   | Parameters                                             | Return Type                                   | Description                                                  |
+|--------------------------|--------------------------------------------------------|-----------------------------------------------|--------------------------------------------------------------|
+| `setConfigFilePath`      | `(configFilePath: string)`                             | `void`                                        | Sets the path to the config file                             |
+| `getConfigFilePath`      | `()`                                                   | `string`                                      | Returns the current config file path                         |
+| `getDestinationBasePath` | `()`                                                   | `string`                                      | Returns the base directory for generating files              |
+| `setSelectionPrompt`     | `(message: string)`                                    | `void`                                        | Sets the prompt message displayed during generator selection |
+| `getSelectionPrompt`     | `()`                                                   | `string`                                      | Returns the current prompt message                           |
+| `addGenerator`           | `(id: string, config: GeneratorConfig)`                | `void`                                        | Adds a new generator to the configuration                    |
+| `getGenerator`           | `(generatorId: string)`                                | `GeneratorConfig`                             | Returns a specific generator by ID                           |
+| `getGenerators`          | `()`                                                   | `Record<string, GeneratorConfig>`             | Returns all registered generators                            |
+| `addHelper`*             | `(name: string, helper: HelperDelegate)`               | `void`                                        | Adds a custom Handlebars helper                              |
+| `getHelper`              | `(name: string)`                                       | `HelperDelegate`                              | Returns a specific helper by name                            |
+| `getHelpers`             | `()`                                                   | `Record<string, HelperDelegate>`              | Returns all registered helpers                               |
+| `addPartial`*            | `(name: string, partial: Template\| TemplateDelegate)` | `void`                                        | Adds a custom Handlebars template partial                    |
+| `addPartialFromFile`     | `(name: string, partialFilePath:string)`               | `void`                                        | Adds a custom Handlebars template partial from file          |
+| `getPartial`             | `(name: string)`                                       | `Template\| TemplateDelegate`                 | Returns a specific partial by name                           |
+| `getPartials`            | `()`                                                   | `Record<string, Template\| TemplateDelegate>` | Returns all registered partials                              |
+
+> **Note**: Handlebars helpers and partials docs can be found on [their website](https://handlebarsjs.com/).
 
 ### CLI Options
 
@@ -153,7 +161,7 @@ Example:
 
 ## Operations
 
-genobi supports several operation types:
+Genobi supports several operation types:
 
 ### Create Operation
 
@@ -242,7 +250,7 @@ export default (genobi) => {
 
 ## Built-in Handlebars Helpers
 
-genobi includes several helpful string transformation helpers:
+Genobi includes several helpful string transformation helpers:
 
 ### Basic String Transformers
 

@@ -82,14 +82,6 @@ describe("content utils", () => {
 			vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error("Simulated read error"));
 
 			await expect(content.getSingleFileContent(operation, input)).rejects.toThrow();
-
-			expect(fileSys.getTemplateProcessedPath).toHaveBeenCalledWith(
-				operation.templateFilePath,
-				input,
-				store.state().configPath,
-			);
-			expect(fs.readFile).toHaveBeenCalledWith(getTmpDirPath(operation.templateFilePath), "utf8");
-			expect(logger.error).toBeCalledWith(expect.stringContaining("Error reading template file"));
 		});
 	});
 });

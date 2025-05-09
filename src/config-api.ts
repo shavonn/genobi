@@ -41,8 +41,8 @@ function configApi(): ConfigAPI {
 		addPartial: (name: string, templateStr: Template | TemplateDelegate) => {
 			store.setPartial(name, templateStr);
 		},
-		addPartialFromFile: async (name: string, templateFilePath: string) => {
-			const fileResult = await fileSys.readFromFile(path.resolve(store.state().configPath, templateFilePath));
+		addPartialFromFile: async (name: string, partialFilePath: string) => {
+			const fileResult = await fileSys.readFromFile(path.resolve(store.state().configPath, partialFilePath));
 			store.setPartial(name, fileResult);
 		},
 		getPartial: (name: string): Template | TemplateDelegate => {

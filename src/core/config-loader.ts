@@ -2,7 +2,7 @@ import { cosmiconfig } from "cosmiconfig";
 import pkg from "../../package.json";
 import { configAPI } from "../config-api";
 import { store } from "../config-store";
-import { ConfigError } from "../errors";
+import { ConfigLoadError } from "../errors";
 import { logger } from "../utils/logger";
 
 const packageName = pkg.name;
@@ -18,12 +18,14 @@ async function loadConfig(destination?: string) {
 	const result = await explorer.search();
 
 	if (result === null) {
-		throw new ConfigError("Config file not found. Create one to define your generators, helpers, and other options.");
+		throw new ConfigLoadError(
+			"Config file not found. Create one to define your generators, helpers, and other options.",
+		);
 	}
 
 	const { config: loadConfig, filepath, isEmpty } = result;
 	if (isEmpty || typeof loadConfig !== "function") {
-		throw new ConfigError(`Config file invalid. It must export a default function: ${filepath}.`);
+		throw new ConfigLoadError(`Config file invalid. It must export a default function: ${filepath}.`);
 	}
 
 	store.setConfigFilePath(filepath);
@@ -31,7 +33,7 @@ async function loadConfig(destination?: string) {
 	try {
 		await loadConfig(configAPI.get());
 	} catch (err: any) {
-		const enhancedError = new ConfigError(`Error in config loading. ${err.message}`);
+		const enhancedError = new ConfigLoadError(`Error in config loading. ${err.message}`);
 		enhancedError.cause = err;
 
 		logger.debug("Original error stack:", err.stack);
@@ -40,7 +42,7 @@ async function loadConfig(destination?: string) {
 
 	const generators = store.getGeneratorsList();
 	if (generators.length === 0) {
-		throw new ConfigError(
+		throw new ConfigLoadError(
 			"No generators were found in the loaded configuration. Please define at least one generator.",
 		);
 	}

@@ -49,7 +49,7 @@ export class ReadError extends GenobiError {
 	}
 }
 
-export class ConfigError extends GenobiError {
+export class ConfigLoadError extends GenobiError {
 	constructor(message: string, cause?: any) {
 		super("CONFIG_ERROR", message, cause);
 	}

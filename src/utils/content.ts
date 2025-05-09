@@ -4,6 +4,15 @@ import type { SingleFileOperation } from "../types/operation";
 import { fileSys } from "./file-sys";
 import { logger } from "./logger";
 
+/**
+ * Gets the content for a single file operation, either from a template string or template file.
+ *
+ * @param {SingleFileOperation} operation - The operation configuration
+ * @param {Record<string, any>} data - The data for template processing
+ * @returns {Promise<string>} The content as a string
+ * @throws {GenobiError} If neither templateStr nor templateFilePath is provided
+ * @throws {ReadError} If reading the template file fails
+ */
 export async function getSingleFileContent(operation: SingleFileOperation, data: Record<string, any>): Promise<string> {
 	let content: string;
 
@@ -20,6 +29,9 @@ export async function getSingleFileContent(operation: SingleFileOperation, data:
 	return content;
 }
 
+/**
+ * Utilities for working with content for file operations.
+ */
 const content = {
 	getSingleFileContent,
 };

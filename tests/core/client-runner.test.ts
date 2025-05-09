@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import { Command } from "commander";
 import inquirer from "inquirer";
-import { expect } from "vitest";
 import { configAPI } from "../../src/config-api";
 import { store } from "../../src/config-store";
 import { cli } from "../../src/core/client-runner";
@@ -10,8 +9,6 @@ import { generatorResolver } from "../../src/core/generator-resolver";
 import { generatorRunner } from "../../src/core/generator-runner";
 import { logger } from "../../src/utils/logger";
 import { testData } from "../__fixtures__/test-data";
-import { testFiles } from "../__fixtures__/test-files";
-import { loadTestFiles } from "../test-utils";
 
 describe("runCli", () => {
 	describe("mocked core functions", () => {
@@ -57,12 +54,8 @@ describe("runCli", () => {
 	});
 
 	describe("actual generator runner", () => {
-		beforeEach(async () => {
-			await loadTestFiles(testFiles.existingFiles);
-		});
-
 		it("should exit process when an error is thrown from operation", async () => {
-			testData.slimConfigFunc(configAPI.get());
+			await testData.slimConfigFunc(configAPI.get());
 			store.setSelectedGenerator(testData.component.id);
 			const input = { name: "table cell" };
 
@@ -70,7 +63,7 @@ describe("runCli", () => {
 			vi.spyOn(configLoader, "load").mockImplementationOnce(vi.fn());
 			vi.spyOn(generatorResolver, "resolve").mockImplementationOnce(vi.fn());
 			vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(input);
-			vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error());
+			vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error("Simulated write error"));
 
 			await expect(cli.run()).rejects.toThrow('process.exit unexpectedly called with "1"');
 

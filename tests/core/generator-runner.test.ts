@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import Handlebars from "handlebars";
 import inquirer from "inquirer";
-import { expect } from "vitest";
 import { configAPI } from "../../src/config-api";
 import { store } from "../../src/config-store";
 import { generatorRunner } from "../../src/core/generator-runner";
@@ -12,8 +11,6 @@ import { stringHelpers } from "../../src/utils/helpers/string-transformers";
 import { logger } from "../../src/utils/logger";
 import { templateAssetRegister } from "../../src/utils/template-asset-register";
 import { testData } from "../__fixtures__/test-data";
-import { testFiles } from "../__fixtures__/test-files";
-import { loadTestFiles } from "../test-utils";
 
 vi.mock("inquirer");
 
@@ -21,13 +18,11 @@ describe("runGenerator", () => {
 	const input = { name: "text input" };
 
 	beforeEach(async () => {
-		await loadTestFiles(testFiles.existingFiles);
-
 		vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(input);
 	});
 
 	it("should prompt user for input when generator configured with prompts", async () => {
-		testData.slimConfigFunc(configAPI.get());
+		await testData.slimConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
 
 		await generatorRunner.run();
@@ -36,7 +31,7 @@ describe("runGenerator", () => {
 	});
 
 	it("should register built-in helpers and user-configured helpers", async () => {
-		testData.slimConfigFunc(configAPI.get());
+		await testData.slimConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
 
 		vi.spyOn(templateAssetRegister, "register");
@@ -50,7 +45,7 @@ describe("runGenerator", () => {
 	});
 
 	it("should merge input with operation data", async () => {
-		testData.slimConfigFunc(configAPI.get());
+		await testData.slimConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
 
 		vi.spyOn(ops, "create");
@@ -64,7 +59,7 @@ describe("runGenerator", () => {
 	});
 
 	it("should call appropriate operation function", async () => {
-		testData.slimConfigFunc(configAPI.get());
+		await testData.slimConfigFunc(configAPI.get());
 		store.setSelectedGenerator(testData.component.id);
 
 		vi.spyOn(ops, "create");
@@ -134,7 +129,7 @@ describe("runGenerator", () => {
 	});
 
 	it("should throw error when an operation error is caught and haltOnError is true, additional check", async () => {
-		testData.fullConfigFunc(configAPI.get());
+		await testData.fullConfigFunc(configAPI.get());
 		store.setGenerator(
 			"fail-op-gen",
 			Object.assign(testData.component.generator, {
@@ -147,7 +142,7 @@ describe("runGenerator", () => {
 		);
 		store.setSelectedGenerator("fail-op-gen");
 
-		vi.spyOn(fs, "readFile").mockRejectedValue(new Error("Error reading file"));
+		vi.spyOn(fs, "readFile").mockRejectedValue(new Error("Simulated read error"));
 		vi.spyOn(generatorRunner, "run");
 
 		await expect(generatorRunner.run()).rejects.toThrow();

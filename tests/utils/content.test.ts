@@ -79,7 +79,7 @@ describe("content utils", () => {
 				}),
 			);
 
-			vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error());
+			vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error("Simulated read error"));
 
 			await expect(content.getSingleFileContent(operation, input)).rejects.toThrow();
 

@@ -1,11 +1,9 @@
 import fs from "node:fs/promises";
-import { expect } from "vitest";
 import { operationDecorators } from "../../../src/core/operations/operation-decorators";
 import { ops } from "../../../src/core/operations/ops";
 import { fileSys } from "../../../src/utils/file-sys";
 import { templateAssetRegister } from "../../../src/utils/template-asset-register";
 import { testData } from "../../__fixtures__/test-data";
-import { testFiles } from "../../__fixtures__/test-files";
 import { getTmpDirPath, loadTestFiles } from "../../test-utils";
 
 describe("createAll", async () => {
@@ -24,8 +22,6 @@ describe("createAll", async () => {
 	beforeEach(async () => {
 		componentFilePath = getTmpDirPath("src/components/checkbox-input/checkbox-input.tsx");
 		cssFilePath = getTmpDirPath("src/components/checkbox-input/checkbox-input.css");
-
-		await loadTestFiles(testFiles.existingFiles);
 	});
 
 	it("should create files matching glob, removing template base path", async () => {
@@ -46,7 +42,7 @@ describe("createAll", async () => {
 			}),
 		);
 
-		vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error("Read error"));
+		vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error("Simulated read error"));
 
 		await ops.createAll(operation, mergedData);
 

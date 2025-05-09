@@ -21,7 +21,7 @@ describe("path and dir utils", () => {
 		});
 
 		it("should throw other errors when mkdir encounters an error", async () => {
-			vi.mocked(fs.mkdir).mockRejectedValueOnce(new Error());
+			vi.mocked(fs.mkdir).mockRejectedValueOnce(new Error("Simulated mkdir error"));
 
 			await expect(fileSys.ensureDirectoryExists("path/to/dir")).rejects.toThrow();
 		});

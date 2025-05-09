@@ -3,7 +3,7 @@ export type Operation = AmendOperation | CreateOperation | CreateAllOperation;
 export interface BaseOperation {
 	type: string;
 	data?: Record<string, any>;
-	skip?: (data?: any) => boolean;
+	skip?: (data?: any) => boolean | Promise<boolean>;
 	haltOnError?: boolean;
 }
 

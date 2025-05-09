@@ -27,7 +27,7 @@ async function runGenerator() {
 
 		const data = { ...input, ...(operation.data || {}) };
 
-		if (typeof operation.skip === "function" && operation.skip(data)) {
+		if (typeof operation.skip === "function" && (await operation.skip(data))) {
 			continue;
 		}
 

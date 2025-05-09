@@ -98,7 +98,7 @@ describe("amend", () => {
 			const input = { name: "foo" };
 			const processed = `@import "../components/foo/foo.css";`;
 
-			const combiner = vi.spyOn(combiners.append, "combine");
+			const opProcess = vi.spyOn(combiners.append, "process");
 
 			await ops.amendFile(operation, input);
 
@@ -106,7 +106,7 @@ describe("amend", () => {
 			expect(fileResult).toBe(
 				`@import "../components/header/header.css";\n@import "../components/table/table.css";\n${processed}\n@import "../components/switch/switch.css";\n@import "../components/radio/radio.css";`,
 			);
-			expect(combiner).toHaveReturnedWith(
+			expect(opProcess).toHaveReturnedWith(
 				`@import "../components/header/header.css";\n@import "../components/table/table.css";\n${processed}\n@import "../components/switch/switch.css";\n@import "../components/radio/radio.css";`,
 			);
 		});
@@ -121,7 +121,7 @@ describe("amend", () => {
 			const input = { name: "bar" };
 			const processed = `@import "../components/bar/bar.css";`;
 
-			const combiner = vi.spyOn(combiners.prepend, "combine");
+			const opProcess = vi.spyOn(combiners.prepend, "process");
 
 			await ops.amendFile(operation, input);
 
@@ -129,7 +129,7 @@ describe("amend", () => {
 			expect(fileResult).toBe(
 				`@import "../components/header/header.css";\n@import "../components/table/table.css";\n@import "../components/switch/switch.css";\n${processed}\n@import "../components/radio/radio.css";`,
 			);
-			expect(combiner).toHaveReturnedWith(
+			expect(opProcess).toHaveReturnedWith(
 				`@import "../components/header/header.css";\n@import "../components/table/table.css";\n@import "../components/switch/switch.css";\n${processed}\n@import "../components/radio/radio.css";`,
 			);
 		});

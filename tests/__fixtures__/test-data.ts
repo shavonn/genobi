@@ -1,4 +1,5 @@
 import type { AmendOperation, ConfigAPI, CreateAllOperation, CreateOperation, GeneratorConfig } from "../../src";
+import type { ForManyOperation } from "../../src/types/operation";
 import { getTmpDirPath } from "../test-utils";
 import { testFiles } from "./test-files";
 
@@ -44,6 +45,13 @@ const makeAmendOperation: (overrides?: object) => AmendOperation = (overrides = 
 		templateStr: testFiles.aggregateCss.templateStr,
 		...overrides,
 	}) as AmendOperation;
+
+const makeForManyOperation: (overrides?: object) => ForManyOperation = (overrides = {}) => ({
+	type: "forMany",
+	generatorId: testData.component.id,
+	items: [{ name: "button" }, { name: "card" }, { name: "modal" }],
+	...overrides,
+});
 
 const component = {
 	id: "react-component",
@@ -116,6 +124,7 @@ const testData = {
 	makeAmendOperation,
 	makeCreateOperation,
 	makeCreateAllOperation,
+	makeForManyOperation,
 	fullConfigFunc,
 	slimConfigFunc,
 	zeroConfigFunc,

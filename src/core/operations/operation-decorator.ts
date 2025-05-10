@@ -1,5 +1,11 @@
 import { UnknownOperationType } from "../../errors";
-import type { AmendOperation, CreateAllOperation, CreateOperation, Operation } from "../../types/operation";
+import type {
+	AmendOperation,
+	CreateAllOperation,
+	CreateOperation,
+	ForManyOperation,
+	Operation,
+} from "../../types/operation";
 
 /**
  * Adds common default properties to any operation type.
@@ -69,6 +75,16 @@ export function amendDecorator(operation: AmendOperation): AmendOperation {
 }
 
 /**
+ * Adds default properties specific to forMany operations.
+ *
+ * @param {ForManyOperation} operation - The forMany operation to decorate
+ * @returns {ForManyOperation} The operation with default properties applied
+ */
+export function forManyDecorator(operation: ForManyOperation): ForManyOperation {
+	return Object.assign({}, OpDecorator(operation)) as ForManyOperation;
+}
+
+/**
  * Map of operation types to their decorator functions.
  */
 const operationDecorators = {
@@ -76,6 +92,7 @@ const operationDecorators = {
 	prepend: (operation: AmendOperation) => amendDecorator(operation),
 	create: (operation: CreateOperation) => createDecorator(operation),
 	createAll: (operation: CreateAllOperation) => createAllDecorator(operation),
+	forMany: (operation: ForManyOperation) => forManyDecorator(operation),
 };
 
 /**
@@ -137,5 +154,13 @@ const operationDecorator = {
 	 * @returns {AmendOperation} The decorated operation
 	 */
 	amend: amendDecorator,
+
+	/**
+	 * Decorates a forMany operation with default values.
+	 *
+	 * @param {ForManyOperation} operation - The forMany operation to decorate
+	 * @returns {ForManyOperation} The decorated operation
+	 */
+	forMany: forManyDecorator,
 };
 export { operationDecorator };

@@ -216,6 +216,34 @@ Creates multiple files matching a glob pattern.
 | `haltOnError`       | `boolean`                | Whether to stop execution on error                        | `true`     |
 | `verbose`           | `boolean`                | Log each time a file is created                           | `true`     |
 
+### ForMany Operation
+
+Runs a generator multiple times with different inputs.
+
+| Property           | Type                                                                     | Description                                            | Default    |
+|--------------------|--------------------------------------------------------------------------|--------------------------------------------------------|------------|
+| `type`             | `string`                                                                 | Must be `"forMany"`                                     | *required* |
+| `generatorId`      | `string`                                                                 | ID of the generator to run multiple times              | *required* |
+| `items`            | `any[] | ((data: Record<string, any>) => any[])`                         | Array of data objects or function that returns an array | *required* |
+| `transformItem`    | `(item: any, index: number, parentData: Record<string, any>) => any`     | Function to transform each item before processing       | -          |
+| `data`             | `Record<string, any>`                                                    | Additional data for templates                          | `{}`       |
+| `skip`             | `(data: any) => boolean`                                                 | Function to determine if op should be skipped          | -          |
+| `haltOnError`      | `boolean`                                                                | Whether to stop execution on error                     | `true`     |
+
+Example:
+
+```javascript
+{
+  type: "forMany",
+  generatorId: "react-component",
+  items: (data) => {
+    return data.componentTypes.map(component => ({
+      name: component
+    }));
+  }
+}
+```
+
 ### Append Operation
 
 Appends content to an existing file.
@@ -225,7 +253,7 @@ Appends content to an existing file.
 | `type`             | `string`                 | `"append"`                                               | *required* |
 | `filePath`         | `string`                 | Path to the file to append to                            | *required* |
 | `templateStr`      | `string`                 | Handlebars template string for content to append         | -          |
-| `templateFilePath` | `string`                 | Path to a Handlebars template file for content to append | -          |
+| `templateFilePath` | `string`                 | Path to a Handlebars template file for c[formany-operation-readme.md](../../../Downloads/formany-operation-readme.md)ontent to append | -          |
 | `pattern`          | `string \| RegExp`       | Pattern to find where to append content                  | -          |
 | `separator`        | `string`                 | String to insert between existing and new content        | `"\n"`     |
 | `unique`           | `boolean`                | Skip if content already exists in file                   | `true`     |

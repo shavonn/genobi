@@ -1,6 +1,7 @@
 import { amendFile, append, prepend } from "./amend";
 import { create } from "./create";
 import { createAll } from "./create-all";
+import { forMany } from "./for-many";
 
 /**
  * Collection of operation implementations.
@@ -31,6 +32,11 @@ const ops = {
 	 * Prepends content to a file
 	 */
 	prepend,
+
+	/**
+	 * Runs a specified generator multiple times for variable data
+	 */
+	forMany,
 };
 
 export { ops };

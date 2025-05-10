@@ -29,7 +29,7 @@ function configApi(): ConfigAPI {
 		 *
 		 * @returns {string} The absolute path to the config file
 		 */
-		getConfigFilePath: () => store.state().configFilePath,
+		getConfigFilePath: (): string => store.state().configFilePath,
 
 		/**
 		 * Returns the base directory path used for generating files.
@@ -37,7 +37,7 @@ function configApi(): ConfigAPI {
 		 *
 		 * @returns {string} The base directory path for file operations
 		 */
-		getDestinationBasePath: () => store.state().destinationBasePath,
+		getDestinationBasePath: (): string => store.state().destinationBasePath,
 
 		/**
 		 * Sets the prompt message displayed during generator selection.
@@ -51,7 +51,7 @@ function configApi(): ConfigAPI {
 		 *
 		 * @returns {string} The prompt message
 		 */
-		getSelectionPrompt: () => store.state().selectionPrompt,
+		getSelectionPrompt: (): string => store.state().selectionPrompt,
 
 		/**
 		 * Adds a new generator to the configuration.
@@ -125,7 +125,7 @@ function configApi(): ConfigAPI {
 		 * });
 		 * ```
 		 */
-		addHelper: (name, helper: HelperDelegate): void => {
+		addHelper: (name: string, helper: HelperDelegate): void => {
 			store.setHelper(name, helper);
 			Handlebars.registerHelper(name, helper);
 		},

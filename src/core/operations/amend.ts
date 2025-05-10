@@ -27,7 +27,7 @@ const combiners = {
 		 * @param {string} [separator="\n"] - Separator between existing and new content
 		 * @returns {string} The combined content
 		 */
-		process: (existingContent: string, newContent: string, placementIdx: number, separator = "\n"): string => {
+		process: (existingContent: string, newContent: string, placementIdx: number, separator: string): string => {
 			return (
 				existingContent.substring(0, placementIdx) + separator + newContent + existingContent.substring(placementIdx)
 			);
@@ -41,7 +41,7 @@ const combiners = {
 		 * @param {string} [separator="\n"] - Separator between existing and new content
 		 * @returns {string} The combined content
 		 */
-		defaultAction: (existingContent: string, newContent: string, separator = "\n") => {
+		defaultAction: (existingContent: string, newContent: string, separator: string): string => {
 			return existingContent + separator + newContent;
 		},
 
@@ -64,7 +64,7 @@ const combiners = {
 		 * @param {string} [separator="\n"] - Separator between new and existing content
 		 * @returns {string} The combined content
 		 */
-		process: (existingContent: string, newContent: string, placementIdx: number, separator = "\n") => {
+		process: (existingContent: string, newContent: string, placementIdx: number, separator: string): string => {
 			return (
 				existingContent.substring(0, placementIdx) + newContent + separator + existingContent.substring(placementIdx)
 			);
@@ -78,7 +78,7 @@ const combiners = {
 		 * @param {string} [separator="\n"] - Separator between new and existing content
 		 * @returns {string} The combined content
 		 */
-		defaultAction: (existingContent: string, newContent: string, separator = "\n") => {
+		defaultAction: (existingContent: string, newContent: string, separator: string): string => {
 			return newContent + separator + existingContent;
 		},
 
@@ -187,7 +187,7 @@ async function amendFile(operation: AmendOperation, data: Record<string, any>): 
  * @param {Record<string, any>} data - The data for template processing
  * @returns {Promise<void>}
  */
-const append = (operation: AmendOperation, data: Record<string, any>) =>
+const append = (operation: AmendOperation, data: Record<string, any>): Promise<void> =>
 	amendFile({ ...operation, type: "append" }, data);
 
 /**
@@ -197,7 +197,7 @@ const append = (operation: AmendOperation, data: Record<string, any>) =>
  * @param {Record<string, any>} data - The data for template processing
  * @returns {Promise<void>}
  */
-const prepend = (operation: AmendOperation, data: Record<string, any>) =>
+const prepend = (operation: AmendOperation, data: Record<string, any>): Promise<void> =>
 	amendFile({ ...operation, type: "prepend" }, data);
 
 export { amendFile, append, prepend, combiners };

@@ -21,7 +21,7 @@ import { operationDecorator } from "./operations/operation-decorator";
  * @throws {GenobiError} If the generator has no operations
  * @throws {Error} If an operation fails and haltOnError is true
  */
-async function runGenerator() {
+async function runGenerator(): Promise<void> {
 	// Register handlebars helpers and partials
 	templates.registerComponents();
 

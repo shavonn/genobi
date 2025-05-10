@@ -57,7 +57,7 @@ function isValidOperationType(type: string): type is keyof typeof operationHandl
  * @returns {Promise<any>} The result of the operation
  * @throws {UnknownOperationType} If the operation type is not recognized
  */
-function handleOperation(operation: Operation, data: Record<string, any>) {
+function handleOperation(operation: Operation, data: Record<string, any>): Promise<any> {
 	if (isValidOperationType(operation.type)) {
 		return operationHandlers[operation.type](operation as any, data);
 	}

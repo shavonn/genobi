@@ -19,7 +19,7 @@ import { generatorRunner } from "./generator-runner";
  *
  * @returns {Promise<void>}
  */
-async function runCli() {
+async function runCli(): Promise<void> {
 	// Create a new Commander instance
 	const program = new Command(pkg.name);
 

@@ -19,12 +19,10 @@ function escapeRegExp(str: string): string {
  *
  * @returns {boolean} True if Genobi is installed globally
  */
-function isGlobalInstall() {
+function isGlobalInstall(): boolean {
 	try {
 		const globalNodeModules = execSync("npm root -g").toString().trim();
-		const currentPath = __dirname;
-
-		return currentPath.startsWith(globalNodeModules);
+		return __dirname.startsWith(globalNodeModules);
 	} catch (_err: any) {
 		return false;
 	}

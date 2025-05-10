@@ -7,7 +7,7 @@ import type { AmendOperation, CreateAllOperation, CreateOperation, Operation } f
  * @param {Operation} operation - The operation to decorate
  * @returns {Operation} The operation with default properties applied
  */
-export function OpDecorator(operation: Operation) {
+export function OpDecorator(operation: Operation): Operation {
 	return Object.assign(
 		{
 			data: {},
@@ -23,7 +23,7 @@ export function OpDecorator(operation: Operation) {
  * @param {CreateOperation} operation - The create operation to decorate
  * @returns {CreateOperation} The operation with default properties applied
  */
-export function createDecorator(operation: CreateOperation) {
+export function createDecorator(operation: CreateOperation): CreateOperation {
 	return Object.assign(
 		{
 			skipIfExists: false,
@@ -40,7 +40,7 @@ export function createDecorator(operation: CreateOperation) {
  * @param {CreateAllOperation} operation - The createAll operation to decorate
  * @returns {CreateAllOperation} The operation with default properties applied
  */
-export function createAllDecorator(operation: CreateAllOperation) {
+export function createAllDecorator(operation: CreateAllOperation): CreateAllOperation {
 	return Object.assign(
 		{
 			skipIfExists: false,
@@ -58,7 +58,7 @@ export function createAllDecorator(operation: CreateAllOperation) {
  * @param {AmendOperation} operation - The amend operation to decorate
  * @returns {AmendOperation} The operation with default properties applied
  */
-export function amendDecorator(operation: AmendOperation) {
+export function amendDecorator(operation: AmendOperation): AmendOperation {
 	return Object.assign(
 		{
 			unique: true,
@@ -95,7 +95,7 @@ function isValidOperationType(type: string): type is keyof typeof operationDecor
  * @returns {Operation} The decorated operation with default values
  * @throws {UnknownOperationType} If the operation type is not recognized
  */
-function decorateOperation(operation: Operation) {
+function decorateOperation(operation: Operation): Operation {
 	if (isValidOperationType(operation.type)) {
 		return operationDecorators[operation.type](operation as any);
 	}

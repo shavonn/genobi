@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, unlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { store } from "../src/config-store";
@@ -44,15 +44,4 @@ export async function writeTestFile(filePath: string, content: string): Promise<
 	const dirPath = dirname(fullPath);
 	await mkdir(dirPath, { recursive: true });
 	await writeFile(fullPath, content);
-}
-
-export async function removeTestFiles(filePaths: string[]): Promise<void> {
-	const removePromises = filePaths.map((filePath) =>
-		unlink(getTmpDirPath(filePath)).catch((err) => {
-			if (err.code !== "ENOENT") {
-				throw err;
-			}
-		}),
-	);
-	await Promise.all(removePromises);
 }

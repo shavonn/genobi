@@ -1,5 +1,11 @@
 import { UnknownOperationType } from "../errors";
-import type { AmendOperation, CreateAllOperation, CreateOperation, Operation } from "../types/operation";
+import type {
+	AmendOperation,
+	CreateAllOperation,
+	CreateOperation,
+	ForManyOperation,
+	Operation,
+} from "../types/operation";
 import { ops } from "./operations/ops";
 
 /**
@@ -37,6 +43,14 @@ const operationHandlers = {
 	 * @param {Record<string, any>} data - Data for template processing
 	 */
 	createAll: (operation: CreateAllOperation, data: Record<string, any>) => ops.createAll(operation, data),
+
+	/**
+	 * Handler for forMany operations.
+	 *
+	 * @param {ForManyOperation} operation - The forMany operation configuration
+	 * @param {Record<string, any>} data - Data for template processing
+	 */
+	forMany: (operation: ForManyOperation, data: Record<string, any>) => ops.forMany(operation, data),
 };
 
 /**

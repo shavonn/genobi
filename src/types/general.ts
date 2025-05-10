@@ -44,4 +44,6 @@ export type ErrorName =
 	/** When a specified partial is not found */
 	| "PARTIAL_NOT_FOUND"
 	/** When creating a directory fails */
-	| "MKDIR_DIR_ERROR";
+	| "MKDIR_DIR_ERROR"
+	/** Invalid or empty array given for forMany operation */
+	| "INVALID_FOR_MANY_ITEMS";

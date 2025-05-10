@@ -1,7 +1,7 @@
 /**
  * Union type representing all possible operation types.
  */
-export type Operation = AmendOperation | CreateOperation | CreateAllOperation;
+export type Operation = AmendOperation | CreateOperation | CreateAllOperation | ForManyOperation;
 
 /**
  * Base interface for all operations.
@@ -191,4 +191,39 @@ export interface CreateAllOperation extends BaseOperation {
 	 * @default false
 	 */
 	overwrite?: boolean;
+}
+
+/**
+ * Interface for forMany operations, which run a generator multiple times with different data.
+ * This allows for efficient creation of multiple components in a single operation.
+ */
+export interface ForManyOperation extends BaseOperation {
+	/**
+	 * The type of the operation, always "forMany".
+	 */
+	type: "forMany";
+
+	/**
+	 * The ID of the generator to run multiple times.
+	 * This generator must be defined in the configuration.
+	 */
+	generatorId: string;
+
+	/**
+	 * The array of data objects to use for each generator run.
+	 * Each item in the array will be passed to the generator as input data.
+	 * This can be a static array or a computed property that returns an array.
+	 */
+	items: any[] | ((data: Record<string, any>) => any[]);
+
+	/**
+	 * Optional function to transform each item before passing to the generator.
+	 * This can be used to format or augment the data for each run.
+	 *
+	 * @param {any} item - The current item from the items array
+	 * @param {number} index - The index of the current item
+	 * @param {Record<string, any>} parentData - The parent data object
+	 * @returns {Record<string, any>} The transformed data to pass to the generator
+	 */
+	transformItem?: (item: any, index: number, parentData: Record<string, any>) => Record<string, any>;
 }

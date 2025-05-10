@@ -9,16 +9,39 @@
 
 > Help me Obi-Wan Genobi, you're our only hope.
 
-Genobi is a flexible, customizable file generator and modifier tool designed to streamline your development workflow. It
-allows you to generate and modify text files through templates, prompts, and operations configured to your specific
-needs.
+Genobi is a flexible, customizable file generator and modifier tool designed to streamline your development workflow. It allows you to generate and modify text files through templates, prompts, and operations configured to your specific needs.
 
+***
 ## Why Genobi?
 
-I like to work smarter. I like tools that make my life easier. I started out
-using [plopjs](https://github.com/plopjs/plop), but then, I wanted to do more and differently.
+I like to work smarter. I like tools that make my life easier. I started out using [plopjs](https://github.com/plopjs/plop), but then, I wanted to do more and differently.
 
 To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
+
+***
+
+<!-- TOC -->
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Args](#args)
+  * [Options](#options)
+* [Configuration](#configuration)
+  * [Config File](#config-file)
+  * [Config API](#config-api)
+* [FYI](#fyi)
+  * [Templates and Prompts](#templates-and-prompts)
+  * [File size](#file-size)
+* [Generators](#generators)
+* [Operations](#operations)
+  * [Create Operation](#create-operation)
+  * [CreateAll Operation](#createall-operation)
+  * [Append Operation](#append-operation)
+  * [Prepend Operation](#prepend-operation)
+* [Custom Helpers](#custom-helpers)
+* [Built-in Handlebars Helpers](#built-in-handlebars-helpers)
+  * [Basic String Transformers](#basic-string-transformers)
+  * [String Helpers with Additional Args](#string-helpers-with-additional-args)
+<!-- TOC -->
 
 ## Installation
 
@@ -35,8 +58,50 @@ npm install -D genobi
 ```
 
 ## Usage
+```bash
+pnpm genobi [generator] [options]
 
-Genobi is configured via a `genobi.config.js` file in the root of your project. This file exports a function that receives the Genobi API as its parameter:
+genobi [generator] [options] // global
+```
+### Args
+
+- `generator`: Optional ID of the generator to use
+```bash
+genobi react-component
+```
+### Options
+- `-d, --destination <path>`: Root directory for generating files (relative paths will resolve from here)
+- `-v, --verbose`: Log all operations as they are completed
+
+## Configuration
+
+### Config File
+Create a `genobi.config.js` file in the root of your project. The extension can be any of: `js`, `ts`, `mjs`, or `cjs`.
+ This file exports a function that receives the Genobi API as its parameter:
+
+### Config API
+The Genobi API provides the following methods:
+
+| Method                   | Parameters                                             | Return Type                                   | Description                                                  |
+|--------------------------|--------------------------------------------------------|-----------------------------------------------|--------------------------------------------------------------|
+| `setConfigFilePath`      | `(configFilePath: string)`                             | `void`                                        | Sets the path to the config file                             |
+| `getConfigFilePath`      | `()`                                                   | `string`                                      | Returns the current config file path                         |
+| `getDestinationBasePath` | `()`                                                   | `string`                                      | Returns the base directory for generating files              |
+| `setSelectionPrompt`     | `(message: string)`                                    | `void`                                        | Sets the prompt message displayed during generator selection |
+| `getSelectionPrompt`     | `()`                                                   | `string`                                      | Returns the current prompt message                           |
+| `addGenerator`           | `(id: string, config: GeneratorConfig)`                | `void`                                        | Adds a new generator to the configuration                    |
+| `getGenerator`           | `(generatorId: string)`                                | `GeneratorConfig`                             | Returns a specific generator by ID                           |
+| `getGenerators`          | `()`                                                   | `Record<string, GeneratorConfig>`             | Returns all registered generators                            |
+| `addHelper`*             | `(name: string, helper: HelperDelegate)`               | `void`                                        | Adds a custom Handlebars helper                              |
+| `getHelper`              | `(name: string)`                                       | `HelperDelegate`                              | Returns a specific helper by name                            |
+| `getHelpers`             | `()`                                                   | `Record<string, HelperDelegate>`              | Returns all registered helpers                               |
+| `addPartial`*            | `(name: string, partial: Template\| TemplateDelegate)` | `void`                                        | Adds a custom Handlebars template partial                    |
+| `addPartialFromFile`     | `(name: string, partialFilePath:string)`               | `void`                                        | Adds a custom Handlebars template partial from file          |
+| `getPartial`             | `(name: string)`                                       | `Template\| TemplateDelegate`                 | Returns a specific partial by name                           |
+| `getPartials`            | `()`                                                   | `Record<string, Template\| TemplateDelegate>` | Returns all registered partials                              |
+
+> **Note**: Handlebars helpers and partials docs can be found on [their website](https://handlebarsjs.com/).
+
 
 ```javascript
 // genobi.config.js
@@ -70,60 +135,13 @@ export default (genobi) => {
 };
 ```
 
-Then, run the CLI:
-
-```bash
-genobi
-```
-
-Or with a specific generator:
-
-```bash
-genobi react-component
-```
-
-### Inside
+## FYI
+### Templates and Prompts
 Genobi uses [Inquirer.js](https://github.com/SBoudrias/Inquirer.js) for prompts and [Handlebars](https://handlebarsjs.com/) for templates.
 
-## Configuration
+### File size
+I would avoid template files over 50MB. I started working on a streaming option, but it got rocky when considering control flow logic, loops, and the prepend operation. So, instead, I started to work on extending Handlebars template parsing to chunk with logic and loop boundaries but that will take a little time wrap up with higher priority things on my plate.
 
-### Config File
-
-Create a `genobi.config.js` file in the root of your project. The extension can be any of: `js`, `ts`, `mjs`, or `cjs`.
-
-### Config API
-
-The Genobi API provides the following methods:
-
-| Method                   | Parameters                                             | Return Type                                   | Description                                                  |
-|--------------------------|--------------------------------------------------------|-----------------------------------------------|--------------------------------------------------------------|
-| `setConfigFilePath`      | `(configFilePath: string)`                             | `void`                                        | Sets the path to the config file                             |
-| `getConfigFilePath`      | `()`                                                   | `string`                                      | Returns the current config file path                         |
-| `getDestinationBasePath` | `()`                                                   | `string`                                      | Returns the base directory for generating files              |
-| `setSelectionPrompt`     | `(message: string)`                                    | `void`                                        | Sets the prompt message displayed during generator selection |
-| `getSelectionPrompt`     | `()`                                                   | `string`                                      | Returns the current prompt message                           |
-| `addGenerator`           | `(id: string, config: GeneratorConfig)`                | `void`                                        | Adds a new generator to the configuration                    |
-| `getGenerator`           | `(generatorId: string)`                                | `GeneratorConfig`                             | Returns a specific generator by ID                           |
-| `getGenerators`          | `()`                                                   | `Record<string, GeneratorConfig>`             | Returns all registered generators                            |
-| `addHelper`*             | `(name: string, helper: HelperDelegate)`               | `void`                                        | Adds a custom Handlebars helper                              |
-| `getHelper`              | `(name: string)`                                       | `HelperDelegate`                              | Returns a specific helper by name                            |
-| `getHelpers`             | `()`                                                   | `Record<string, HelperDelegate>`              | Returns all registered helpers                               |
-| `addPartial`*            | `(name: string, partial: Template\| TemplateDelegate)` | `void`                                        | Adds a custom Handlebars template partial                    |
-| `addPartialFromFile`     | `(name: string, partialFilePath:string)`               | `void`                                        | Adds a custom Handlebars template partial from file          |
-| `getPartial`             | `(name: string)`                                       | `Template\| TemplateDelegate`                 | Returns a specific partial by name                           |
-| `getPartials`            | `()`                                                   | `Record<string, Template\| TemplateDelegate>` | Returns all registered partials                              |
-
-> **Note**: Handlebars helpers and partials docs can be found on [their website](https://handlebarsjs.com/).
-
-### CLI Options
-
-```
-genobi [generator] [options]
-```
-
-- `generator`: Optional ID of the generator to use
-- `-d, --destination <path>`: Root directory for generating files (relative paths will resolve from here)
-- `-v, --verbose`: Log all operations as they are completed
 
 ## Generators
 

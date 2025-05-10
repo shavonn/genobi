@@ -3,7 +3,8 @@ description: Setup pnpm, Node and install packages
 inputs:
   package-registry: # id of input
     description: 'PACKAGE_REGISTRY'
-    required: true
+    required: false
+    default: 'https://registry.npmjs.org/'
 
 runs:
   using: composite

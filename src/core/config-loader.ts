@@ -27,7 +27,7 @@ const configFilePatterns = [`${packageName}.js`, `${packageName}.ts`, `${package
  * @returns {Promise<void>}
  * @throws {ConfigLoadError} If the config file is not found, invalid, or has errors
  */
-async function loadConfig(destination?: string) {
+async function loadConfig(destination?: string): Promise<void> {
 	// Create a cosmiconfig explorer to find the config file
 	const explorer = cosmiconfig(packageName, {
 		searchStrategy: common.isGlobalInstall() ? "global" : "project",

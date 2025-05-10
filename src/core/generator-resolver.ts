@@ -12,7 +12,7 @@ import { logger } from "../utils/logger";
  *
  * @returns {Promise<void>}
  */
-async function resolveGenerator() {
+async function resolveGenerator(): Promise<void> {
 	// Start with the currently selected generator (if any)
 	let selectedGenerator: string = store.state().selectedGenerator;
 

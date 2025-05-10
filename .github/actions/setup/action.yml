@@ -1,5 +1,9 @@
 name: Setup
 description: Setup pnpm, Node and install packages
+inputs:
+  package-registry: # id of input
+    description: 'PACKAGE_REGISTRY'
+    required: true
 
 runs:
   using: composite
@@ -11,11 +15,11 @@ runs:
         run_install: false
         package_json_file: '/home/runner/work/genobi/package.json'
 
-    - name: Setup Node.js
+    - name: Setup Node
       uses: actions/setup-node@v4
       with:
         node-version: '22.x'
-        registry-url: 'https://npm.pkg.github.com/'
+        registry-url: ${{ inputs.package-registry }}
 
     - name: Install Dependencies
       shell: bash

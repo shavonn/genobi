@@ -9,8 +9,7 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "biome check --write",
-    "change": "changeset",
-    "publish-package": "changeset version && changeset publish"
+    "change": "changeset"
   },
   "bin": {
     "genobi": "dist/bin/cli.js"
@@ -34,6 +33,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "cli",
     "generator",

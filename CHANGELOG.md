@@ -1,5 +1,12 @@
 # genobi
 
+## 0.3.0
+
+### Minor Changes
+
+- 42d547a: Add ForMany operation
+  ForMany: Run specified generator for multiple datasets
+
 ## 0.2.0
 
 ### Minor Changes

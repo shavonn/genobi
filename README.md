@@ -35,6 +35,7 @@ To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
 * [Operations](#operations)
   * [Create Operation](#create-operation)
   * [CreateAll Operation](#createall-operation)
+  * [ForMany Operation](#formany-operation)
   * [Append Operation](#append-operation)
   * [Prepend Operation](#prepend-operation)
 * [Custom Helpers](#custom-helpers)

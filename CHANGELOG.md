@@ -1,5 +1,11 @@
 # genobi
 
+## 0.3.1
+
+### Patch Changes
+
+- 1d345ce: Better debug and verbose logs
+
 ## 0.3.0
 
 ### Minor Changes

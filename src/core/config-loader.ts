@@ -1,3 +1,4 @@
+// src/core/config-loader.ts
 import { cosmiconfig } from "cosmiconfig";
 import pkg from "../../package.json";
 import { configAPI } from "../config-api";
@@ -28,6 +29,10 @@ const configFilePatterns = [`${packageName}.js`, `${packageName}.ts`, `${package
  * @throws {ConfigLoadError} If the config file is not found, invalid, or has errors
  */
 async function loadConfig(destination?: string): Promise<void> {
+	logger.info("Loading configuration");
+	logger.debug(`Search patterns: ${configFilePatterns.join(", ")}`);
+	logger.debug(`Search strategy: ${common.isGlobalInstall() ? "global" : "project"}`);
+
 	// Create a cosmiconfig explorer to find the config file
 	const explorer = cosmiconfig(packageName, {
 		searchStrategy: common.isGlobalInstall() ? "global" : "project",
@@ -35,10 +40,12 @@ async function loadConfig(destination?: string): Promise<void> {
 	});
 
 	// Search for the config file
+	logger.info("Searching for config file");
 	const result = await explorer.search();
 
 	// Handle case where no config file is found
 	if (result === null) {
+		logger.error("No config file found");
 		throw new ConfigLoadError(
 			"Config file not found. Create one to define your generators, helpers, and other options.",
 		);
@@ -46,20 +53,32 @@ async function loadConfig(destination?: string): Promise<void> {
 
 	// Extract config information
 	const { config: loadConfig, filepath, isEmpty } = result;
+	logger.info(`Found config file: ${filepath}`);
+	logger.debug(`Config file ${isEmpty ? "is" : "is not"} empty`);
 
 	// Validate config format
 	if (isEmpty || typeof loadConfig !== "function") {
+		logger.error("Invalid config file format");
 		throw new ConfigLoadError(`Config file invalid. It must export a default function: ${filepath}.`);
 	}
 
 	// Set up configuration paths
+	logger.info("Setting up configuration paths");
 	store.setConfigFilePath(filepath);
-	store.setDestinationBasePath(destination || store.state().configPath);
+
+	const basePath = destination || store.state().configPath;
+	logger.debug(`Setting destination base path: ${basePath}`);
+	store.setDestinationBasePath(basePath);
 
 	// Execute the config function with the Genobi API
 	try {
+		logger.info("Executing config function");
 		await loadConfig(configAPI.get());
+		logger.info("Config function executed successfully");
 	} catch (err: any) {
+		logger.error(`Error in config function: ${err.message}`);
+		logger.debug(`Error details: ${err.stack || "No stack trace available"}`);
+
 		const enhancedError = new ConfigLoadError(`Error in config loading. ${err.message}`);
 		enhancedError.cause = err;
 
@@ -69,13 +88,32 @@ async function loadConfig(destination?: string): Promise<void> {
 
 	// Check that at least one generator is defined
 	const generators = store.getGeneratorsList();
+	logger.info(`Found ${generators.length} generators`);
+
+	if (generators.length > 0) {
+		logger.debug(`Generator IDs: ${generators.map((g) => g.value).join(", ")}`);
+	}
+
 	if (generators.length === 0) {
+		logger.error("No generators found in configuration");
 		throw new ConfigLoadError(
 			"No generators were found in the loaded configuration. Please define at least one generator.",
 		);
 	}
 
-	logger.debug("Configuration loaded from file:", store.state());
+	// Log helper and partial counts
+	logger.debug(`Registered ${store.state().helpers.size} helpers`);
+	if (store.state().helpers.size > 0) {
+		logger.debug(`Helper names: ${Array.from(store.state().helpers.keys()).join(", ")}`);
+	}
+
+	logger.debug(`Registered ${store.state().partials.size} partials`);
+	if (store.state().partials.size > 0) {
+		logger.debug(`Partial names: ${Array.from(store.state().partials.keys()).join(", ")}`);
+	}
+
+	logger.debug("Configuration state:", store.state());
+	logger.success("Configuration loaded successfully");
 }
 
 /**

@@ -66,7 +66,9 @@ describe("content utils", () => {
 
 			await expect(content.getSingleFileContent(operation, input)).rejects.toThrow();
 
-			expect(logger.error).toBeCalledWith(expect.stringContaining("No template string or template file value found"));
+			expect(logger.error).toBeCalledWith(
+				expect.stringContaining("No template source specified (templateStr or templateFilePath)."),
+			);
 			expect(fileSys.getTemplateProcessedPath).not.toHaveBeenCalled();
 		});
 

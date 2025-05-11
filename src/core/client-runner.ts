@@ -1,4 +1,4 @@
-import { Command, Option } from "commander";
+import { Command } from "commander";
 import pkg from "../../package.json";
 import { store } from "../config-store";
 import { logger } from "../utils/logger";
@@ -35,10 +35,8 @@ async function runCli(): Promise<void> {
 			"-d --destination <string>",
 			"The directory used as the reference point for resolving all relative paths. Usually your project root.",
 		)
-		.option("-v --verbose <string>", "Logs operation activities as they are completed.");
-
-	// Add a hidden debug option
-	program.addOption(new Option("--debug").hideHelp());
+		.option("-v --verbose <string>", "Progress logs - what is happening (creation, modification, operation progress)")
+		.option("--debug", "Technical detail logs - how it's happening (internal details, data state, exact paths)");
 
 	// Parse command-line arguments
 	program.parse(process.argv);
@@ -82,6 +80,7 @@ async function runCli(): Promise<void> {
 
 		// Run the selected generator
 		await generatorRunner.run();
+		logger.success("Done!");
 	} catch (err: any) {
 		// Log the error message
 		logger.error(`Error: ${err.message}`);
@@ -91,7 +90,7 @@ async function runCli(): Promise<void> {
 			if (err.cause.message) {
 				logger.error(`Caused by: ${err.cause.message}`);
 			}
-			if (err.cause.message) {
+			if (err.cause.stack) {
 				logger.debug(`Original error stack: ${err.cause.stack}`);
 			}
 		}

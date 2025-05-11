@@ -24,6 +24,7 @@ import { operationDecorator } from "./operation-decorator";
  */
 export async function forMany(operation: ForManyOperation, data: Record<string, any>): Promise<void> {
 	// Get the generator configuration
+	logger.info(`Looking for generator: "${operation.generatorId}"`);
 	const generator = store.state().generators.get(operation.generatorId);
 	if (!generator) {
 		throw new GenobiError(
@@ -31,14 +32,34 @@ export async function forMany(operation: ForManyOperation, data: Record<string, 
 			`Generator "${operation.generatorId}" referenced in forMany operation was not found.`,
 		);
 	}
+	logger.info(`Generator found: ${generator.description}`);
+	logger.debug(
+		`Generator config: ${JSON.stringify(
+			{
+				description: generator.description,
+				operations: generator.operations.length,
+				hasPrompts: generator.prompts?.length > 0,
+			},
+			null,
+			2,
+		)}`,
+	);
 
 	// Check that the generator has operations
 	if (!generator.operations || generator.operations.length === 0) {
 		throw new GenobiError("MISSING_OPERATIONS_ERROR", `No operations found for generator "${operation.generatorId}".`);
 	}
+	logger.info(`Generator has ${generator.operations.length} operations`);
 
 	// Get the items array
+	logger.info("Getting items for ForMany operation");
 	const items = typeof operation.items === "function" ? operation.items(data) : operation.items;
+
+	if (typeof operation.items === "function") {
+		logger.debug("Items provided by function");
+	} else {
+		logger.debug("Items provided directly as array");
+	}
 
 	if (!Array.isArray(items)) {
 		throw new GenobiError(
@@ -47,22 +68,29 @@ export async function forMany(operation: ForManyOperation, data: Record<string, 
 		);
 	}
 
-	logger.info(`Running forMany operation with ${items.length} items using generator "${operation.generatorId}"`);
+	logger.info(`Running generator for ${items.length} items`);
+
+	if (operation.transformItem) {
+		logger.debug("Item transformation function provided");
+	}
 
 	// Process each item
 	for (let index = 0; index < items.length; index++) {
 		const item = items[index];
+		logger.info(`Processing item ${index + 1} of ${items.length}`);
+		logger.debug(`Original item data: ${JSON.stringify(item, null, 2)}`);
 
 		// Transform the item data if needed
 		let itemData = item;
 		if (operation.transformItem) {
+			logger.info("Transforming item data");
 			itemData = operation.transformItem(item, index, data);
+			logger.debug(`Transformed item data: ${JSON.stringify(itemData, null, 2)}`);
 		}
 
 		// Merge with parent data
 		const mergedData = { ...data, ...itemData };
-
-		logger.info(`Processing item ${index + 1}/${items.length}: ${JSON.stringify(itemData)}`);
+		logger.debug(`Merged data: ${JSON.stringify(mergedData, null, 2)}`);
 
 		// Process each operation in the target generator
 		await processGeneratorOperations(
@@ -70,6 +98,8 @@ export async function forMany(operation: ForManyOperation, data: Record<string, 
 			mergedData,
 			operation.haltOnError !== undefined ? operation.haltOnError : true,
 		);
+
+		logger.info(`Completed item ${index + 1} of ${items.length}`);
 	}
 
 	logger.success(`ForMany operation completed with ${items.length} items`);
@@ -88,34 +118,65 @@ async function processGeneratorOperations(
 	data: Record<string, any>,
 	haltOnError: boolean,
 ): Promise<void> {
+	logger.info(`Processing ${generator.operations.length} operations`);
+	logger.debug(`haltOnError setting: ${haltOnError}`);
+
 	// Process each operation
 	for (const op of generator.operations) {
 		// Apply defaults and enhancements to the operation
 		const operation = operationDecorator.decorate(op);
+		logger.info(`Executing operation: ${operation.type}`);
+		logger.debug(
+			`Operation details: ${JSON.stringify(
+				{
+					type: operation.type,
+					haltOnError: operation.haltOnError,
+					hasSkipFunction: typeof operation.skip === "function",
+					hasData: !!operation.data,
+				},
+				null,
+				2,
+			)}`,
+		);
 
 		// Merge input data with operation-specific data
 		const opData = { ...(operation.data || {}), ...data };
+		logger.debug(`Operation data: ${JSON.stringify(operation.data || {}, null, 2)}`);
+		logger.debug(`Merged operation data keys: ${Object.keys(opData).join(", ")}`);
 
 		// Check if the operation should be skipped
-		if (typeof operation.skip === "function" && (await operation.skip(opData))) {
-			continue;
+		if (typeof operation.skip === "function") {
+			logger.info("Evaluating skip condition");
+			const shouldSkip = await operation.skip(opData);
+			if (shouldSkip) {
+				logger.info("Skipping operation due to skip condition");
+				continue;
+			}
 		}
 
 		// Execute the operation and handle errors
 		try {
+			logger.info(`Running ${operation.type} operation`);
 			await operationHandler.handle(operation, opData);
+			logger.info("Operation completed successfully");
 		} catch (err: any) {
 			logger.error(
-				`[${stringHelpers.upperCase(stringHelpers.sentenceCase(operation.type))}] Operation failed.`,
+				`${stringHelpers.titleCase(stringHelpers.sentenceCase(operation.type))} Operation failed.`,
 				err.message,
 			);
 			if (err.cause) {
 				logger.error(err.cause.message);
 			}
+			logger.debug(`Error details: ${err.stack || "No stack trace available"}`);
+
 			// If haltOnError is true, rethrow the error to stop execution
 			if (haltOnError) {
+				logger.debug("haltOnError is true, stopping execution");
 				throw err;
 			}
+			logger.debug("haltOnError is false, continuing with next operation");
 		}
 	}
+
+	logger.debug("Completed all operations for generator");
 }

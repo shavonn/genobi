@@ -68,7 +68,7 @@ describe("runCli", () => {
 			await expect(cli.run()).rejects.toThrow('process.exit unexpectedly called with "1"');
 
 			expect(logger.error).toHaveBeenCalledWith(
-				expect.stringContaining("[CREATE] Operation failed."),
+				expect.stringContaining("Create Operation failed."),
 				expect.stringContaining("Error writing file"),
 			);
 		});

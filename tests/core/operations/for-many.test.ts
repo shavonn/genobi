@@ -202,7 +202,7 @@ describe("forMany", () => {
 
 		await ops.forMany(operation, parentData);
 
-		expect(logger.info).toHaveBeenCalledWith(expect.stringContaining("Running forMany operation with 3 items"));
+		expect(logger.info).toHaveBeenCalledWith(expect.stringContaining("Completed item 3 of 3"));
 		expect(logger.success).toHaveBeenCalledWith("ForMany operation completed with 3 items");
 	});
 

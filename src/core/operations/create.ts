@@ -26,19 +26,27 @@ import { templates } from "../../utils/templates";
 async function create(operation: CreateOperation, data: Record<string, any>): Promise<void> {
 	// Process the file path with Handlebars
 	const filePath = fileSys.getTemplateProcessedPath(operation.filePath, data, store.state().destinationBasePath);
+	logger.info(`Creating file: ${filePath}`);
+	logger.debug(`Absolute path: ${path.resolve(filePath)}`);
+	logger.debug(`Operation data: ${JSON.stringify(operation.data || {}, null, 2)}`);
 
 	// Ensure the directory exists
-	await fileSys.ensureDirectoryExists(path.dirname(filePath));
+	const dirPath = path.dirname(filePath);
+	logger.info("Ensuring directory exists");
+	logger.debug(`Directory path: ${dirPath}`);
+	await fileSys.ensureDirectoryExists(dirPath);
 
 	// Check if file exists and handle accordingly
 	const exists = await fileSys.fileExists(filePath);
 	if (exists) {
 		if (operation.overwrite) {
-			logger.warn(`File already exists: ${filePath}.`);
+			logger.warn(`File already exists: ${filePath}`);
 			logger.warn("It will be overwritten.");
+			logger.debug("Overwriting due to overwrite=true");
 		} else if (operation.skipIfExists) {
-			logger.warn(`File already exists: ${filePath}.`);
+			logger.warn(`File already exists: ${filePath}`);
 			logger.warn("This operation will be skipped.");
+			logger.debug("Skipping due to skipIfExists=true");
 			return;
 		} else {
 			throw new FileExistsError(filePath);
@@ -46,13 +54,21 @@ async function create(operation: CreateOperation, data: Record<string, any>): Pr
 	}
 
 	// Get the content from template string or file
+	logger.info("Processing template");
+	logger.debug(`Template source: ${operation.templateFilePath ? "file" : "string"}`);
+	if (operation.templateFilePath) {
+		logger.debug(`Template file path: ${operation.templateFilePath}`);
+	}
+
 	const processedContent = await content.getSingleFileContent(operation, data).then((content) => {
 		return templates.process(content, data);
 	});
+	logger.debug(`Processed content length: ${processedContent.length} characters`);
 
 	// Write the content to the file
+	logger.info("Writing content to file");
 	await fileSys.writeToFile(filePath, processedContent);
-	logger.success(`File created: ${filePath}.`);
+	logger.success(`File created: ${filePath}`);
 }
 
 export { create };

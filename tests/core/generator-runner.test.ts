@@ -119,7 +119,7 @@ describe("runGenerator", () => {
 		await expect(generatorRunner.run()).rejects.toThrow();
 
 		expect(logger.error).toHaveBeenCalledWith(
-			expect.stringContaining("[CREATE ALL] Operation failed."),
+			expect.stringContaining("Create All Operation failed."),
 			expect.stringContaining("File already exists"),
 		);
 		expect(ops.createAll).toHaveBeenCalledWith(operationDecorator.createAll(testData.makeCreateAllOperation()), {
@@ -148,7 +148,7 @@ describe("runGenerator", () => {
 		await expect(generatorRunner.run()).rejects.toThrow();
 
 		expect(logger.error).toHaveBeenCalledWith(
-			expect.stringContaining("[APPEND] Operation failed."),
+			expect.stringContaining("Append Operation failed."),
 			expect.stringContaining("Error reading file"),
 		);
 	});

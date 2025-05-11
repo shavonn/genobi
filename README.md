@@ -18,6 +18,16 @@ I like to work smarter. I like tools that make my life easier. I started out usi
 
 To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
 
+#### TODO to major release version: (dates are "at latest")
+- [x] Logs are improved (5/12)
+- [x] Operation for multi-gen (5/13)
+- [ ] Validation for api functions is implemented (5/13)
+- [ ] API can be used to create generation packages (5/20)
+- [ ] Custom operations are implemented
+- [ ] File path validation (5/13)
+- [ ] More examples
+***
+
 ***
 
 <!-- TOC -->
@@ -72,7 +82,8 @@ genobi react-component
 ```
 ### Options
 - `-d, --destination <path>`: Root directory for generating files (relative paths will resolve from here)
-- `-v, --verbose`: Log all operations as they are completed
+- `-v, --verbose`: Progress information logs
+- `-d, --debug`: Technical detail logs
 
 ## Configuration
 

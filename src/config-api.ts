@@ -1,11 +1,11 @@
 import path from "node:path";
-import type { HelperDelegate, Template, TemplateDelegate } from "handlebars";
+import type {HelperDelegate, Template, TemplateDelegate} from "handlebars";
 import Handlebars from "handlebars";
-import { store } from "./config-store";
-import { GenobiError } from "./errors";
-import type { ConfigAPI } from "./types/config-api";
-import type { GeneratorConfig } from "./types/generator";
-import { fileSys } from "./utils/file-sys";
+import {store} from "./config-store";
+import {GenobiError} from "./errors";
+import type {ConfigAPI} from "./types/config-api";
+import type {GeneratorConfig} from "./types/generator";
+import {fileSys} from "./utils/file-sys";
 
 /**
  * Creates and returns the Genobi configuration API.
@@ -59,31 +59,6 @@ function configApi(): ConfigAPI {
 		 * @param {string} id - Unique identifier for the generator
 		 * @param {GeneratorConfig} generator - The generator configuration
 		 * @throws {GenobiError} If validation fails (currently not implemented)
-		 *
-		 * @example
-		 * ```
-		 * genobi.addGenerator("react-component", {
-		 *   description: "React component",
-		 *   prompts: [
-		 *     {
-		 *       type: "input",
-		 *       name: "name",
-		 *       message: "What is the name of this component?"
-		 *     }
-		 *   ],
-		 *   operations: [
-		 *     {
-		 *       type: "create",
-		 *       filePath: "src/components/{{kebabCase name}}/{{kebabCase name}}.tsx",
-		 *       templateStr: `export function {{pascalCase name}}() {
-		 *         return (
-		 *           <div className="{{kebabCase name}}" />
-		 *         );
-		 *       }`
-		 *     }
-		 *   ]
-		 * });
-		 * ```
 		 */
 		addGenerator: (id: string, generator: GeneratorConfig): void => {
 			// TODO: validate generator
@@ -117,13 +92,6 @@ function configApi(): ConfigAPI {
 		 *
 		 * @param {string} name - The name of the helper
 		 * @param {HelperDelegate} helper - The helper function implementation
-		 *
-		 * @example
-		 * ```
-		 * genobi.addHelper("uppercase", (str) => {
-		 *   return String(str).toUpperCase();
-		 * });
-		 * ```
 		 */
 		addHelper: (name: string, helper: HelperDelegate): void => {
 			store.setHelper(name, helper);
@@ -157,11 +125,6 @@ function configApi(): ConfigAPI {
 		 *
 		 * @param {string} name - The name of the partial
 		 * @param {Template | TemplateDelegate} templateStr - The partial template string or template function
-		 *
-		 * @example
-		 * ```
-		 * genobi.addPartial("header", "<header>{{title}}</header>");
-		 * ```
 		 */
 		addPartial: (name: string, templateStr: Template | TemplateDelegate) => {
 			store.setPartial(name, templateStr);
@@ -173,13 +136,8 @@ function configApi(): ConfigAPI {
 		 * @param {string} name - The name of the partial
 		 * @param {string} partialFilePath - The path to the partial template file, relative to the config file
 		 * @returns {Promise<void>}
-		 *
-		 * @example
-		 * ```
-		 * await genobi.addPartialFromFile("componentProps", "templates/partials/component-props.hbs");
-		 * ```
 		 */
-		addPartialFromFile: async (name: string, partialFilePath: string) => {
+		addPartialFromFile: async (name: string, partialFilePath: string): Promise<void> => {
 			const fileResult = await fileSys.readFromFile(path.resolve(store.state().configPath, partialFilePath));
 			store.setPartial(name, fileResult);
 		},

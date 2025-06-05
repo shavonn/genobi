@@ -118,7 +118,6 @@ async function loadConfig(destination?: string): Promise<void> {
 	}
 
 	logger.debug("Configuration state:", store.state());
-	logger.success("Configuration loaded successfully");
 }
 
 /**

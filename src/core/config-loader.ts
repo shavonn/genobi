@@ -13,7 +13,12 @@ const packageName = pkg.name;
  * List of file patterns to search for when looking for the config file.
  * Supports JavaScript, TypeScript, and ESM/CJS variants.
  */
-const configFilePatterns = [`${packageName}.js`, `${packageName}.ts`, `${packageName}.mjs`, `${packageName}.cjs`];
+const configFilePatterns = [
+	`${packageName}.config.js`,
+	`${packageName}.config.ts`,
+	`${packageName}.config.mjs`,
+	`${packageName}.config.cjs`,
+];
 
 /**
  * Loads the Genobi configuration from a file.

@@ -29,7 +29,6 @@ describe("validation", () => {
 			};
 
 			expect(() => validation.validateGenerator("test-gen", validGenerator)).not.toThrow();
-			expect(logger.success).toHaveBeenCalledWith('Generator "test-gen" validation passed');
 		});
 
 		it("should throw for empty generator id", () => {
@@ -144,7 +143,6 @@ describe("validation", () => {
 		it("should validate a valid helper", () => {
 			const validHelper = () => "test";
 			expect(() => validation.validateHelper("testHelper", validHelper)).not.toThrow();
-			expect(logger.success).toHaveBeenCalledWith('Helper "testHelper" validation passed');
 		});
 
 		it("should throw for non-function helper", () => {
@@ -172,7 +170,6 @@ describe("validation", () => {
 	describe("validatePartial", () => {
 		it("should validate a valid string partial", () => {
 			expect(() => validation.validatePartial("test", "<div>{{content}}</div>")).not.toThrow();
-			expect(logger.success).toHaveBeenCalledWith('Partial "test" validation passed');
 		});
 
 		it("should validate a valid function partial", () => {
@@ -196,7 +193,6 @@ describe("validation", () => {
 	describe("validatePartialFilePath", () => {
 		it("should validate a valid partial file path", () => {
 			expect(() => validation.validatePartialFilePath("test", "templates/test.hbs")).not.toThrow();
-			expect(logger.success).toHaveBeenCalledWith('Partial file "test" validation passed');
 		});
 
 		it("should warn for non-standard file extensions", () => {

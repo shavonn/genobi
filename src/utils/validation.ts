@@ -355,8 +355,6 @@ export function validateGenerator(id: string, generator: any): void {
 				logger.warn(`Warning: operations[${index}] references itself (${id}), this could cause infinite recursion`);
 			}
 		});
-
-		logger.success(`Generator "${id}" validation passed`);
 	} catch (err) {
 		logger.error(`Generator "${id}" validation failed`);
 		throw err;
@@ -378,8 +376,6 @@ export function validateHelper(name: string, helper: any): void {
 		if (reservedNames.includes(name)) {
 			throw new ValidationError("helper name", `"${name}" is a reserved Handlebars helper name`);
 		}
-
-		logger.success(`Helper "${name}" validation passed`);
 	} catch (err) {
 		logger.error(`Helper "${name}" validation failed`);
 		throw err;
@@ -398,8 +394,6 @@ export function validatePartial(name: string, partial: any): void {
 		if (typeof partial !== "string" && typeof partial !== "function") {
 			throw new ValidationError("partial", "must be a string or template function");
 		}
-
-		logger.success(`Partial "${name}" validation passed`);
 	} catch (err) {
 		logger.error(`Partial "${name}" validation failed`);
 		throw err;
@@ -424,8 +418,6 @@ export function validatePartialFilePath(name: string, filePath: string): void {
 				`Warning: Partial file "${filePath}" doesn't have a common template extension (${expectedPartialFileTypes.join(", ")})`,
 			);
 		}
-
-		logger.success(`Partial file "${name}" validation passed`);
 	} catch (err) {
 		logger.error(`Partial file "${name}" validation failed`);
 		throw err;

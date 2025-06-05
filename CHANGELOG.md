@@ -1,5 +1,11 @@
 # genobi
 
+## 0.7.0
+
+### Minor Changes
+
+- 13da455: Fix operation type issue
+
 ## 0.6.0
 
 ### Minor Changes

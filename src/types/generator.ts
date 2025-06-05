@@ -1,4 +1,4 @@
-import type { DistinctQuestion } from "inquirer";
+import type { Question } from "inquirer";
 import type { Operation } from "./operation";
 
 /**
@@ -19,7 +19,7 @@ export interface GeneratorConfig {
 	 *
 	 * @see {@link https://github.com/SBoudrias/Inquirer.js#questions} for question format
 	 */
-	prompts: DistinctQuestion[];
+	prompts: Question[];
 
 	/**
 	 * Array of operations to perform when the generator is executed.

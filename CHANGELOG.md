@@ -1,5 +1,11 @@
 # genobi
 
+## 0.6.0
+
+### Minor Changes
+
+- 0a1362f: Implementing type fix, removing excess logs
+
 ## 0.5.1
 
 ### Patch Changes

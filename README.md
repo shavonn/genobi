@@ -114,6 +114,7 @@ The Genobi API provides the following methods:
 |--------------------------|--------------------------------------------------------|-----------------------------------------------|--------------------------------------------------------------|
 | `setConfigFilePath`      | `(configFilePath: string)`                             | `void`                                        | Sets the path to the config file                             |
 | `getConfigFilePath`      | `()`                                                   | `string`                                      | Returns the current config file path                         |
+| `setDestinationBasePath` | `(destinationDirPath: string)`                         | `void`                                        | Sets the base directory for generating files                 |
 | `getDestinationBasePath` | `()`                                                   | `string`                                      | Returns the base directory for generating files              |
 | `setSelectionPrompt`     | `(message: string)`                                    | `void`                                        | Sets the prompt message displayed during generator selection |
 | `getSelectionPrompt`     | `()`                                                   | `string`                                      | Returns the current prompt message                           |
@@ -133,6 +134,7 @@ The Genobi API provides the following methods:
 ```javascript
 // genobi.config.js
 export default (genobi) => {
+    genobi.setDestinationBasePath("src/")
     genobi.addGenerator("react-component", {
         description: "React component",
         prompts: [
@@ -147,10 +149,10 @@ export default (genobi) => {
                 type: "create",
                 filePath: "src/components/{{kebabCase name}}/{{kebabCase name}}.tsx",
                 templateStr: `export function {{pascalCase name}}() {
-    return (
-        <div className="{{kebabCase name}}" />
-    );
-}`
+                    return (
+                        <div className="{{kebabCase name}}" />
+                    );
+                }`
             },
             {
                 type: "append",

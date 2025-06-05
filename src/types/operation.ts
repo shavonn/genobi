@@ -1,7 +1,14 @@
 /**
  * Union type representing all possible operation types.
  */
-export type Operation = AppendOperation | PrependOperation | CreateOperation | CreateAllOperation | ForManyOperation;
+export type Operation =
+	| AmendOperation
+	| CreateOperation
+	| CreateAllOperation
+	| ForManyOperation
+	| BaseOperation
+	| AppendOperation
+	| PrependOperation;
 
 /**
  * Base interface for all operations.

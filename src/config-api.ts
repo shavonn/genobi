@@ -34,6 +34,14 @@ function configApi(): ConfigAPI {
 		getConfigFilePath: (): string => store.state().configFilePath,
 
 		/**
+		 * Sets the base directory path used for generating files.
+		 * All relative paths in operations will be resolved from this path.
+		 *
+		 * @param {string} destinationPath - TThe base directory path for file operations
+		 */
+		setDestinationBasePath: store.setDestinationBasePath,
+
+		/**
 		 * Returns the base directory path used for generating files.
 		 * All relative paths in operations will be resolved from this path.
 		 *

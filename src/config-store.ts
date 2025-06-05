@@ -65,10 +65,10 @@ class ConfigStore {
 	/**
 	 * Sets the base directory for resolving relative paths in operations.
 	 *
-	 * @param {string} destPath - Absolute path to the base directory
+	 * @param {string} destinationDirPath - Absolute path to the base directory
 	 */
-	setDestinationBasePath: (destPath: string) => void = (destPath) => {
-		this.#destinationBasePath = destPath;
+	setDestinationBasePath: (destinationDirPath: string) => void = (destinationDirPath: string) => {
+		this.#destinationBasePath = destinationDirPath;
 	};
 
 	/**

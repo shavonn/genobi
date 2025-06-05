@@ -46,4 +46,6 @@ export type ErrorName =
 	/** When creating a directory fails */
 	| "MKDIR_DIR_ERROR"
 	/** Invalid or empty array given for forMany operation */
-	| "INVALID_FOR_MANY_ITEMS";
+	| "INVALID_FOR_MANY_ITEMS"
+	/** When validation fails for a configuration field */
+	| "VALIDATION_ERROR";

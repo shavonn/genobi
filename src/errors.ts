@@ -28,6 +28,25 @@ export class GenobiError extends Error {
 }
 
 /**
+ * Error thrown when validation fails for a configuration field
+ */
+export class ValidationError extends GenobiError {
+	/** The field that failed validation */
+	field: string;
+
+	/**
+	 * Creates a new validation error.
+	 *
+	 * @param {string} field - The field that failed validation
+	 * @param {string} message - Specific validation failure message
+	 */
+	constructor(field: string, message: string) {
+		super("VALIDATION_ERROR", `Validation failed for ${field}: ${message}`);
+		this.field = field;
+	}
+}
+
+/**
  * Error thrown when file writing fails.
  */
 export class WriteError extends GenobiError {

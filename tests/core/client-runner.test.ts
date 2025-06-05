@@ -13,7 +13,6 @@ import { testData } from "../__fixtures__/test-data";
 describe("runCli", () => {
 	describe("mocked core functions", () => {
 		beforeEach(() => {
-			vi.spyOn(configLoader, "load").mockResolvedValueOnce();
 			vi.spyOn(generatorResolver, "resolve").mockResolvedValueOnce();
 			vi.spyOn(generatorRunner, "run").mockResolvedValueOnce();
 		});
@@ -22,6 +21,8 @@ describe("runCli", () => {
 			vi.spyOn(Command.prototype, "version");
 			vi.spyOn(Command.prototype, "description");
 			vi.spyOn(Command.prototype, "parse");
+
+			vi.spyOn(configLoader, "load").mockResolvedValueOnce();
 
 			await cli.run();
 
@@ -32,7 +33,7 @@ describe("runCli", () => {
 		});
 
 		it("should exit process when an error is thrown from core function", async () => {
-			vi.spyOn(configLoader, "load").mockRejectedValueOnce(
+			vi.spyOn(configLoader, "load").mockRejectedValue(
 				new Error("Config file not found. Create one to define your generators, helpers, and other options."),
 			);
 
@@ -45,6 +46,7 @@ describe("runCli", () => {
 		it("should use generator arg when provided", async () => {
 			vi.spyOn(process, "argv", "get").mockReturnValueOnce(["", "", testData.component.id]);
 			vi.spyOn(store, "setSelectedGenerator");
+			vi.spyOn(configLoader, "load").mockResolvedValueOnce();
 
 			await cli.run();
 

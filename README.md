@@ -9,49 +9,58 @@
 
 > Help me Obi-Wan Genobi, you're our only hope.
 
-Genobi is a flexible, customizable file generator and modifier tool designed to streamline your development workflow. It allows you to generate and modify text files through templates, prompts, and operations configured to your specific needs.
+Genobi is a flexible, customizable file generator and modifier tool designed to streamline your development workflow. It
+allows you to generate and modify text files through templates, prompts, and operations configured to your specific
+needs.
 
 ***
+
 ## Why Genobi?
 
-I like to work smarter. I like tools that make my life easier. I started out using [plopjs](https://github.com/plopjs/plop), but then, I wanted to do more and differently.
+I like to work smarter. I like tools that make my life easier. I started out
+using [plopjs](https://github.com/plopjs/plop), but then, I wanted to do more and differently.
 
 To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
 
 #### TODO to major release version: (dates are "at latest")
-- [x] Logs are improved (5/12)
-- [x] Operation for multi-gen (5/13)
-- [ ] Validation for api functions is implemented (5/13)
-- [ ] API can be used to create generation packages (5/20)
+
+- [x] Logs are improved
+- [x] Operation for multi-gen
+- [x] Validation for api functions is implemented
 - [ ] Custom operations are implemented
-- [ ] File path validation (5/13)
+- [ ] File path validation
 - [ ] More examples
-***
 
 ***
 
 <!-- TOC -->
-* [Installation](#installation)
-* [Usage](#usage)
-  * [Args](#args)
-  * [Options](#options)
-* [Configuration](#configuration)
-  * [Config File](#config-file)
-  * [Config API](#config-api)
-* [FYI](#fyi)
-  * [Templates and Prompts](#templates-and-prompts)
-  * [File size](#file-size)
-* [Generators](#generators)
-* [Operations](#operations)
-  * [Create Operation](#create-operation)
-  * [CreateAll Operation](#createall-operation)
-  * [ForMany Operation](#formany-operation)
-  * [Append Operation](#append-operation)
-  * [Prepend Operation](#prepend-operation)
-* [Custom Helpers](#custom-helpers)
-* [Built-in Handlebars Helpers](#built-in-handlebars-helpers)
-  * [Basic String Transformers](#basic-string-transformers)
-  * [String Helpers with Additional Args](#string-helpers-with-additional-args)
+
+* [Genobi](#genobi)
+    * [Why Genobi?](#why-genobi)
+        * [TODO to major release version: (dates are "at latest")](#todo-to-major-release-version-dates-are-at-latest)
+    * [Installation](#installation)
+    * [Usage](#usage)
+        * [Args](#args)
+        * [Options](#options)
+    * [Configuration](#configuration)
+        * [Config File](#config-file)
+        * [Config API](#config-api)
+    * [Generators](#generators)
+    * [Operations](#operations)
+        * [Create Operation](#create-operation)
+        * [CreateAll Operation](#createall-operation)
+        * [ForMany Operation](#formany-operation)
+        * [Append Operation](#append-operation)
+        * [Prepend Operation](#prepend-operation)
+    * [Custom Helpers](#custom-helpers)
+    * [Built-in Handlebars Helpers](#built-in-handlebars-helpers)
+        * [Basic String Transformers](#basic-string-transformers)
+        * [String Helpers with Additional Args](#string-helpers-with-additional-args)
+    * [Things to Know](#things-to-know)
+        * [Templates and Prompts](#templates-and-prompts)
+        * [Template File Size](#template-file-size)
+    * [License](#license)
+
 <!-- TOC -->
 
 ## Installation
@@ -69,18 +78,23 @@ npm install -D genobi
 ```
 
 ## Usage
+
 ```bash
 pnpm genobi [generator] [options]
 
 genobi [generator] [options] // global
 ```
+
 ### Args
 
 - `generator`: Optional ID of the generator to use
+
 ```bash
 genobi react-component
 ```
+
 ### Options
+
 - `-d, --destination <path>`: Root directory for generating files (relative paths will resolve from here)
 - `-v, --verbose`: Progress information logs
 - `-d, --debug`: Technical detail logs
@@ -88,10 +102,12 @@ genobi react-component
 ## Configuration
 
 ### Config File
+
 Create a `genobi.config.js` file in the root of your project. The extension can be any of: `js`, `ts`, `mjs`, or `cjs`.
- This file exports a function that receives the Genobi API as its parameter:
+This file exports a function that receives the Genobi API as its parameter:
 
 ### Config API
+
 The Genobi API provides the following methods:
 
 | Method                   | Parameters                                             | Return Type                                   | Description                                                  |
@@ -113,7 +129,6 @@ The Genobi API provides the following methods:
 | `getPartials`            | `()`                                                   | `Record<string, Template\| TemplateDelegate>` | Returns all registered partials                              |
 
 > **Note**: Handlebars helpers and partials docs can be found on [their website](https://handlebarsjs.com/).
-
 
 ```javascript
 // genobi.config.js
@@ -147,14 +162,6 @@ export default (genobi) => {
 };
 ```
 
-## FYI
-### Templates and Prompts
-Genobi uses [Inquirer.js](https://github.com/SBoudrias/Inquirer.js) for prompts and [Handlebars](https://handlebarsjs.com/) for templates.
-
-### File size
-I would avoid template files over 50MB. I started working on a streaming option, but it got rocky when considering control flow logic, loops, and the prepend operation. So, instead, I started to work on extending Handlebars template parsing to chunk with logic and loop boundaries but that will take a little time wrap up with higher priority things on my plate.
-
-
 ## Generators
 
 Generators are defined with the following structure:
@@ -168,17 +175,17 @@ Generators are defined with the following structure:
 Example:
 
 ```javascript
-{
+const reactGenerator = {
     description: "React component",
-        prompts:[
+    prompts: [
         {
             type: "input",
             name: "name",
             message: "Component name?",
             default: "Button"
         }
-    ], 
-    operations:[
+    ],
+    operations: [
         // Create component file
         {
             type: "create",
@@ -232,27 +239,27 @@ Creates multiple files matching a glob pattern.
 
 Runs a generator multiple times with different inputs.
 
-| Property           | Type                                                                     | Description                                            | Default    |
-|--------------------|--------------------------------------------------------------------------|--------------------------------------------------------|------------|
-| `type`             | `string`                                                                 | Must be `"forMany"`                                     | *required* |
-| `generatorId`      | `string`                                                                 | ID of the generator to run multiple times              | *required* |
-| `items`            | `any[] | ((data: Record<string, any>) => any[])`                         | Array of data objects or function that returns an array | *required* |
-| `transformItem`    | `(item: any, index: number, parentData: Record<string, any>) => any`     | Function to transform each item before processing       | -          |
-| `data`             | `Record<string, any>`                                                    | Additional data for templates                          | `{}`       |
-| `skip`             | `(data: any) => boolean`                                                 | Function to determine if op should be skipped          | -          |
-| `haltOnError`      | `boolean`                                                                | Whether to stop execution on error                     | `true`     |
+| Property        | Type                                                                 | Description                                       | Default                                                 |
+|-----------------|----------------------------------------------------------------------|---------------------------------------------------|---------------------------------------------------------|
+| `type`          | `string`                                                             | Must be `"forMany"`                               | *required*                                              |
+| `generatorId`   | `string`                                                             | ID of the generator to run multiple times         | *required*                                              |
+| `items`         | `any[]                                                               | ((data: Record<string, any>) => any[])`           | Array of data objects or function that returns an array | *required* |
+| `transformItem` | `(item: any, index: number, parentData: Record<string, any>) => any` | Function to transform each item before processing | -                                                       |
+| `data`          | `Record<string, any>`                                                | Additional data for templates                     | `{}`                                                    |
+| `skip`          | `(data: any) => boolean`                                             | Function to determine if op should be skipped     | -                                                       |
+| `haltOnError`   | `boolean`                                                            | Whether to stop execution on error                | `true`                                                  |
 
 Example:
 
 ```javascript
-{
-  type: "forMany",
-  generatorId: "react-component",
-  items: (data) => {
-    return data.componentTypes.map(component => ({
-      name: component
-    }));
-  }
+const forManyOperation = {
+    type: "forMany",
+    generatorId: "react-component",
+    items: (data) => {
+        return data.componentTypes.map(component => ({
+            name: component
+        }));
+    }
 }
 ```
 
@@ -265,7 +272,7 @@ Appends content to an existing file.
 | `type`             | `string`                 | `"append"`                                               | *required* |
 | `filePath`         | `string`                 | Path to the file to append to                            | *required* |
 | `templateStr`      | `string`                 | Handlebars template string for content to append         | -          |
-| `templateFilePath` | `string`                 | Path to a Handlebars template file for c[formany-operation-readme.md](../../../Downloads/formany-operation-readme.md)ontent to append | -          |
+| `templateFilePath` | `string`                 | Path to a Handlebars template file for content to append | -          |
 | `pattern`          | `string \| RegExp`       | Pattern to find where to append content                  | -          |
 | `separator`        | `string`                 | String to insert between existing and new content        | `"\n"`     |
 | `unique`           | `boolean`                | Skip if content already exists in file                   | `true`     |
@@ -334,6 +341,20 @@ Genobi includes several helpful string transformation helpers:
 | `append`        | `(str, toAppend)`          | Appends a string to another                                                     | `{{append "Hello" " world"}}` → "Hello world"                        |
 | `prepend`       | `(str, toPrepend)`         | Prepends a string to another                                                    | `{{prepend "world" "Hello "}}` → "Hello world"                       |
 | `remove`        | `(str, toRemove)`          | Removes all occurrences of substring                                            | `{{remove "Hello world" "o"}}` → "Hell wrld"                         |
+
+## Things to Know
+
+### Templates and Prompts
+
+Genobi uses [Inquirer.js](https://github.com/SBoudrias/Inquirer.js) for prompts
+and [Handlebars](https://handlebarsjs.com/) for templates.
+
+### Template File Size
+
+I would avoid template files over 50MB. I started working on a streaming option, but it got rocky when considering
+control flow logic, loops, and the prepend operation. So, instead, I started to work on extending Handlebars template
+parsing to chunk with logic and loop boundaries but that will take a little time wrap up with higher priority things on
+my plate.
 
 ## License
 

@@ -6,6 +6,8 @@ import { GenobiError } from "./errors";
 import type { ConfigAPI } from "./types/config-api";
 import type { GeneratorConfig } from "./types/generator";
 import { fileSys } from "./utils/file-sys";
+import { logger } from "./utils/logger";
+import { validation } from "./utils/validation";
 
 /**
  * Creates and returns the Genobi configuration API.
@@ -58,36 +60,25 @@ function configApi(): ConfigAPI {
 		 *
 		 * @param {string} id - Unique identifier for the generator
 		 * @param {GeneratorConfig} generator - The generator configuration
-		 * @throws {GenobiError} If validation fails (currently not implemented)
-		 *
-		 * @example
-		 * ```
-		 * genobi.addGenerator("react-component", {
-		 *   description: "React component",
-		 *   prompts: [
-		 *     {
-		 *       type: "input",
-		 *       name: "name",
-		 *       message: "What is the name of this component?"
-		 *     }
-		 *   ],
-		 *   operations: [
-		 *     {
-		 *       type: "create",
-		 *       filePath: "src/components/{{kebabCase name}}/{{kebabCase name}}.tsx",
-		 *       templateStr: `export function {{pascalCase name}}() {
-		 *         return (
-		 *           <div className="{{kebabCase name}}" />
-		 *         );
-		 *       }`
-		 *     }
-		 *   ]
-		 * });
-		 * ```
+		 * @throws {GenobiError} If validation fails
 		 */
 		addGenerator: (id: string, generator: GeneratorConfig): void => {
-			// TODO: validate generator
-			store.setGenerator(id, generator);
+			try {
+				// Validate the generator configuration
+				validation.validateGenerator(id, generator);
+
+				// Check if generator with this ID already exists
+				if (store.state().generators.has(id)) {
+					logger.warn(`Generator "${id}" already exists and will be overwritten`);
+				}
+
+				// Store the generator
+				store.setGenerator(id, generator);
+				logger.info(`Generator "${id}" registered successfully`);
+			} catch (err: any) {
+				logger.error(`Failed to add generator "${id}": ${err.message}`);
+				throw err;
+			}
 		},
 
 		/**
@@ -117,17 +108,26 @@ function configApi(): ConfigAPI {
 		 *
 		 * @param {string} name - The name of the helper
 		 * @param {HelperDelegate} helper - The helper function implementation
-		 *
-		 * @example
-		 * ```
-		 * genobi.addHelper("uppercase", (str) => {
-		 *   return String(str).toUpperCase();
-		 * });
-		 * ```
+		 * @throws {ValidationError} If validation fails
 		 */
 		addHelper: (name: string, helper: HelperDelegate): void => {
-			store.setHelper(name, helper);
-			Handlebars.registerHelper(name, helper);
+			try {
+				// Validate the helper
+				validation.validateHelper(name, helper);
+
+				// Check if helper with this name already exists
+				if (store.state().helpers.has(name)) {
+					logger.warn(`Helper "${name}" already exists and will be overwritten`);
+				}
+
+				// Store and register the helper
+				store.setHelper(name, helper);
+				Handlebars.registerHelper(name, helper);
+				logger.info(`Helper "${name}" registered successfully`);
+			} catch (err: any) {
+				logger.error(`Failed to add helper "${name}": ${err.message}`);
+				throw err;
+			}
 		},
 
 		/**
@@ -157,14 +157,25 @@ function configApi(): ConfigAPI {
 		 *
 		 * @param {string} name - The name of the partial
 		 * @param {Template | TemplateDelegate} templateStr - The partial template string or template function
-		 *
-		 * @example
-		 * ```
-		 * genobi.addPartial("header", "<header>{{title}}</header>");
-		 * ```
+		 * @throws {ValidationError} If validation fails
 		 */
 		addPartial: (name: string, templateStr: Template | TemplateDelegate) => {
-			store.setPartial(name, templateStr);
+			try {
+				// Validate the partial
+				validation.validatePartial(name, templateStr);
+
+				// Check if partial with this name already exists
+				if (store.state().partials.has(name)) {
+					logger.warn(`Partial "${name}" already exists and will be overwritten`);
+				}
+
+				// Store the partial
+				store.setPartial(name, templateStr);
+				logger.info(`Partial "${name}" registered successfully`);
+			} catch (err: any) {
+				logger.error(`Failed to add partial "${name}": ${err.message}`);
+				throw err;
+			}
 		},
 
 		/**
@@ -173,15 +184,31 @@ function configApi(): ConfigAPI {
 		 * @param {string} name - The name of the partial
 		 * @param {string} partialFilePath - The path to the partial template file, relative to the config file
 		 * @returns {Promise<void>}
-		 *
-		 * @example
-		 * ```
-		 * await genobi.addPartialFromFile("componentProps", "templates/partials/component-props.hbs");
-		 * ```
+		 * @throws {ValidationError} If validation fails
+		 * @throws {ReadError} If reading the file fails
 		 */
-		addPartialFromFile: async (name: string, partialFilePath: string) => {
-			const fileResult = await fileSys.readFromFile(path.resolve(store.state().configPath, partialFilePath));
-			store.setPartial(name, fileResult);
+		addPartialFromFile: async (name: string, partialFilePath: string): Promise<void> => {
+			try {
+				// Validate the inputs
+				validation.validatePartialFilePath(name, partialFilePath);
+
+				// Check if partial with this name already exists
+				if (store.state().partials.has(name)) {
+					logger.warn(`Partial "${name}" already exists and will be overwritten`);
+				}
+
+				// Read the file content
+				const resolvedPath = path.resolve(store.state().configPath, partialFilePath);
+				logger.info(`Reading partial from file: ${resolvedPath}`);
+				const fileResult = await fileSys.readFromFile(resolvedPath);
+
+				// Store the partial
+				store.setPartial(name, fileResult);
+				logger.info(`Partial "${name}" loaded from file successfully`);
+			} catch (err: any) {
+				logger.error(`Failed to add partial "${name}" from file: ${err.message}`);
+				throw err;
+			}
 		},
 
 		/**

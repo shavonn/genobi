@@ -1,5 +1,15 @@
 # genobi
 
+## 0.5.0
+
+### Minor Changes
+
+- 962ea7c: Add setDestinationBasePath to config api
+
+### Patch Changes
+
+- 596a347: Fix config patterns for search
+
 ## 0.4.0
 
 ### Minor Changes

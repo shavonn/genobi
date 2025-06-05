@@ -1,5 +1,6 @@
 import { ValidationError } from "../errors";
 import { logger } from "./logger";
+import { expectedPartialFileTypes } from "./resources/expected-partial-file-types";
 
 /**
  * Validates that a value is a non-empty string
@@ -416,12 +417,11 @@ export function validatePartialFilePath(name: string, filePath: string): void {
 		validateNonEmptyString(filePath, "partial file path");
 
 		// Check for common file extensions
-		const validExtensions = [".hbs", ".handlebars", ".html", ".htm", ".txt"];
-		const hasValidExtension = validExtensions.some((ext) => filePath.toLowerCase().endsWith(ext));
+		const hasValidExtension = expectedPartialFileTypes.some((ext) => filePath.toLowerCase().endsWith(ext));
 
 		if (!hasValidExtension) {
 			logger.warn(
-				`Warning: Partial file "${filePath}" doesn't have a common template extension (${validExtensions.join(", ")})`,
+				`Warning: Partial file "${filePath}" doesn't have a common template extension (${expectedPartialFileTypes.join(", ")})`,
 			);
 		}
 

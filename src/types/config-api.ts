@@ -22,13 +22,6 @@ export interface ConfigAPI {
 	getConfigFilePath(): string;
 
 	/**
-	 * Sets the base directory path used for generating files.
-	 *
-	 * @param {string} path - The base directory path for file operations
-	 */
-	setDestinationBasePath(path: string): void;
-
-	/**
 	 * Returns the base directory path used for generating files.
 	 * All relative paths in operations will be resolved from this path.
 	 *

@@ -1,5 +1,11 @@
 # genobi
 
+## 0.4.0
+
+### Minor Changes
+
+- 0d5d562: Add validation to config api methods
+
 ## 0.3.1
 
 ### Patch Changes

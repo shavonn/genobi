@@ -1,5 +1,11 @@
 # genobi
 
+## 0.5.1
+
+### Patch Changes
+
+- 5bcf6f0: Update expected partial file types
+
 ## 0.5.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # genobi
 
+## 0.4.1
+
+### Patch Changes
+
+- 5c7dfbb: Fix config name patterns
+
 ## 0.4.0
 
 ### Minor Changes

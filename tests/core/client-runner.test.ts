@@ -1,14 +1,14 @@
 import fs from "node:fs/promises";
-import {Command} from "commander";
+import { Command } from "commander";
 import inquirer from "inquirer";
-import {configAPI} from "../../src/config-api";
-import {store} from "../../src/config-store";
-import {cli} from "../../src/core/client-runner";
-import {configLoader} from "../../src/core/config-loader";
-import {generatorResolver} from "../../src/core/generator-resolver";
-import {generatorRunner} from "../../src/core/generator-runner";
-import {logger} from "../../src/utils/logger";
-import {testData} from "../__fixtures__/test-data";
+import { configAPI } from "../../src/config-api";
+import { store } from "../../src/config-store";
+import { cli } from "../../src/core/client-runner";
+import { configLoader } from "../../src/core/config-loader";
+import { generatorResolver } from "../../src/core/generator-resolver";
+import { generatorRunner } from "../../src/core/generator-runner";
+import { logger } from "../../src/utils/logger";
+import { testData } from "../__fixtures__/test-data";
 
 describe("runCli", () => {
 	describe("mocked core functions", () => {

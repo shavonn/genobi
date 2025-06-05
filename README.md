@@ -22,7 +22,7 @@ using [plopjs](https://github.com/plopjs/plop), but then, I wanted to do more an
 
 To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
 
-#### TODO to major release version: (dates are "at latest")
+#### TODO to major release version:
 
 - [x] Logs are improved
 - [x] Operation for multi-gen
@@ -37,13 +37,17 @@ To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
 
 * [Genobi](#genobi)
     * [Why Genobi?](#why-genobi)
-        * [TODO to major release version: (dates are "at latest")](#todo-to-major-release-version-dates-are-at-latest)
+        * [TODO to major release version:](#todo-to-major-release-version)
     * [Installation](#installation)
+        * [Install Genobi globally:](#install-genobi-globally)
+            * [Why would I install Genobi globally?](#why-would-i-install-genobi-globally)
+        * [Install  as a dev dependency in your project:](#install--as-a-dev-dependency-in-your-project)
     * [Usage](#usage)
-        * [Args](#args)
-        * [Options](#options)
+        * [Create a Config File](#create-a-config-file)
+        * [Run Genobi](#run-genobi)
+            * [Args](#args)
+            * [Options](#options)
     * [Configuration](#configuration)
-        * [Config File](#config-file)
         * [Config API](#config-api)
     * [Generators](#generators)
     * [Operations](#operations)
@@ -65,13 +69,19 @@ To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
 
 ## Installation
 
-Install Genobi globally:
+### Install Genobi globally:
 
 ```bash
 npm install -g genobi
 ```
 
-Or as a dev dependency in your project:
+#### Why would I install Genobi globally?
+
+When you run Genobi, it will look in the current directory for the Genobi config file, and if it doesn't find it there,
+it will traverse up through parent directories to find one. That means that you can store your Genobi config and
+templates outside of your project and use them in any other project.
+
+### Install  as a dev dependency in your project:
 
 ```bash
 npm install -D genobi
@@ -79,13 +89,19 @@ npm install -D genobi
 
 ## Usage
 
+### Create a Config File
+
+Create a `genobi.config.js` file in the root of your project. The extension can be any of: `js`, `ts`, `mjs`, or `cjs`.
+
+### Run Genobi
+
 ```bash
 pnpm genobi [generator] [options]
 
 genobi [generator] [options] // global
 ```
 
-### Args
+#### Args
 
 - `generator`: Optional ID of the generator to use
 
@@ -93,7 +109,7 @@ genobi [generator] [options] // global
 genobi react-component
 ```
 
-### Options
+#### Options
 
 - `-d, --destination <path>`: Root directory for generating files (relative paths will resolve from here)
 - `-v, --verbose`: Progress information logs
@@ -101,9 +117,6 @@ genobi react-component
 
 ## Configuration
 
-### Config File
-
-Create a `genobi.config.js` file in the root of your project. The extension can be any of: `js`, `ts`, `mjs`, or `cjs`.
 This file exports a function that receives the Genobi API as its parameter:
 
 ### Config API

@@ -1,4 +1,3 @@
-// src/utils/file-sys.ts
 import fs from "node:fs/promises";
 import path from "node:path";
 import { store } from "../config-store";

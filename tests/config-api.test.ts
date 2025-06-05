@@ -1,173 +1,286 @@
 import Handlebars from "handlebars";
-import { configAPI } from "../src/config-api";
-import { store } from "../src/config-store";
-import { testData } from "./__fixtures__/test-data";
-import { testFiles } from "./__fixtures__/test-files";
+import {configAPI} from "../src/config-api";
+import {store} from "../src/config-store";
+import {afterAll, beforeEach, describe, expect, it, vi} from "vitest";
+import {validation} from "../src/utils/validation";
+import {logger} from "../src/utils/logger";
+import {fileSys} from "../src/utils/file-sys";
+import type {GeneratorConfig} from "../src";
 
-describe("config api", () => {
-	describe("config file path", () => {
-		it("should apply custom select generator prompt", () => {
-			configAPI.get().setConfigFilePath("/beep/boop/toot");
+describe("configAPI", () => {
+    let api: ReturnType<typeof configAPI.get>;
+    let mockState: any;
 
-			expect(configAPI.get().getConfigFilePath()).toBe("/beep/boop/toot");
-		});
-	});
+    beforeEach(() => {
+        // Reset all mocks
+        vi.clearAllMocks();
 
-	describe("destination base path", () => {
-		it("should apply custom select generator prompt", () => {
-			expect(configAPI.get().getDestinationBasePath()).toBe(store.state().destinationBasePath);
-		});
-	});
+        // Setup mock state
+        mockState = {
+            configFilePath: "/test/config.js",
+            configPath: "/test",
+            destinationBasePath: "/test",
+            selectionPrompt: "Select a generator:",
+            generators: new Map(),
+            helpers: new Map(),
+            partials: new Map(),
+        };
 
-	describe("select generator prompt", () => {
-		it("should apply custom select generator prompt", () => {
-			configAPI.get().setSelectionPrompt("hellooo! please select a repository generator.");
+        vi.mock("../src/config-store");
+        vi.mock("../src/utils/validation");
+        vi.mock("../src/utils/file-sys");
 
-			expect(configAPI.get().getSelectionPrompt()).toBe("hellooo! please select a repository generator.");
-		});
-	});
+        // Mock store methods
+        vi.mocked(store.state).mockReturnValue(mockState);
 
-	describe("generators", () => {
-		beforeEach(() => {
-			store.resetDefault();
-		});
+        // Get fresh API instance
+        api = configAPI.get();
+    });
 
-		it("should add generator", () => {
-			configAPI.get().addGenerator(testData.component.id, testData.component.generator);
+    afterAll(() => {
+        vi.resetAllMocks()
+        vi.clearAllMocks()
+    })
 
-			expect(configAPI.get().getGenerators()).toStrictEqual(
-				expect.objectContaining({
-					"react-component": testData.component.generator,
-				}),
-			);
-		});
+    describe("addGenerator", () => {
+        const validGenerator: GeneratorConfig = {
+            description: "Test generator",
+            prompts: [],
+            operations: [
+                {
+                    type: "create",
+                    filePath: "test.txt",
+                    templateStr: "content",
+                },
+            ],
+        };
 
-		it("should return specified generator", () => {
-			configAPI.get().addGenerator(testData.layout.id, testData.layout.generator);
+        it("should add a valid generator", () => {
+            vi.mocked(validation.validateGenerator).mockReturnValueOnce();
 
-			expect(configAPI.get().getGenerator("next-layout")).toBe(testData.layout.generator);
-		});
+            api.addGenerator("test-gen", validGenerator);
 
-		it("should throw error when specified generator not configured", () => {
-			expect(() => configAPI.get().getGenerator("missing-gen")).toThrow(
-				`Generator "missing-gen" not found in loaded configuration.`,
-			);
-		});
+            expect(validation.validateGenerator).toHaveBeenCalledWith("test-gen", validGenerator);
+            expect(store.setGenerator).toHaveBeenCalledWith("test-gen", validGenerator);
+            expect(logger.info).toHaveBeenCalledWith('Generator "test-gen" registered successfully');
+        });
 
-		it("should get all generators", () => {
-			configAPI.get().addGenerator(testData.component.id, testData.component.generator);
-			configAPI.get().addGenerator("content-eloquent", {
-				description: "Content Type Eloquent Model",
-				operations: [],
-				prompts: [],
-			});
+        it("should warn when overwriting existing generator", () => {
+            mockState.generators.set("existing", validGenerator);
+            vi.mocked(validation.validateGenerator).mockReturnValueOnce();
 
-			expect(configAPI.get().getGenerators()).toStrictEqual({
-				"react-component": testData.component.generator,
-				"content-eloquent": {
-					description: "Content Type Eloquent Model",
-					operations: [],
-					prompts: [],
-				},
-			});
-		});
-	});
+            api.addGenerator("existing", validGenerator);
 
-	describe("helpers", () => {
-		it("should add helper", () => {
-			vi.spyOn(Handlebars, "registerHelper");
+            expect(logger.warn).toHaveBeenCalledWith('Generator "existing" already exists and will be overwritten');
+        });
 
-			configAPI.get().addHelper("awwYeah", testData.AwwYeahHelper);
+        it("should log and rethrow validation errors", () => {
+            const validationError = new Error("Validation failed");
+            vi.mocked(validation.validateGenerator).mockImplementation(() => {
+                throw validationError;
+            });
 
-			expect(configAPI.get().getHelpers()).toStrictEqual(
-				expect.objectContaining({
-					awwYeah: expect.any(Function),
-				}),
-			);
-		});
+            expect(() => api.addGenerator("bad-gen", {} as any)).toThrow(validationError);
+            expect(logger.error).toHaveBeenCalledWith('Failed to add generator "bad-gen": Validation failed');
+        });
+    });
 
-		it("should return specified helper", () => {
-			configAPI.get().addHelper("micDrop", testData.MicDropHelper);
+    describe("addHelper", () => {
+        const validHelper = (str: string) => str.toUpperCase();
 
-			expect(configAPI.get().getHelper("micDrop")).toBe(testData.MicDropHelper);
-		});
+        it("should add a valid helper", () => {
+            vi.mock("handlebars");
+            vi.mocked(validation.validateHelper).mockReturnValueOnce();
 
-		it("should throw error when specified helper not configured", () => {
-			expect(() => configAPI.get().getHelper("not-there-helper")).toThrow(
-				`Helper "not-there-helper" not found in loaded configuration.`,
-			);
-		});
+            api.addHelper("uppercase", validHelper);
 
-		it("should get all helpers", () => {
-			configAPI.get().addHelper("micDropHelper", testData.MicDropHelper);
-			configAPI.get().addHelper("awwYeah", testData.AwwYeahHelper);
+            expect(validation.validateHelper).toHaveBeenCalledWith("uppercase", validHelper);
+            expect(store.setHelper).toHaveBeenCalledWith("uppercase", validHelper);
+            expect(Handlebars.registerHelper).toHaveBeenCalledWith("uppercase", validHelper);
+            expect(logger.info).toHaveBeenCalledWith('Helper "uppercase" registered successfully');
+        });
 
-			expect(configAPI.get().getHelpers()).toStrictEqual({
-				micDropHelper: testData.MicDropHelper,
-				awwYeah: testData.AwwYeahHelper,
-			});
-		});
-	});
+        it("should warn when overwriting existing helper", () => {
+            mockState.helpers.set("existing", validHelper);
+            vi.mocked(validation.validateHelper).mockReturnValueOnce()
 
-	describe("partials", () => {
-		it("should add partial from template string", () => {
-			vi.spyOn(Handlebars, "registerPartial");
+            api.addHelper("existing", validHelper);
 
-			configAPI.get().addPartial("newPar", testFiles.componentPropsPartial.template);
+            expect(logger.warn).toHaveBeenCalledWith('Helper "existing" already exists and will be overwritten');
+        });
 
-			expect(configAPI.get().getPartials()).toStrictEqual(
-				expect.objectContaining({
-					newPar: testFiles.componentPropsPartial.template,
-				}),
-			);
-		});
+        it("should log and rethrow validation errors", () => {
+            const validationError = new Error("Invalid helper");
+            vi.mocked(validation.validateHelper).mockImplementation(() => {
+                throw validationError;
+            });
 
-		it("should add partial from template func", () => {
-			vi.spyOn(Handlebars, "registerPartial");
+            expect(() => api.addHelper("bad", "not a function" as any)).toThrow(validationError);
+            expect(logger.error).toHaveBeenCalledWith('Failed to add helper "bad": Invalid helper');
+        });
+    });
 
-			configAPI.get().addPartial("newParFunc", testData.partialFunc);
+    describe("addPartial", () => {
+        const validPartial = "<div>{{content}}</div>";
 
-			expect(configAPI.get().getPartials()).toStrictEqual(
-				expect.objectContaining({
-					newParFunc: testData.partialFunc,
-				}),
-			);
-		});
+        it("should add a valid partial", () => {
+            vi.mocked(validation.validatePartial).mockReturnValueOnce();
 
-		it("should add partial from template file", async () => {
-			vi.spyOn(Handlebars, "registerPartial");
+            api.addPartial("testPartial", validPartial);
 
-			await configAPI.get().addPartialFromFile("componentProps", testFiles.componentPropsPartial.filePath);
+            expect(validation.validatePartial).toHaveBeenCalledWith("testPartial", validPartial);
+            expect(store.setPartial).toHaveBeenCalledWith("testPartial", validPartial);
+            expect(logger.info).toHaveBeenCalledWith('Partial "testPartial" registered successfully');
+        });
 
-			expect(configAPI.get().getPartials()).toStrictEqual(
-				expect.objectContaining({
-					componentProps: testFiles.componentPropsPartial.template,
-				}),
-			);
-		});
+        it("should warn when overwriting existing partial", () => {
+            mockState.partials.set("existing", validPartial);
+            vi.mocked(validation.validatePartial).mockReturnValueOnce();
 
-		it("should return specified partial", () => {
-			configAPI.get().addPartial("componentCss", testFiles.componentCss.templateStr);
+            api.addPartial("existing", validPartial);
 
-			expect(configAPI.get().getPartial("componentCss")).toBe(testFiles.componentCss.templateStr);
-		});
+            expect(logger.warn).toHaveBeenCalledWith('Partial "existing" already exists and will be overwritten');
+        });
 
-		it("should throw error when specified partial not configured", () => {
-			expect(() => configAPI.get().getPartial("not-there-partial")).toThrow(
-				`Template partial "not-there-partial" not found in loaded configuration.`,
-			);
-		});
+        it("should log and rethrow validation errors", () => {
+            const validationError = new Error("Invalid partial");
+            vi.mocked(validation.validatePartial).mockImplementation(() => {
+                throw validationError;
+            });
 
-		it("should get all partials", () => {
-			configAPI.get().addPartial("componentCss", testFiles.componentCss.templateStr);
-			configAPI.get().addPartial("newPar", testFiles.componentPropsPartial.template);
-			configAPI.get().addPartial("newParFunc", testData.partialFunc);
+            expect(() => api.addPartial("bad", 123 as any)).toThrow(validationError);
+            expect(logger.error).toHaveBeenCalledWith('Failed to add partial "bad": Invalid partial');
+        });
+    });
 
-			expect(configAPI.get().getPartials()).toStrictEqual({
-				componentCss: testFiles.componentCss.templateStr,
-				newPar: testFiles.componentPropsPartial.template,
-				newParFunc: testData.partialFunc,
-			});
-		});
-	});
+    describe("addPartialFromFile", () => {
+        const partialContent = "<header>{{title}}</header>";
+
+        it("should add a partial from file", async () => {
+            vi.mocked(validation.validatePartialFilePath).mockReturnValueOnce();
+            vi.mocked(fileSys.readFromFile).mockResolvedValueOnce(partialContent);
+
+            await api.addPartialFromFile("header", "partials/header.hbs");
+
+            expect(validation.validatePartialFilePath).toHaveBeenCalledWith("header", "partials/header.hbs");
+            expect(fileSys.readFromFile).toHaveBeenCalledWith("/test/partials/header.hbs");
+            expect(store.setPartial).toHaveBeenCalledWith("header", partialContent);
+            expect(logger.info).toHaveBeenCalledWith("Reading partial from file: /test/partials/header.hbs");
+            expect(logger.info).toHaveBeenCalledWith('Partial "header" loaded from file successfully');
+        });
+
+        it("should warn when overwriting existing partial", async () => {
+            mockState.partials.set("existing", "<div>old</div>");
+            vi.mocked(validation.validatePartialFilePath).mockReturnValueOnce();
+            vi.mocked(fileSys.readFromFile).mockResolvedValueOnce(partialContent);
+
+            await api.addPartialFromFile("existing", "partials/new.hbs");
+
+            expect(logger.warn).toHaveBeenCalledWith('Partial "existing" already exists and will be overwritten');
+        });
+
+        it("should log and rethrow validation errors", async () => {
+            const validationError = new Error("Invalid file path");
+            vi.mocked(validation.validatePartialFilePath).mockImplementation(() => {
+                throw validationError;
+            });
+
+            await expect(api.addPartialFromFile("bad", "")).rejects.toThrow(validationError);
+            expect(logger.error).toHaveBeenCalledWith('Failed to add partial "bad" from file: Invalid file path');
+        });
+
+        it("should log and rethrow file read errors", async () => {
+            const readError = new Error("File not found");
+            vi.mocked(validation.validatePartialFilePath).mockReturnValueOnce();
+            vi.mocked(fileSys.readFromFile).mockRejectedValueOnce(readError);
+
+            await expect(api.addPartialFromFile("missing", "not-found.hbs")).rejects.toThrow(readError);
+            expect(logger.error).toHaveBeenCalledWith('Failed to add partial "missing" from file: File not found');
+        });
+    });
+
+    describe("getter methods", () => {
+        beforeEach(() => {
+            // Add some test data
+            mockState.generators.set("gen1", {description: "Generator 1", prompts: [], operations: []});
+            mockState.generators.set("gen2", {description: "Generator 2", prompts: [], operations: []});
+            mockState.helpers.set("helper1", () => "test");
+            mockState.helpers.set("helper2", () => "test2");
+            mockState.partials.set("partial1", "<div>1</div>");
+            mockState.partials.set("partial2", "<div>2</div>");
+        });
+
+        it("should get config file path", () => {
+            expect(api.getConfigFilePath()).toBe("/test/config.js");
+        });
+
+        it("should get destination base path", () => {
+            expect(api.getDestinationBasePath()).toBe("/test");
+        });
+
+        it("should get selection prompt", () => {
+            expect(api.getSelectionPrompt()).toBe("Select a generator:");
+        });
+
+        it("should get a generator by ID", () => {
+            const generator = api.getGenerator("gen1");
+            expect(generator).toEqual({description: "Generator 1", prompts: [], operations: []});
+        });
+
+        it("should throw when getting non-existent generator", () => {
+            expect(() => api.getGenerator("non-existent")).toThrow('Generator "non-existent" not found in loaded configuration.');
+        });
+
+        it("should get all generators", () => {
+            const generators = api.getGenerators();
+            expect(generators).toEqual({
+                gen1: {description: "Generator 1", prompts: [], operations: []},
+                gen2: {description: "Generator 2", prompts: [], operations: []},
+            });
+        });
+
+        it("should get a helper by name", () => {
+            const helper = api.getHelper("helper1");
+            expect(helper).toBeDefined();
+            expect(helper()).toBe("test");
+        });
+
+        it("should throw when getting non-existent helper", () => {
+            expect(() => api.getHelper("non-existent")).toThrow('Helper "non-existent" not found in loaded configuration.');
+        });
+
+        it("should get all helpers", () => {
+            const helpers = api.getHelpers();
+            expect(Object.keys(helpers)).toEqual(["helper1", "helper2"]);
+        });
+
+        it("should get a partial by name", () => {
+            const partial = api.getPartial("partial1");
+            expect(partial).toBe("<div>1</div>");
+        });
+
+        it("should throw when getting non-existent partial", () => {
+            expect(() => api.getPartial("non-existent")).toThrow('Template partial "non-existent" not found in loaded configuration.');
+        });
+
+        it("should get all partials", () => {
+            const partials = api.getPartials();
+            expect(partials).toEqual({
+                partial1: "<div>1</div>",
+                partial2: "<div>2</div>",
+            });
+        });
+    });
+
+    describe("setter methods", () => {
+        it("should set config file path", () => {
+            api.setConfigFilePath("/new/path/config.js");
+            expect(store.setConfigFilePath).toHaveBeenCalledWith("/new/path/config.js");
+        });
+
+        it("should set selection prompt", () => {
+            api.setSelectionPrompt("Choose your generator:");
+            expect(store.setSelectionPrompt).toHaveBeenCalledWith("Choose your generator:");
+        });
+    });
 });

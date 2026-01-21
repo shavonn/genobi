@@ -25,7 +25,7 @@ function configApi(): ConfigAPI {
 		 *
 		 * @param {string} configFilePath - The absolute path to the config file
 		 */
-		setConfigFilePath: store.setConfigFilePath,
+		setConfigFilePath: (configFilePath: string) => store.setConfigFilePath(configFilePath),
 
 		/**
 		 * Returns the current configuration file path.
@@ -38,9 +38,9 @@ function configApi(): ConfigAPI {
 		 * Sets the base directory path used for generating files.
 		 * All relative paths in operations will be resolved from this path.
 		 *
-		 * @param {string} destinationPath - TThe base directory path for file operations
+		 * @param {string} destinationPath - The base directory path for file operations
 		 */
-		setDestinationBasePath: store.setDestinationBasePath,
+		setDestinationBasePath: (destinationPath: string) => store.setDestinationBasePath(destinationPath),
 
 		/**
 		 * Returns the base directory path used for generating files.
@@ -55,7 +55,7 @@ function configApi(): ConfigAPI {
 		 *
 		 * @param {string} message - The prompt message to display
 		 */
-		setSelectionPrompt: store.setSelectionPrompt,
+		setSelectionPrompt: (prompt: string) => store.setSelectionPrompt(prompt),
 
 		/**
 		 * Returns the current generator selection prompt message.

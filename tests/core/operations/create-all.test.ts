@@ -1,10 +1,9 @@
 import fs from "node:fs/promises";
-import { operationDecorator } from "../../../src/core/operations/operation-decorator";
-import { ops } from "../../../src/core/operations/ops";
-import { fileSys } from "../../../src/utils/file-sys";
-import { templates } from "../../../src/utils/templates";
-import { testData } from "../../__fixtures__/test-data";
-import { getTmpDirPath, loadTestFiles } from "../../test-utils";
+import {operationDecorator} from "../../../src/core/operations/operation-decorator";
+import {ops} from "../../../src/core/operations/ops";
+import {templates} from "../../../src/utils/templates";
+import {testData} from "../../__fixtures__/test-data";
+import {getTmpDirPath, loadTestFiles} from "../../test-utils";
 
 describe("createAll", async () => {
 	let componentFilePath: string;
@@ -70,11 +69,11 @@ describe("createAll", async () => {
 			"src/components/checkbox-input/checkbox-input.css": "exists",
 		});
 
-		vi.spyOn(fileSys, "writeToFile");
+		// Uses atomic write with exclusive flag (wx) - throws FileExistsError atomically
+		// This prevents TOCTOU race conditions between checking file existence and writing
+		await expect(ops.createAll(operation, mergedData)).rejects.toThrow(/File already exists/);
 
-		await expect(ops.createAll(operation, mergedData)).rejects.toThrowError();
-
-		expect(fileSys.writeToFile).not.toHaveBeenCalled();
+		// Existing file should not be modified
 		expect(await fs.access(cssFilePath, fs.constants.F_OK)).toBe(undefined);
 	});
 

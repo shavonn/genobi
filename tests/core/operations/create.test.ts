@@ -55,23 +55,15 @@ describe("create", () => {
 	});
 
 	it("should throw error if file already exists and skipIfExists is false", async () => {
-		const operation = operationDecorator.create(
-			testData.makeCreateOperation({
-				templateFilePath: undefined,
-			}),
-		);
+		const operation = operationDecorator.create(testData.makeCreateOperation());
 
 		await loadTestFiles({
 			"src/components/page-header/page-header.tsx": "page header",
 		});
 
-		vi.spyOn(fs, "readFile");
-		vi.spyOn(fileSys, "fileExists");
-
-		await expect(ops.create(operation, mergedData)).rejects.toThrow();
-
-		expect(fileSys.fileExists).toHaveResolvedWith(true);
-		expect(fs.readFile).not.toHaveBeenCalled();
+		// Uses atomic write with exclusive flag (wx) - throws FileExistsError atomically
+		// This prevents TOCTOU race conditions between checking file existence and writing
+		await expect(ops.create(operation, mergedData)).rejects.toThrow(/File already exists/);
 	});
 
 	it("should skip operation if file already exists and skipIfExists is true", async () => {
@@ -81,6 +73,7 @@ describe("create", () => {
 			}),
 		);
 
+		vi.spyOn(fileSys, "fileExists");
 		vi.spyOn(content, "getSingleFileContent");
 
 		await loadTestFiles({
@@ -106,6 +99,9 @@ describe("create", () => {
 			...testData.themeData,
 		};
 		const alertFilePath = getTmpDirPath("src/components/alert/alert.tsx");
+
+		vi.spyOn(fileSys, "fileExists");
+		vi.spyOn(content, "getSingleFileContent");
 
 		await writeTestFile("src/components/alert/alert.tsx", "to be overwritten as alert component");
 

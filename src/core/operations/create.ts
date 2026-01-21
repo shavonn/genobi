@@ -13,17 +13,20 @@ import { templates } from "../../utils/templates";
  * This function will:
  * 1. Process the file path with Handlebars templates
  * 2. Create any directories needed
- * 3. Check if the file already exists and handle according to skipIfExists/overwrite
+ * 3. Handle file existence according to skipIfExists/overwrite settings
  * 4. Get and process the file content
- * 5. Write the processed content to the file
+ * 5. Write the processed content to the file atomically
+ *
+ * Uses atomic file operations to prevent TOCTOU race conditions when checking
+ * for file existence.
  *
  * @param {CreateOperation} operation - The create operation configuration
- * @param {Record<string, any>} data - The data for template processing
+ * @param {Record<string, unknown>} data - The data for template processing
  * @returns {Promise<void>}
  * @throws {FileExistsError} If the file already exists and neither skipIfExists nor overwrite is true
  * @throws {WriteError} If writing the file fails
  */
-async function create(operation: CreateOperation, data: Record<string, any>): Promise<void> {
+async function create(operation: CreateOperation, data: Record<string, unknown>): Promise<void> {
 	// Process the file path with Handlebars
 	const filePath = fileSys.getTemplateProcessedPath(operation.filePath, data, store.state().destinationBasePath);
 	logger.info(`Creating file: ${filePath}`);
@@ -36,20 +39,15 @@ async function create(operation: CreateOperation, data: Record<string, any>): Pr
 	logger.debug(`Directory path: ${dirPath}`);
 	await fileSys.ensureDirectoryExists(dirPath);
 
-	// Check if file exists and handle accordingly
-	const exists = await fileSys.fileExists(filePath);
-	if (exists) {
-		if (operation.overwrite) {
-			logger.warn(`File already exists: ${filePath}`);
-			logger.warn("It will be overwritten.");
-			logger.debug("Overwriting due to overwrite=true");
-		} else if (operation.skipIfExists) {
+	// For skipIfExists, we need to check first since we want to skip gracefully
+	// This is still a TOCTOU window, but it's acceptable since we're skipping anyway
+	if (operation.skipIfExists) {
+		const exists = await fileSys.fileExists(filePath);
+		if (exists) {
 			logger.warn(`File already exists: ${filePath}`);
 			logger.warn("This operation will be skipped.");
 			logger.debug("Skipping due to skipIfExists=true");
 			return;
-		} else {
-			throw new FileExistsError(filePath);
 		}
 	}
 
@@ -60,14 +58,31 @@ async function create(operation: CreateOperation, data: Record<string, any>): Pr
 		logger.debug(`Template file path: ${operation.templateFilePath}`);
 	}
 
-	const processedContent = await content.getSingleFileContent(operation, data).then((content) => {
-		return templates.process(content, data);
+	const processedContent = await content.getSingleFileContent(operation, data).then((tplContent) => {
+		return templates.process(tplContent, data);
 	});
 	logger.debug(`Processed content length: ${processedContent.length} characters`);
 
 	// Write the content to the file
+	// - If overwrite is true, use normal write (will overwrite existing files)
+	// - Otherwise, use exclusive write to atomically fail if file exists
 	logger.info("Writing content to file");
-	await fileSys.writeToFile(filePath, processedContent);
+
+	if (operation.overwrite) {
+		logger.debug("Using overwrite mode");
+		// Check if file exists just for logging purposes
+		const exists = await fileSys.fileExists(filePath);
+		if (exists) {
+			logger.warn(`File already exists: ${filePath}`);
+			logger.warn("It will be overwritten.");
+		}
+		await fileSys.writeToFile(filePath, processedContent);
+	} else {
+		// Use atomic exclusive write - will throw FileExistsError if file exists
+		logger.debug("Using exclusive write mode for atomic create");
+		await fileSys.writeToFile(filePath, processedContent, { exclusive: true });
+	}
+
 	logger.success(`File created: ${filePath}`);
 }
 

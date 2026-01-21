@@ -10,80 +10,80 @@ import { testFiles } from "../__fixtures__/test-files";
 import { getTmpDirPath, loadTestFiles } from "../test-utils";
 
 describe("content utils", () => {
-	describe("getSingleFileContent", () => {
-		const input = { name: "button" };
+  describe("getSingleFileContent", () => {
+    const input = { name: "button" };
 
-		beforeAll(() => {
-			templates.registerComponents();
-		});
+    beforeAll(() => {
+      templates.registerComponents();
+    });
 
-		beforeEach(async () => {
-			vi.spyOn(fileSys, "getTemplateProcessedPath");
-		});
+    beforeEach(async () => {
+      vi.spyOn(fileSys, "getTemplateProcessedPath");
+    });
 
-		it("should return template content from templateStr", async () => {
-			const operation = operationDecorator.amend(
-				testData.makeAmendOperation({
-					type: "prepend",
-				}),
-			);
+    it("should return template content from templateStr", async () => {
+      const operation = operationDecorator.amend(
+        testData.makeAmendOperation({
+          type: "prepend",
+        }),
+      );
 
-			const result = await content.getSingleFileContent(operation, input);
+      const result = await content.getSingleFileContent(operation, input);
 
-			expect(result).toBe(testFiles.aggregateCss.templateStr);
-			expect(fileSys.getTemplateProcessedPath).not.toHaveBeenCalled();
-		});
+      expect(result).toBe(testFiles.aggregateCss.templateStr);
+      expect(fileSys.getTemplateProcessedPath).not.toHaveBeenCalled();
+    });
 
-		it("should return template content from templateFile", async () => {
-			const operation = operationDecorator.create(testData.makeCreateOperation());
-			const mergedData = {
-				...input,
-				...testData.themeData,
-			};
+    it("should return template content from templateFile", async () => {
+      const operation = operationDecorator.create(testData.makeCreateOperation());
+      const mergedData = {
+        ...input,
+        ...testData.themeData,
+      };
 
-			await loadTestFiles({
-				"templates/component.tsx.hbs": testFiles.component.templateFileContent,
-			});
+      await loadTestFiles({
+        "templates/component.tsx.hbs": testFiles.component.templateFileContent,
+      });
 
-			vi.spyOn(fs, "readFile");
+      vi.spyOn(fs, "readFile");
 
-			const result = await content.getSingleFileContent(operation, mergedData);
+      const result = await content.getSingleFileContent(operation, mergedData);
 
-			expect(fileSys.getTemplateProcessedPath).toHaveBeenCalledWith(
-				operation.templateFilePath,
-				mergedData,
-				store.state().configPath,
-			);
-			expect(result).toBe(testFiles.component.templateFileContent);
-			expect(fs.readFile).toHaveBeenCalledWith(getTmpDirPath(operation.templateFilePath), "utf8");
-		});
+      expect(fileSys.getTemplateProcessedPath).toHaveBeenCalledWith(
+        operation.templateFilePath,
+        mergedData,
+        store.state().configPath,
+      );
+      expect(result).toBe(testFiles.component.templateFileContent);
+      expect(fs.readFile).toHaveBeenCalledWith(getTmpDirPath(operation.templateFilePath), "utf8");
+    });
 
-		it("should throw error when no templateStr or templateFile found for single file operation", async () => {
-			const operation = {
-				type: "prepend",
-				filePath: "src/css/file.css",
-			};
+    it("should throw error when no templateStr or templateFile found for single file operation", async () => {
+      const operation = {
+        type: "prepend",
+        filePath: "src/css/file.css",
+      };
 
-			await expect(content.getSingleFileContent(operation, input)).rejects.toThrow();
+      await expect(content.getSingleFileContent(operation, input)).rejects.toThrow();
 
-			expect(logger.error).toBeCalledWith(
-				expect.stringContaining("No template source specified (templateStr or templateFilePath)."),
-			);
-			expect(fileSys.getTemplateProcessedPath).not.toHaveBeenCalled();
-		});
+      expect(logger.error).toBeCalledWith(
+        expect.stringContaining("No template source specified (templateStr or templateFilePath)."),
+      );
+      expect(fileSys.getTemplateProcessedPath).not.toHaveBeenCalled();
+    });
 
-		it("should throw error when error encountered reading file", async () => {
-			const operation = operationDecorator.amend(
-				testData.makeAmendOperation({
-					type: "prepend",
-					templateStr: undefined,
-					templateFilePath: "templates/style.css.hbs",
-				}),
-			);
+    it("should throw error when error encountered reading file", async () => {
+      const operation = operationDecorator.amend(
+        testData.makeAmendOperation({
+          type: "prepend",
+          templateStr: undefined,
+          templateFilePath: "templates/style.css.hbs",
+        }),
+      );
 
-			vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error("Simulated read error"));
+      vi.spyOn(fs, "readFile").mockRejectedValueOnce(new Error("Simulated read error"));
 
-			await expect(content.getSingleFileContent(operation, input)).rejects.toThrow();
-		});
-	});
+      await expect(content.getSingleFileContent(operation, input)).rejects.toThrow();
+    });
+  });
 });

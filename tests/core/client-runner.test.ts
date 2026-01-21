@@ -11,68 +11,68 @@ import { logger } from "../../src/utils/logger";
 import { testData } from "../__fixtures__/test-data";
 
 describe("runCli", () => {
-	describe("mocked core functions", () => {
-		beforeEach(() => {
-			vi.spyOn(generatorResolver, "resolve").mockResolvedValueOnce();
-			vi.spyOn(generatorRunner, "run").mockResolvedValueOnce();
-		});
+  describe("mocked core functions", () => {
+    beforeEach(() => {
+      vi.spyOn(generatorResolver, "resolve").mockResolvedValueOnce();
+      vi.spyOn(generatorRunner, "run").mockResolvedValueOnce();
+    });
 
-		it("should setup commander and load config", async () => {
-			vi.spyOn(Command.prototype, "version");
-			vi.spyOn(Command.prototype, "description");
-			vi.spyOn(Command.prototype, "parse");
+    it("should setup commander and load config", async () => {
+      vi.spyOn(Command.prototype, "version");
+      vi.spyOn(Command.prototype, "description");
+      vi.spyOn(Command.prototype, "parse");
 
-			vi.spyOn(configLoader, "load").mockResolvedValueOnce();
+      vi.spyOn(configLoader, "load").mockResolvedValueOnce();
 
-			await cli.run();
+      await cli.run();
 
-			expect(Command.prototype.version).toHaveBeenCalled();
-			expect(Command.prototype.description).toHaveBeenCalled();
-			expect(Command.prototype.parse).toHaveBeenCalled();
-			expect(logger.error).not.toHaveBeenCalled();
-		});
+      expect(Command.prototype.version).toHaveBeenCalled();
+      expect(Command.prototype.description).toHaveBeenCalled();
+      expect(Command.prototype.parse).toHaveBeenCalled();
+      expect(logger.error).not.toHaveBeenCalled();
+    });
 
-		it("should exit process when an error is thrown from core function", async () => {
-			vi.spyOn(configLoader, "load").mockRejectedValue(
-				new Error("Config file not found. Create one to define your generators, helpers, and other options."),
-			);
+    it("should exit process when an error is thrown from core function", async () => {
+      vi.spyOn(configLoader, "load").mockRejectedValue(
+        new Error("Config file not found. Create one to define your generators, helpers, and other options."),
+      );
 
-			await expect(cli.run()).rejects.toThrow('process.exit unexpectedly called with "1"');
-			expect(logger.error).toHaveBeenCalledWith(
-				"Error: Config file not found. Create one to define your generators, helpers, and other options.",
-			);
-		});
+      await expect(cli.run()).rejects.toThrow('process.exit unexpectedly called with "1"');
+      expect(logger.error).toHaveBeenCalledWith(
+        "Error: Config file not found. Create one to define your generators, helpers, and other options.",
+      );
+    });
 
-		it("should use generator arg when provided", async () => {
-			vi.spyOn(process, "argv", "get").mockReturnValueOnce(["", "", testData.component.id]);
-			vi.spyOn(store, "setSelectedGenerator");
-			vi.spyOn(configLoader, "load").mockResolvedValueOnce();
+    it("should use generator arg when provided", async () => {
+      vi.spyOn(process, "argv", "get").mockReturnValueOnce(["", "", testData.component.id]);
+      vi.spyOn(store, "setSelectedGenerator");
+      vi.spyOn(configLoader, "load").mockResolvedValueOnce();
 
-			await cli.run();
+      await cli.run();
 
-			expect(store.setSelectedGenerator).toHaveBeenCalledWith(testData.component.id);
-			expect(logger.error).not.toHaveBeenCalled();
-		});
-	});
+      expect(store.setSelectedGenerator).toHaveBeenCalledWith(testData.component.id);
+      expect(logger.error).not.toHaveBeenCalled();
+    });
+  });
 
-	describe("actual generator runner", () => {
-		it("should exit process when an error is thrown from operation", async () => {
-			await testData.slimConfigFunc(configAPI.get());
-			store.setSelectedGenerator(testData.component.id);
-			const input = { name: "table cell" };
+  describe("actual generator runner", () => {
+    it("should exit process when an error is thrown from operation", async () => {
+      await testData.slimConfigFunc(configAPI.get());
+      store.setSelectedGenerator(testData.component.id);
+      const input = { name: "table cell" };
 
-			vi.spyOn(process, "argv", "get").mockReturnValue(["", "", testData.component.id]);
-			vi.spyOn(configLoader, "load").mockImplementationOnce(vi.fn());
-			vi.spyOn(generatorResolver, "resolve").mockImplementationOnce(vi.fn());
-			vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(input);
-			vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error("Simulated write error"));
+      vi.spyOn(process, "argv", "get").mockReturnValue(["", "", testData.component.id]);
+      vi.spyOn(configLoader, "load").mockImplementationOnce(vi.fn());
+      vi.spyOn(generatorResolver, "resolve").mockImplementationOnce(vi.fn());
+      vi.spyOn(inquirer, "prompt").mockResolvedValueOnce(input);
+      vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error("Simulated write error"));
 
-			await expect(cli.run()).rejects.toThrow('process.exit unexpectedly called with "1"');
+      await expect(cli.run()).rejects.toThrow('process.exit unexpectedly called with "1"');
 
-			expect(logger.error).toHaveBeenCalledWith(
-				expect.stringContaining("Create Operation failed."),
-				expect.stringContaining("Error writing file"),
-			);
-		});
-	});
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining("Create Operation failed."),
+        expect.stringContaining("Error writing file"),
+      );
+    });
+  });
 });

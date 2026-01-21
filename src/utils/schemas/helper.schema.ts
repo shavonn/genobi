@@ -9,11 +9,11 @@ const reservedHelperNames = ["if", "unless", "each", "with", "lookup", "log"] as
  * Helper name schema - validates the name is non-empty and not reserved
  */
 export const helperNameSchema = z
-	.string()
-	.min(1, "cannot be empty")
-	.refine((name) => !reservedHelperNames.includes(name as (typeof reservedHelperNames)[number]), {
-		message: "is a reserved Handlebars helper name",
-	});
+  .string()
+  .min(1, "cannot be empty")
+  .refine((name) => !reservedHelperNames.includes(name as (typeof reservedHelperNames)[number]), {
+    message: "is a reserved Handlebars helper name",
+  });
 
 /**
  * Helper function schema

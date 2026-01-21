@@ -7,12 +7,13 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["./package.json!"]
+    "includes": ["**", "./package.json!"]
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
-    "lineWidth": 120
+    "lineWidth": 120,
+    "bracketSpacing": true
   },
   "linter": {
     "enabled": true,
@@ -85,13 +86,5 @@
         "organizeImports": "on"
       }
     }
-  },
-  "overrides": [
-    {
-      "includes": ["**/*.tsx"],
-      "formatter": {
-        "bracketSameLine": true
-      }
-    }
-  ]
+  }
 }

@@ -8,13 +8,13 @@ import { execSync } from "node:child_process";
  * @returns {string} The error message
  */
 function getErrorMessage(err: unknown): string {
-	if (err instanceof Error) {
-		return err.message;
-	}
-	if (typeof err === "string") {
-		return err;
-	}
-	return String(err);
+  if (err instanceof Error) {
+    return err.message;
+  }
+  if (typeof err === "string") {
+    return err;
+  }
+  return String(err);
 }
 
 /**
@@ -24,12 +24,12 @@ function getErrorMessage(err: unknown): string {
  * @returns {boolean} True if the value has error-like properties
  */
 function isErrorWithMessage(err: unknown): err is { message: string } {
-	return (
-		typeof err === "object" &&
-		err !== null &&
-		"message" in err &&
-		typeof (err as { message: unknown }).message === "string"
-	);
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "message" in err &&
+    typeof (err as { message: unknown }).message === "string"
+  );
 }
 
 /**
@@ -39,9 +39,9 @@ function isErrorWithMessage(err: unknown): err is { message: string } {
  * @returns {boolean} True if the value has a stack property
  */
 function isErrorWithStack(err: unknown): err is { stack: string } {
-	return (
-		typeof err === "object" && err !== null && "stack" in err && typeof (err as { stack: unknown }).stack === "string"
-	);
+  return (
+    typeof err === "object" && err !== null && "stack" in err && typeof (err as { stack: unknown }).stack === "string"
+  );
 }
 
 /**
@@ -54,7 +54,7 @@ function isErrorWithStack(err: unknown): err is { stack: string } {
  * escapeRegExp("hello.world") => "hello\\.world"
  */
 function escapeRegExp(str: string): string {
-	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /**
@@ -64,22 +64,22 @@ function escapeRegExp(str: string): string {
  * @returns {boolean} True if Genobi is installed globally
  */
 function isGlobalInstall(): boolean {
-	try {
-		const globalNodeModules = execSync("npm root -g").toString().trim();
-		return __dirname.startsWith(globalNodeModules);
-	} catch {
-		return false;
-	}
+  try {
+    const globalNodeModules = execSync("npm root -g").toString().trim();
+    return __dirname.startsWith(globalNodeModules);
+  } catch {
+    return false;
+  }
 }
 
 /**
  * Common utility functions used throughout the application.
  */
 const common = {
-	escapeRegExp,
-	getErrorMessage,
-	isErrorWithMessage,
-	isErrorWithStack,
-	isGlobalInstall,
+  escapeRegExp,
+  getErrorMessage,
+  isErrorWithMessage,
+  isErrorWithStack,
+  isGlobalInstall,
 };
 export { common };

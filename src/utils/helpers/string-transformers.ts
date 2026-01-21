@@ -27,10 +27,10 @@ const isNumber = (val: unknown): val is number => typeof val === "number";
  * @returns {string} The camelCase string or empty string if input is not a string
  */
 export function camelCase(str: unknown): string {
-	if (!isString(str)) return "";
-	return str
-		.replace(/([-_.\s]+[a-zA-Z])/g, (g) => g.toUpperCase().replace(/[-_.\s]/g, ""))
-		.replace(/^[A-Z]/, (c) => c.toLowerCase());
+  if (!isString(str)) return "";
+  return str
+    .replace(/([-_.\s]+[a-zA-Z])/g, (g) => g.toUpperCase().replace(/[-_.\s]/g, ""))
+    .replace(/^[A-Z]/, (c) => c.toLowerCase());
 }
 
 /**
@@ -44,13 +44,13 @@ export function camelCase(str: unknown): string {
  * @returns {string} The snake_case string or empty string if input is not a string
  */
 export function snakeCase(str: unknown): string {
-	if (!isString(str)) return "";
-	return str
-		.replace(/\s+/g, "_")
-		.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-		.replace(/^_+/, "")
-		.replace(/_+/g, "_")
-		.toLowerCase();
+  if (!isString(str)) return "";
+  return str
+    .replace(/\s+/g, "_")
+    .replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+    .replace(/^_+/, "")
+    .replace(/_+/g, "_")
+    .toLowerCase();
 }
 
 /**
@@ -64,13 +64,13 @@ export function snakeCase(str: unknown): string {
  * @returns {string} The kebab-case string or empty string if input is not a string
  */
 export function kebabCase(str: unknown): string {
-	if (!isString(str)) return "";
-	return str
-		.replace(/\s+/g, "-")
-		.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
-		.replace(/^-+/, "")
-		.replace(/-+/g, "-")
-		.toLowerCase();
+  if (!isString(str)) return "";
+  return str
+    .replace(/\s+/g, "-")
+    .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
+    .replace(/^-+/, "")
+    .replace(/-+/g, "-")
+    .toLowerCase();
 }
 
 /**
@@ -84,13 +84,13 @@ export function kebabCase(str: unknown): string {
  * @returns {string} The dot.case string or empty string if input is not a string
  */
 export function dotCase(str: unknown): string {
-	if (!isString(str)) return "";
-	return str
-		.replace(/\s+/g, ".")
-		.replace(/[A-Z]/g, (letter) => `.${letter.toLowerCase()}`)
-		.replace(/^\.+/, "")
-		.replace(/\.+/g, ".")
-		.toLowerCase();
+  if (!isString(str)) return "";
+  return str
+    .replace(/\s+/g, ".")
+    .replace(/[A-Z]/g, (letter) => `.${letter.toLowerCase()}`)
+    .replace(/^\.+/, "")
+    .replace(/\.+/g, ".")
+    .toLowerCase();
 }
 
 /**
@@ -104,8 +104,8 @@ export function dotCase(str: unknown): string {
  * @returns {string} The PascalCase string or empty string if input is not a string
  */
 export function pascalCase(str: unknown): string {
-	if (!isString(str)) return "";
-	return str.replace(/(^\w|[-_\s.]+(\w))/g, (_, p1, p2) => (p2 || p1).toUpperCase());
+  if (!isString(str)) return "";
+  return str.replace(/(^\w|[-_\s.]+(\w))/g, (_, p1, p2) => (p2 || p1).toUpperCase());
 }
 
 /**
@@ -119,13 +119,13 @@ export function pascalCase(str: unknown): string {
  * @returns {string} The path/case string or empty string if input is not a string
  */
 export function pathCase(str: unknown): string {
-	if (!isString(str)) return "";
-	return str
-		.replace(/\s+/g, "/")
-		.replace(/[A-Z]/g, (letter) => `/${letter.toLowerCase()}`)
-		.replace(/^\/+/, "")
-		.replace(/\/+/g, "/")
-		.toLowerCase();
+  if (!isString(str)) return "";
+  return str
+    .replace(/\s+/g, "/")
+    .replace(/[A-Z]/g, (letter) => `/${letter.toLowerCase()}`)
+    .replace(/^\/+/, "")
+    .replace(/\/+/g, "/")
+    .toLowerCase();
 }
 
 /**
@@ -138,8 +138,8 @@ export function pathCase(str: unknown): string {
  * @returns {string} The lowercase string or empty string if input is not a string
  */
 export function lowerCase(str: unknown): string {
-	if (!isString(str)) return "";
-	return str.toLowerCase();
+  if (!isString(str)) return "";
+  return str.toLowerCase();
 }
 
 /**
@@ -152,8 +152,8 @@ export function lowerCase(str: unknown): string {
  * @returns {string} The UPPERCASE string or empty string if input is not a string
  */
 export function upperCase(str: unknown): string {
-	if (!isString(str)) return "";
-	return str.toUpperCase();
+  if (!isString(str)) return "";
+  return str.toUpperCase();
 }
 
 /**
@@ -167,8 +167,8 @@ export function upperCase(str: unknown): string {
  * @returns {string} The SCREAMING_SNAKE_CASE string or empty string if input is not a string
  */
 export function screamingSnakeCase(str: unknown): string {
-	if (!isString(str)) return "";
-	return snakeCase(str).toUpperCase();
+  if (!isString(str)) return "";
+  return snakeCase(str).toUpperCase();
 }
 
 /**
@@ -182,12 +182,12 @@ export function screamingSnakeCase(str: unknown): string {
  * @returns {string} The Sentence case string or empty string if input is not a string
  */
 export function sentenceCase(str: unknown): string {
-	if (!isString(str)) return "";
-	const result = str
-		.replace(/([a-z])([A-Z])/g, "$1 $2")
-		.replace(/[_\-.]+/g, " ")
-		.toLowerCase();
-	return result.charAt(0).toUpperCase() + result.slice(1);
+  if (!isString(str)) return "";
+  const result = str
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[_\-.]+/g, " ")
+    .toLowerCase();
+  return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
 /**
@@ -201,11 +201,11 @@ export function sentenceCase(str: unknown): string {
  * @returns {string} The Title Case string or empty string if input is not a string
  */
 export function titleCase(str: unknown): string {
-	if (!isString(str)) return "";
-	return str
-		.toLowerCase()
-		.replace(/[_\-.]+/g, " ")
-		.replace(/\b\w/g, (char) => char.toUpperCase());
+  if (!isString(str)) return "";
+  return str
+    .toLowerCase()
+    .replace(/[_\-.]+/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 /**
@@ -221,8 +221,8 @@ export function titleCase(str: unknown): string {
  * @returns {string} The truncated string or empty string if inputs are invalid
  */
 export function truncate(str: unknown, limit: unknown, suffix: unknown = "..."): string {
-	if (!isString(str) || !isNumber(limit) || !isString(suffix)) return "";
-	return str.length <= limit ? str : str.slice(0, limit) + suffix;
+  if (!isString(str) || !isNumber(limit) || !isString(suffix)) return "";
+  return str.length <= limit ? str : str.slice(0, limit) + suffix;
 }
 
 /**
@@ -237,9 +237,9 @@ export function truncate(str: unknown, limit: unknown, suffix: unknown = "..."):
  * @returns {string} The truncated string or empty string if inputs are invalid
  */
 export function truncateWords(str: unknown, wordLimit: unknown, suffix: unknown = "..."): string {
-	if (!isString(str) || !isNumber(wordLimit) || !isString(suffix)) return "";
-	const words = str.split(/\s+/);
-	return words.length <= wordLimit ? str : words.slice(0, wordLimit).join(" ") + suffix;
+  if (!isString(str) || !isNumber(wordLimit) || !isString(suffix)) return "";
+  const words = str.split(/\s+/);
+  return words.length <= wordLimit ? str : words.slice(0, wordLimit).join(" ") + suffix;
 }
 
 /**
@@ -254,7 +254,7 @@ export function truncateWords(str: unknown, wordLimit: unknown, suffix: unknown 
  * @returns {string} The string with ellipsis or empty string if inputs are invalid
  */
 export function ellipsis(str: unknown, limit: unknown): string {
-	return truncate(str, limit);
+  return truncate(str, limit);
 }
 
 /**
@@ -268,8 +268,8 @@ export function ellipsis(str: unknown, limit: unknown): string {
  * @returns {string} The combined string or empty string if inputs are invalid
  */
 export function append(str: unknown, toAppend: unknown): string {
-	if (!isString(str) || !isString(toAppend)) return "";
-	return str + toAppend;
+  if (!isString(str) || !isString(toAppend)) return "";
+  return str + toAppend;
 }
 
 /**
@@ -283,8 +283,8 @@ export function append(str: unknown, toAppend: unknown): string {
  * @returns {string} The combined string or empty string if inputs are invalid
  */
 export function prepend(str: unknown, toPrepend: unknown): string {
-	if (!isString(str) || !isString(toPrepend)) return "";
-	return toPrepend + str;
+  if (!isString(str) || !isString(toPrepend)) return "";
+  return toPrepend + str;
 }
 
 /**
@@ -298,32 +298,32 @@ export function prepend(str: unknown, toPrepend: unknown): string {
  * @returns {string} The string with removals or empty string if inputs are invalid
  */
 export function remove(str: unknown, toRemove: unknown): string {
-	if (!isString(str) || !isString(toRemove)) return "";
-	const escaped = toRemove.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	return str.replace(new RegExp(escaped, "g"), "");
+  if (!isString(str) || !isString(toRemove)) return "";
+  const escaped = toRemove.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return str.replace(new RegExp(escaped, "g"), "");
 }
 
 /**
  * Collection of string transformation helper functions.
  */
 export const stringHelpers = {
-	camelCase,
-	snakeCase,
-	kebabCase,
-	dotCase,
-	pascalCase,
-	pathCase,
-	lowerCase,
-	upperCase,
-	screamingSnakeCase,
-	sentenceCase,
-	titleCase,
-	truncate,
-	truncateWords,
-	ellipsis,
-	append,
-	prepend,
-	remove,
+  camelCase,
+  snakeCase,
+  kebabCase,
+  dotCase,
+  pascalCase,
+  pathCase,
+  lowerCase,
+  upperCase,
+  screamingSnakeCase,
+  sentenceCase,
+  titleCase,
+  truncate,
+  truncateWords,
+  ellipsis,
+  append,
+  prepend,
+  remove,
 };
 
 /**
@@ -331,7 +331,7 @@ export const stringHelpers = {
  * This makes them available for use in templates.
  */
 export function registerStringHelpers() {
-	for (const [name, fn] of Object.entries(stringHelpers)) {
-		Handlebars.registerHelper(name, fn);
-	}
+  for (const [name, fn] of Object.entries(stringHelpers)) {
+    Handlebars.registerHelper(name, fn);
+  }
 }

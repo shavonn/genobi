@@ -1,5 +1,16 @@
-export { promptSchema, type PromptConfig } from "./prompt.schema.js";
-export { operationSchema, validOperationTypes, type OperationConfig } from "./operation.schema.js";
-export { generatorSchema, generatorIdSchema, type GeneratorConfig } from "./generator.schema.js";
-export { helperNameSchema, helperFunctionSchema, type HelperName } from "./helper.schema.js";
-export { partialNameSchema, partialSchema, partialFilePathSchema, type PartialName, type PartialContent } from "./partial.schema.js";
+export { type GeneratorConfig, generatorIdSchema, generatorSchema } from "./generator.schema.js";
+export { type HelperName, helperFunctionSchema, helperNameSchema } from "./helper.schema.js";
+export {
+  type OperationConfig,
+  operationSchema,
+  reservedOperationTypes,
+  validOperationTypes,
+} from "./operation.schema.js";
+export {
+  type PartialContent,
+  type PartialName,
+  partialFilePathSchema,
+  partialNameSchema,
+  partialSchema,
+} from "./partial.schema.js";
+export { type PromptConfig, promptSchema } from "./prompt.schema.js";

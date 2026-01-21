@@ -7,23 +7,23 @@ import type { Operation } from "./operation";
  * and a set of operations to perform.
  */
 export interface GeneratorConfig {
-	/**
-	 * Human-readable description of the generator.
-	 * This is displayed in the selection menu when choosing a generator.
-	 */
-	description: string;
+  /**
+   * Human-readable description of the generator.
+   * This is displayed in the selection menu when choosing a generator.
+   */
+  description: string;
 
-	/**
-	 * Array of Inquirer.js question objects that prompt the user for input.
-	 * The answers will be available to operations as template data.
-	 *
-	 * @see {@link https://github.com/SBoudrias/Inquirer.js#questions} for question format
-	 */
-	prompts: Question[];
+  /**
+   * Array of Inquirer.js question objects that prompt the user for input.
+   * The answers will be available to operations as template data.
+   *
+   * @see {@link https://github.com/SBoudrias/Inquirer.js#questions} for question format
+   */
+  prompts: Question[];
 
-	/**
-	 * Array of operations to perform when the generator is executed.
-	 * Operations include creating files, appending/prepending to files, etc.
-	 */
-	operations: Operation[];
+  /**
+   * Array of operations to perform when the generator is executed.
+   * Operations include creating files, appending/prepending to files, etc.
+   */
+  operations: Operation[];
 }

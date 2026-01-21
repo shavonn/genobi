@@ -8,35 +8,35 @@ import { forMany } from "./for-many";
  * These functions handle the actual execution of different operation types.
  */
 const ops = {
-	/**
-	 * Executes a generic amend operation (append or prepend)
-	 */
-	amendFile,
+  /**
+   * Executes a generic amend operation (append or prepend)
+   */
+  amendFile,
 
-	/**
-	 * Appends content to a file
-	 */
-	append,
+  /**
+   * Appends content to a file
+   */
+  append,
 
-	/**
-	 * Creates a new file
-	 */
-	create,
+  /**
+   * Creates a new file
+   */
+  create,
 
-	/**
-	 * Creates multiple files from a template pattern
-	 */
-	createAll,
+  /**
+   * Creates multiple files from a template pattern
+   */
+  createAll,
 
-	/**
-	 * Prepends content to a file
-	 */
-	prepend,
+  /**
+   * Prepends content to a file
+   */
+  prepend,
 
-	/**
-	 * Runs a specified generator multiple times for variable data
-	 */
-	forMany,
+  /**
+   * Runs a specified generator multiple times for variable data
+   */
+  forMany,
 };
 
 export { ops };

@@ -5,15 +5,15 @@ import { testFiles } from "./__fixtures__/test-files";
 import { cleanUpTmpDir, createTmpDir, getTmpDir } from "./test-utils";
 
 beforeEach(async () => {
-	store.resetDefault();
-	await createTmpDir();
+  store.resetDefault();
+  await createTmpDir();
 
-	const dir = getTmpDir();
-	store.setDestinationBasePath(dir);
-	store.setConfigFilePath(path.resolve(dir, testData.configFilePath));
-	await testFiles.loadExistingFiles();
+  const dir = getTmpDir();
+  store.setDestinationBasePath(dir);
+  store.setConfigFilePath(path.resolve(dir, testData.configFilePath));
+  await testFiles.loadExistingFiles();
 });
 
 afterEach(async () => {
-	await cleanUpTmpDir();
+  await cleanUpTmpDir();
 });

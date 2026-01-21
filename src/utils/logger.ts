@@ -9,9 +9,9 @@ import { store } from "../config-store";
  * @param {...unknown} args - Additional arguments to log
  */
 function logDebug(msg: string, ...args: unknown[]): void {
-	if (store.state().logDebug) {
-		console.debug(chalk.cyanBright("[Debug]"), msg, ...args);
-	}
+  if (store.state().logDebug) {
+    console.debug(chalk.cyanBright("[Debug]"), msg, ...args);
+  }
 }
 
 /**
@@ -22,7 +22,7 @@ function logDebug(msg: string, ...args: unknown[]): void {
  * @param {...unknown} args - Additional arguments to log
  */
 function logError(msg: string, ...args: unknown[]): void {
-	console.error(chalk.red(msg), ...args);
+  console.error(chalk.red(msg), ...args);
 }
 
 /**
@@ -33,9 +33,9 @@ function logError(msg: string, ...args: unknown[]): void {
  * @param {...unknown} args - Additional arguments to log
  */
 function logInfo(msg: string, ...args: unknown[]): void {
-	if (store.state().logVerbose) {
-		console.info(chalk.blue(msg), ...args);
-	}
+  if (store.state().logVerbose) {
+    console.info(chalk.blue(msg), ...args);
+  }
 }
 
 /**
@@ -46,7 +46,7 @@ function logInfo(msg: string, ...args: unknown[]): void {
  * @param {...unknown} args - Additional arguments to log
  */
 function logSuccess(msg: string, ...args: unknown[]): void {
-	console.log(chalk.green(msg), ...args);
+  console.log(chalk.green(msg), ...args);
 }
 
 /**
@@ -57,22 +57,22 @@ function logSuccess(msg: string, ...args: unknown[]): void {
  * @param {...unknown} args - Additional arguments to log
  */
 function logWarn(msg: string, ...args: unknown[]): void {
-	console.warn(chalk.yellow(msg), ...args);
+  console.warn(chalk.yellow(msg), ...args);
 }
 
 /**
  * A utility for logging messages to the console with different levels of severity.
  */
 const logger = {
-	/** Log debug information (only shows when debug mode is enabled) */
-	debug: logDebug,
-	/** Log errors (always shown) */
-	error: logError,
-	/** Log informational messages (only shows when verbose mode is enabled) */
-	info: logInfo,
-	/** Log success messages (always shown) */
-	success: logSuccess,
-	/** Log warning messages (always shown) */
-	warn: logWarn,
+  /** Log debug information (only shows when debug mode is enabled) */
+  debug: logDebug,
+  /** Log errors (always shown) */
+  error: logError,
+  /** Log informational messages (only shows when verbose mode is enabled) */
+  info: logInfo,
+  /** Log success messages (always shown) */
+  success: logSuccess,
+  /** Log warning messages (always shown) */
+  warn: logWarn,
 };
 export { logger };

@@ -22,21 +22,11 @@ using [plopjs](https://github.com/plopjs/plop), but then, I wanted to do more an
 
 To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
 
-#### TODO to major release version:
-
-- [x] Logs are improved
-- [x] Operation for multi-gen
-- [x] Validation for api functions is implemented
-- [x] Custom operations are implemented
-- [x] File path validation
-- [ ] More examples
-
 ***
 
 <!-- TOC -->
 * [Genobi](#genobi)
   * [Why Genobi?](#why-genobi)
-      * [TODO to major release version:](#todo-to-major-release-version)
   * [Requirements](#requirements)
   * [Installation](#installation)
     * [Install Genobi globally:](#install-genobi-globally)
@@ -62,6 +52,13 @@ To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
   * [Built-in Handlebars Helpers](#built-in-handlebars-helpers)
     * [Basic String Transformers](#basic-string-transformers)
     * [String Helpers with Additional Args](#string-helpers-with-additional-args)
+  * [Examples](#examples)
+    * [Full React Component Generator](#full-react-component-generator)
+    * [Using Template Files](#using-template-files)
+    * [Using Partials for Shared Templates](#using-partials-for-shared-templates)
+    * [Batch Generation with ForMany](#batch-generation-with-formany)
+    * [API Route Generator with Validation](#api-route-generator-with-validation)
+    * [Monorepo Package Generator with CreateAll](#monorepo-package-generator-with-createall)
   * [Things to Know](#things-to-know)
     * [Templates and Prompts](#templates-and-prompts)
     * [Template File Size](#template-file-size)
@@ -440,6 +437,378 @@ Genobi includes several helpful string transformation helpers:
 | `append`        | `(str, toAppend)`          | Appends a string to another                                                     | `{{append "Hello" " world"}}` → "Hello world"                        |
 | `prepend`       | `(str, toPrepend)`         | Prepends a string to another                                                    | `{{prepend "world" "Hello "}}` → "Hello world"                       |
 | `remove`        | `(str, toRemove)`          | Removes all occurrences of substring                                            | `{{remove "Hello world" "o"}}` → "Hell wrld"                         |
+
+## Examples
+
+### Full React Component Generator
+
+A complete generator that creates a component with styles, tests, and a Storybook story:
+
+```javascript
+export default (genobi) => {
+    genobi.addGenerator("react-component", {
+        description: "React component with styles, tests, and story",
+        prompts: [
+            {
+                type: "input",
+                name: "name",
+                message: "Component name?",
+                validate: (input) => input.length > 0 || "Name is required"
+            },
+            {
+                type: "list",
+                name: "styling",
+                message: "Styling approach?",
+                choices: ["css", "scss", "styled-components", "none"]
+            },
+            {
+                type: "confirm",
+                name: "withTest",
+                message: "Include test file?",
+                default: true
+            },
+            {
+                type: "confirm",
+                name: "withStory",
+                message: "Include Storybook story?",
+                default: false
+            }
+        ],
+        operations: [
+            // Component file
+            {
+                type: "create",
+                filePath: "src/components/{{pascalCase name}}/{{pascalCase name}}.tsx",
+                templateStr: `import React from "react";
+{{#if (eq styling "css")}}import "./{{pascalCase name}}.css";{{/if}}
+{{#if (eq styling "scss")}}import "./{{pascalCase name}}.scss";{{/if}}
+
+export interface {{pascalCase name}}Props {
+  children?: React.ReactNode;
+}
+
+export const {{pascalCase name}}: React.FC<{{pascalCase name}}Props> = ({ children }) => {
+  return (
+    <div className="{{kebabCase name}}">
+      {children}
+    </div>
+  );
+};
+`
+            },
+            // CSS file (conditional)
+            {
+                type: "create",
+                filePath: "src/components/{{pascalCase name}}/{{pascalCase name}}.css",
+                templateStr: `.{{kebabCase name}} {\n  /* styles */\n}\n`,
+                skip: (data) => data.styling !== "css"
+            },
+            // SCSS file (conditional)
+            {
+                type: "create",
+                filePath: "src/components/{{pascalCase name}}/{{pascalCase name}}.scss",
+                templateStr: `.{{kebabCase name}} {\n  /* styles */\n}\n`,
+                skip: (data) => data.styling !== "scss"
+            },
+            // Test file (conditional)
+            {
+                type: "create",
+                filePath: "src/components/{{pascalCase name}}/{{pascalCase name}}.test.tsx",
+                templateStr: `import { render, screen } from "@testing-library/react";
+import { {{pascalCase name}} } from "./{{pascalCase name}}";
+
+describe("{{pascalCase name}}", () => {
+  it("renders children", () => {
+    render(<{{pascalCase name}}>Hello</{{pascalCase name}}>);
+    expect(screen.getByText("Hello")).toBeInTheDocument();
+  });
+});
+`,
+                skip: (data) => !data.withTest
+            },
+            // Story file (conditional)
+            {
+                type: "create",
+                filePath: "src/components/{{pascalCase name}}/{{pascalCase name}}.stories.tsx",
+                templateStr: `import type { Meta, StoryObj } from "@storybook/react";
+import { {{pascalCase name}} } from "./{{pascalCase name}}";
+
+const meta: Meta<typeof {{pascalCase name}}> = {
+  title: "Components/{{pascalCase name}}",
+  component: {{pascalCase name}},
+};
+
+export default meta;
+type Story = StoryObj<typeof {{pascalCase name}}>;
+
+export const Default: Story = {
+  args: {
+    children: "{{pascalCase name}} content",
+  },
+};
+`,
+                skip: (data) => !data.withStory
+            },
+            // Index barrel export
+            {
+                type: "create",
+                filePath: "src/components/{{pascalCase name}}/index.ts",
+                templateStr: `export { {{pascalCase name}} } from "./{{pascalCase name}}";\nexport type { {{pascalCase name}}Props } from "./{{pascalCase name}}";\n`
+            },
+            // Add to components index
+            {
+                type: "append",
+                filePath: "src/components/index.ts",
+                templateStr: `export * from "./{{pascalCase name}}";`,
+                unique: true
+            }
+        ]
+    });
+};
+```
+
+### Using Template Files
+
+For larger templates, use external files instead of inline strings:
+
+```
+project/
+├── genobi.config.js
+└── templates/
+    └── component/
+        ├── component.tsx.hbs
+        ├── component.test.tsx.hbs
+        └── component.css.hbs
+```
+
+```javascript
+// genobi.config.js
+export default (genobi) => {
+    genobi.addGenerator("component", {
+        description: "Component from template files",
+        prompts: [
+            { type: "input", name: "name", message: "Component name?" }
+        ],
+        operations: [
+            {
+                type: "create",
+                filePath: "src/components/{{pascalCase name}}/{{pascalCase name}}.tsx",
+                templateFilePath: "templates/component/component.tsx.hbs"
+            },
+            {
+                type: "create",
+                filePath: "src/components/{{pascalCase name}}/{{pascalCase name}}.test.tsx",
+                templateFilePath: "templates/component/component.test.tsx.hbs"
+            },
+            {
+                type: "create",
+                filePath: "src/components/{{pascalCase name}}/{{pascalCase name}}.css",
+                templateFilePath: "templates/component/component.css.hbs"
+            }
+        ]
+    });
+};
+```
+
+### Using Partials for Shared Templates
+
+Register partials for reusable template snippets:
+
+```javascript
+export default (genobi) => {
+    // Register a partial for file headers
+    genobi.addPartial("fileHeader", `/**
+ * {{name}}
+ * Generated by Genobi on {{timestamp}}
+ */
+`);
+
+    genobi.addGenerator("service", {
+        description: "Service class",
+        prompts: [
+            { type: "input", name: "name", message: "Service name?" }
+        ],
+        operations: [
+            {
+                type: "create",
+                filePath: "src/services/{{pascalCase name}}Service.ts",
+                templateStr: `{{> fileHeader}}
+export class {{pascalCase name}}Service {
+  // Implementation
+}
+`,
+                data: {
+                    timestamp: new Date().toISOString()
+                }
+            }
+        ]
+    });
+};
+```
+
+### Batch Generation with ForMany
+
+Generate multiple files from a list:
+
+```javascript
+export default (genobi) => {
+    // Simple component generator (used by forMany)
+    genobi.addGenerator("simple-component", {
+        description: "Simple component",
+        operations: [
+            {
+                type: "create",
+                filePath: "src/components/{{pascalCase name}}.tsx",
+                templateStr: `export const {{pascalCase name}} = () => <div>{{pascalCase name}}</div>;\n`,
+                skipIfExists: true
+            }
+        ]
+    });
+
+    // Batch generator
+    genobi.addGenerator("component-batch", {
+        description: "Generate multiple components",
+        prompts: [
+            {
+                type: "input",
+                name: "components",
+                message: "Component names (comma-separated)?",
+                filter: (input) => input.split(",").map(s => s.trim())
+            }
+        ],
+        operations: [
+            {
+                type: "forMany",
+                generatorId: "simple-component",
+                items: (data) => data.components,
+                transformItem: (name) => ({ name })
+            }
+        ]
+    });
+};
+```
+
+### API Route Generator with Validation
+
+```javascript
+export default (genobi) => {
+    genobi.addGenerator("api-route", {
+        description: "Express API route",
+        prompts: [
+            {
+                type: "input",
+                name: "resource",
+                message: "Resource name (singular)?",
+                validate: (input) => /^[a-z]+$/.test(input) || "Use lowercase letters only"
+            },
+            {
+                type: "checkbox",
+                name: "methods",
+                message: "HTTP methods to include?",
+                choices: [
+                    { name: "GET (list)", value: "list", checked: true },
+                    { name: "GET (single)", value: "get", checked: true },
+                    { name: "POST", value: "post", checked: true },
+                    { name: "PUT", value: "put", checked: true },
+                    { name: "DELETE", value: "delete", checked: true }
+                ]
+            }
+        ],
+        operations: [
+            {
+                type: "create",
+                filePath: "src/routes/{{resource}}.routes.ts",
+                templateStr: `import { Router } from "express";
+import * as controller from "../controllers/{{resource}}.controller";
+
+const router = Router();
+
+{{#each methods}}
+{{#if (eq this "list")}}router.get("/{{../resource}}s", controller.list);{{/if}}
+{{#if (eq this "get")}}router.get("/{{../resource}}s/:id", controller.get);{{/if}}
+{{#if (eq this "post")}}router.post("/{{../resource}}s", controller.create);{{/if}}
+{{#if (eq this "put")}}router.put("/{{../resource}}s/:id", controller.update);{{/if}}
+{{#if (eq this "delete")}}router.delete("/{{../resource}}s/:id", controller.remove);{{/if}}
+{{/each}}
+
+export default router;
+`
+            },
+            {
+                type: "create",
+                filePath: "src/controllers/{{resource}}.controller.ts",
+                templateStr: `import { Request, Response } from "express";
+
+{{#each methods}}
+{{#if (eq this "list")}}
+export const list = async (req: Request, res: Response) => {
+  // List all {{../resource}}s
+};
+{{/if}}
+{{#if (eq this "get")}}
+export const get = async (req: Request, res: Response) => {
+  // Get single {{../resource}}
+};
+{{/if}}
+{{#if (eq this "post")}}
+export const create = async (req: Request, res: Response) => {
+  // Create {{../resource}}
+};
+{{/if}}
+{{#if (eq this "put")}}
+export const update = async (req: Request, res: Response) => {
+  // Update {{../resource}}
+};
+{{/if}}
+{{#if (eq this "delete")}}
+export const remove = async (req: Request, res: Response) => {
+  // Delete {{../resource}}
+};
+{{/if}}
+{{/each}}
+`
+            },
+            {
+                type: "append",
+                filePath: "src/routes/index.ts",
+                templateStr: `import {{resource}}Routes from "./{{resource}}.routes";\napp.use({{resource}}Routes);`,
+                pattern: "// ROUTES",
+                unique: true
+            }
+        ]
+    });
+};
+```
+
+### Monorepo Package Generator with CreateAll
+
+```javascript
+export default (genobi) => {
+    genobi.addGenerator("package", {
+        description: "New monorepo package",
+        prompts: [
+            { type: "input", name: "name", message: "Package name?" },
+            { type: "input", name: "description", message: "Description?" }
+        ],
+        operations: [
+            // Copy all template files maintaining structure
+            {
+                type: "createAll",
+                destinationPath: "packages/{{kebabCase name}}",
+                templateFilesGlob: "templates/package/**/*",
+                templateBasePath: "templates/package"
+            },
+            // Add to workspace
+            {
+                type: "append",
+                filePath: "pnpm-workspace.yaml",
+                templateStr: `  - "packages/{{kebabCase name}}"`,
+                unique: true
+            }
+        ]
+    });
+};
+```
 
 ## Things to Know
 

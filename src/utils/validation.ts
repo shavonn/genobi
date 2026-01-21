@@ -282,26 +282,27 @@ function validateForManyOperation(operation: unknown, index: number): void {
 }
 
 /**
+ * Registry of operation type validators.
+ * Maps operation types to their validation functions.
+ */
+const operationValidators: Record<string, (operation: unknown, index: number) => void> = {
+	create: validateCreateOperation,
+	append: validateAmendOperation,
+	prepend: validateAmendOperation,
+	createAll: validateCreateAllOperation,
+	forMany: validateForManyOperation,
+};
+
+/**
  * Validates an operation based on its type
  */
 function validateOperation(operation: unknown, index: number): void {
 	validateBaseOperation(operation, index);
 
-	// Type-specific validation
-	switch (operation.type) {
-		case "create":
-			validateCreateOperation(operation, index);
-			break;
-		case "append":
-		case "prepend":
-			validateAmendOperation(operation, index);
-			break;
-		case "createAll":
-			validateCreateAllOperation(operation, index);
-			break;
-		case "forMany":
-			validateForManyOperation(operation, index);
-			break;
+	// Type-specific validation using registry
+	const validator = operationValidators[operation.type];
+	if (validator) {
+		validator(operation, index);
 	}
 }
 

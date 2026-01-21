@@ -8,6 +8,18 @@ import { generatorResolver } from "./generator-resolver";
 import { generatorRunner } from "./generator-runner";
 
 /**
+ * CLI options parsed from command-line arguments.
+ */
+interface CliOptions {
+	/** Enable debug logging for technical details */
+	debug?: boolean;
+	/** Custom destination directory for file operations */
+	destination?: string;
+	/** Enable verbose logging for progress information */
+	verbose?: boolean;
+}
+
+/**
  * Runs the CLI application.
  *
  * This function:
@@ -33,10 +45,10 @@ async function runCli(): Promise<void> {
 			"ID for selecting the generator to use. This ID corresponds to a generator defined in your configuration file.",
 		)
 		.option(
-			"-d --destination <string>",
+			"-d, --destination <path>",
 			"The directory used as the reference point for resolving all relative paths. Usually your project root.",
 		)
-		.option("-v --verbose <string>", "Progress logs - what is happening (creation, modification, operation progress)")
+		.option("-v, --verbose", "Progress logs - what is happening (creation, modification, operation progress)")
 		.option("--debug", "Technical detail logs - how it's happening (internal details, data state, exact paths)");
 
 	// Parse command-line arguments
@@ -45,8 +57,8 @@ async function runCli(): Promise<void> {
 	// Extract the generator argument if provided
 	const [generatorArg] = program.args;
 
-	// Extract options
-	const { debug, destination, verbose } = program.opts();
+	// Extract options with proper typing
+	const { debug, destination, verbose } = program.opts<CliOptions>();
 
 	// Set the selected generator if provided
 	if (generatorArg) {

@@ -113,7 +113,7 @@ genobi react-component
 
 - `-d, --destination <path>`: Root directory for generating files (relative paths will resolve from here)
 - `-v, --verbose`: Progress information logs
-- `-d, --debug`: Technical detail logs
+- `--debug`: Technical detail logs
 
 ## Configuration
 

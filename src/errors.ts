@@ -3,27 +3,22 @@ import type { ErrorName } from "./types/general";
 /**
  * Base error class for all Genobi errors.
  * Provides consistent error handling with error name, message, and optional cause.
+ * Uses native ES2022 Error cause support.
  */
 export class GenobiError extends Error {
 	/** Specific name identifying the error type */
-	name: ErrorName;
-	/** Error message providing details about what went wrong */
-	message: string;
-	/** Optional underlying cause of the error */
-	cause: any;
+	override name: ErrorName;
 
 	/**
 	 * Creates a new Genobi error.
 	 *
 	 * @param {ErrorName} name - The error name/type
 	 * @param {string} message - Error message describing what went wrong
-	 * @param {any} [cause] - Optional underlying error that caused this error
+	 * @param {unknown} [cause] - Optional underlying error that caused this error
 	 */
-	constructor(name: ErrorName, message: string, cause?: any) {
-		super(message);
+	constructor(name: ErrorName, message: string, cause?: unknown) {
+		super(message, cause !== undefined ? { cause } : undefined);
 		this.name = name;
-		this.message = message;
-		this.cause = cause;
 	}
 }
 
@@ -54,9 +49,9 @@ export class WriteError extends GenobiError {
 	 * Creates a new write error.
 	 *
 	 * @param {string} filePath - Path to the file that couldn't be written
-	 * @param {any} [cause] - Optional underlying error that caused this error
+	 * @param {unknown} [cause] - Optional underlying error that caused this error
 	 */
-	constructor(filePath: string, cause?: any) {
+	constructor(filePath: string, cause?: unknown) {
 		super("WRITE_ERROR", `Error writing file: ${filePath}`, cause);
 	}
 }
@@ -97,9 +92,9 @@ export class ReadError extends GenobiError {
 	 * Creates a new read error.
 	 *
 	 * @param {string} filePath - Path to the file that couldn't be read
-	 * @param {any} [cause] - Optional underlying error that caused this error
+	 * @param {unknown} [cause] - Optional underlying error that caused this error
 	 */
-	constructor(filePath: string, cause?: any) {
+	constructor(filePath: string, cause?: unknown) {
 		super("READ_ERROR", `Error reading file: ${filePath}`, cause);
 	}
 }
@@ -112,9 +107,9 @@ export class ConfigLoadError extends GenobiError {
 	 * Creates a new config load error.
 	 *
 	 * @param {string} message - Specific message about the config loading issue
-	 * @param {any} [cause] - Optional underlying error that caused this error
+	 * @param {unknown} [cause] - Optional underlying error that caused this error
 	 */
-	constructor(message: string, cause?: any) {
+	constructor(message: string, cause?: unknown) {
 		super("CONFIG_LOAD_ERROR", message, cause);
 	}
 }

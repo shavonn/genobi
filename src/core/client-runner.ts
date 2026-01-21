@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import pkg from "../../package.json";
 import { store } from "../config-store";
+import { common } from "../utils/common";
 import { logger } from "../utils/logger";
 import { configLoader } from "./config-loader";
 import { generatorResolver } from "./generator-resolver";
@@ -81,16 +82,16 @@ async function runCli(): Promise<void> {
 		// Run the selected generator
 		await generatorRunner.run();
 		logger.success("Done!");
-	} catch (err: any) {
+	} catch (err) {
 		// Log the error message
-		logger.error(`Error: ${err.message}`);
+		logger.error(`Error: ${common.getErrorMessage(err)}`);
 
 		// Log additional details about the error cause if available
-		if (err.cause) {
-			if (err.cause.message) {
+		if (err instanceof Error && err.cause) {
+			if (common.isErrorWithMessage(err.cause)) {
 				logger.error(`Caused by: ${err.cause.message}`);
 			}
-			if (err.cause.stack) {
+			if (common.isErrorWithStack(err.cause)) {
 				logger.debug(`Original error stack: ${err.cause.stack}`);
 			}
 		}

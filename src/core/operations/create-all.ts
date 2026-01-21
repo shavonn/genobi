@@ -3,6 +3,7 @@ import { glob } from "glob";
 import { store } from "../../config-store";
 import { FileExistsError, GenobiError } from "../../errors";
 import type { CreateAllOperation } from "../../types/operation";
+import { common } from "../../utils/common";
 import { fileSys } from "../../utils/file-sys";
 import { logger } from "../../utils/logger";
 import { templates } from "../../utils/templates";
@@ -115,14 +116,14 @@ async function createAll(operation: CreateAllOperation, data: Record<string, any
 			logger.info("Writing to file");
 			await fileSys.writeToFile(filePath, processedContent);
 			logger.success(`Created file: ${filePath}`);
-		} catch (err: any) {
+		} catch (err) {
 			// If haltOnError is true, rethrow the error
 			if (operation.haltOnError) {
 				throw err;
 			}
 			// Otherwise, log the error and continue
-			logger.error(err.message);
-			logger.debug(`Error stack: ${err.stack || "No stack trace available"}`);
+			logger.error(common.getErrorMessage(err));
+			logger.debug(`Error stack: ${common.isErrorWithStack(err) ? err.stack : "No stack trace available"}`);
 		}
 	}
 

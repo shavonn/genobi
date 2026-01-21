@@ -1,7 +1,14 @@
 /**
- * Union type representing all possible operation types.
+ * Type alias for template data passed to Handlebars templates.
+ * Uses `unknown` to indicate the values need type narrowing when accessed.
  */
-export type Operation = AmendOperation | CreateOperation | CreateAllOperation | ForManyOperation | BaseOperation;
+export type TemplateData = Record<string, unknown>;
+
+/**
+ * Union type representing all possible operation types.
+ * Note: BaseOperation is excluded to maintain a proper discriminated union.
+ */
+export type Operation = AmendOperation | CreateOperation | CreateAllOperation | ForManyOperation;
 
 /**
  * Base interface for all operations.
@@ -17,16 +24,16 @@ export interface BaseOperation {
 	 * Additional data to merge with user input for template processing.
 	 * This data will be available to templates along with prompt answers.
 	 */
-	data?: Record<string, any>;
+	data?: TemplateData;
 
 	/**
 	 * Optional function that determines if this operation should be skipped.
 	 * If the function returns true, the operation will be skipped.
 	 *
-	 * @param {any} data - The merged data from prompts and operation data
+	 * @param {TemplateData} data - The merged data from prompts and operation data
 	 * @returns {boolean | Promise<boolean>} True if the operation should be skipped
 	 */
-	skip?: (data?: any) => boolean | Promise<boolean>;
+	skip?: (data?: TemplateData) => boolean | Promise<boolean>;
 
 	/**
 	 * Whether to stop execution if this operation fails.
@@ -212,18 +219,18 @@ export interface ForManyOperation extends BaseOperation {
 	/**
 	 * The array of data objects to use for each generator run.
 	 * Each item in the array will be passed to the generator as input data.
-	 * This can be a static array or a computed property that returns an array.
+	 * This can be a static array or a function that returns an array.
 	 */
-	items: any[] | ((data: Record<string, any>) => any[]);
+	items: unknown[] | ((data: TemplateData) => unknown[]);
 
 	/**
 	 * Optional function to transform each item before passing to the generator.
 	 * This can be used to format or augment the data for each run.
 	 *
-	 * @param {any} item - The current item from the items array
+	 * @param {unknown} item - The current item from the items array
 	 * @param {number} index - The index of the current item
-	 * @param {Record<string, any>} parentData - The parent data object
-	 * @returns {Record<string, any>} The transformed data to pass to the generator
+	 * @param {TemplateData} parentData - The parent data object
+	 * @returns {TemplateData} The transformed data to pass to the generator
 	 */
-	transformItem?: (item: any, index: number, parentData: Record<string, any>) => Record<string, any>;
+	transformItem?: (item: unknown, index: number, parentData: TemplateData) => TemplateData;
 }

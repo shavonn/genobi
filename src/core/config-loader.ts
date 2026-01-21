@@ -80,14 +80,14 @@ async function loadConfig(destination?: string): Promise<void> {
 		logger.info("Executing config function");
 		await loadConfig(configAPI.get());
 		logger.info("Config function executed successfully");
-	} catch (err: any) {
-		logger.error(`Error in config function: ${err.message}`);
-		logger.debug(`Error details: ${err.stack || "No stack trace available"}`);
+	} catch (err) {
+		const message = common.getErrorMessage(err);
+		logger.error(`Error in config function: ${message}`);
+		logger.debug(`Error details: ${common.isErrorWithStack(err) ? err.stack : "No stack trace available"}`);
 
-		const enhancedError = new ConfigLoadError(`Error in config loading. ${err.message}`);
-		enhancedError.cause = err;
+		const enhancedError = new ConfigLoadError(`Error in config loading. ${message}`, err);
 
-		logger.debug("Original error stack:", err.stack);
+		logger.debug("Original error stack:", common.isErrorWithStack(err) ? err.stack : "N/A");
 		throw enhancedError;
 	}
 

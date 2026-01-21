@@ -5,6 +5,7 @@ import { store } from "./config-store";
 import { GenobiError } from "./errors";
 import type { ConfigAPI } from "./types/config-api";
 import type { GeneratorConfig } from "./types/generator";
+import { common } from "./utils/common";
 import { fileSys } from "./utils/file-sys";
 import { logger } from "./utils/logger";
 import { validation } from "./utils/validation";
@@ -83,8 +84,8 @@ function configApi(): ConfigAPI {
 				// Store the generator
 				store.setGenerator(id, generator);
 				logger.info(`Generator "${id}" registered successfully`);
-			} catch (err: any) {
-				logger.error(`Failed to add generator "${id}": ${err.message}`);
+			} catch (err) {
+				logger.error(`Failed to add generator "${id}": ${common.getErrorMessage(err)}`);
 				throw err;
 			}
 		},
@@ -132,8 +133,8 @@ function configApi(): ConfigAPI {
 				store.setHelper(name, helper);
 				Handlebars.registerHelper(name, helper);
 				logger.info(`Helper "${name}" registered successfully`);
-			} catch (err: any) {
-				logger.error(`Failed to add helper "${name}": ${err.message}`);
+			} catch (err) {
+				logger.error(`Failed to add helper "${name}": ${common.getErrorMessage(err)}`);
 				throw err;
 			}
 		},
@@ -180,8 +181,8 @@ function configApi(): ConfigAPI {
 				// Store the partial
 				store.setPartial(name, templateStr);
 				logger.info(`Partial "${name}" registered successfully`);
-			} catch (err: any) {
-				logger.error(`Failed to add partial "${name}": ${err.message}`);
+			} catch (err) {
+				logger.error(`Failed to add partial "${name}": ${common.getErrorMessage(err)}`);
 				throw err;
 			}
 		},
@@ -213,8 +214,8 @@ function configApi(): ConfigAPI {
 				// Store the partial
 				store.setPartial(name, fileResult);
 				logger.info(`Partial "${name}" loaded from file successfully`);
-			} catch (err: any) {
-				logger.error(`Failed to add partial "${name}" from file: ${err.message}`);
+			} catch (err) {
+				logger.error(`Failed to add partial "${name}" from file: ${common.getErrorMessage(err)}`);
 				throw err;
 			}
 		},

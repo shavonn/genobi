@@ -2,6 +2,7 @@ import { store } from "../../config-store";
 import { GenobiError } from "../../errors";
 import type { GeneratorConfig } from "../../types/generator";
 import type { ForManyOperation } from "../../types/operation";
+import { common } from "../../utils/common";
 import { stringHelpers } from "../../utils/helpers/string-transformers";
 import { logger } from "../../utils/logger";
 import { operationHandler } from "../operation-handler";
@@ -159,15 +160,15 @@ async function processGeneratorOperations(
 			logger.info(`Running ${operation.type} operation`);
 			await operationHandler.handle(operation, opData);
 			logger.info("Operation completed successfully");
-		} catch (err: any) {
+		} catch (err) {
 			logger.error(
 				`${stringHelpers.titleCase(stringHelpers.sentenceCase(operation.type))} Operation failed.`,
-				err.message,
+				common.getErrorMessage(err),
 			);
-			if (err.cause) {
-				logger.error(err.cause.message);
+			if (err instanceof Error && err.cause) {
+				logger.error(common.getErrorMessage(err.cause));
 			}
-			logger.debug(`Error details: ${err.stack || "No stack trace available"}`);
+			logger.debug(`Error details: ${common.isErrorWithStack(err) ? err.stack : "No stack trace available"}`);
 
 			// If haltOnError is true, rethrow the error to stop execution
 			if (haltOnError) {

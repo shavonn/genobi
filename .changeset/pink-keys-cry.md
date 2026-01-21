@@ -8,6 +8,6 @@ Path validation
     - Resolves the path relative to a root directory
     - Validates the path stays within bounds using validatePathWithinRoot
     - Throws PathTraversalError if path escapes destination
-* Fixed replaceInFile - Now uses resolveSafePath instead of raw path.resolve, preventing path traversal attacks in custom      
+* Fixed replaceInFile - Now uses resolveSafePath instead of raw path.resolve, preventing path traversal attacks in custom
    operations
-* Added tests - 4 new tests for resolveSafePath, plus updated custom operation tests        
+* Added tests - 4 new tests for resolveSafePath, plus updated custom operation tests

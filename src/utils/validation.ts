@@ -3,6 +3,18 @@ import { logger } from "./logger";
 import { expectedPartialFileTypes } from "./resources/expected-partial-file-types";
 
 /**
+ * Type for objects being validated - allows property access after object check
+ */
+type ValidationObject = Record<string, unknown>;
+
+/**
+ * Type guard to check if a value is a non-null object
+ */
+function isObject(value: unknown): value is ValidationObject {
+	return typeof value === "object" && value !== null;
+}
+
+/**
  * Validates that a value is a non-empty string
  */
 function validateNonEmptyString(value: unknown, fieldName: string): void {
@@ -56,7 +68,7 @@ function validateObject(value: unknown, fieldName: string): void {
 function validatePrompt(prompt: unknown, index: number): void {
 	const promptField = `prompts[${index}]`;
 
-	if (!prompt || typeof prompt !== "object") {
+	if (!isObject(prompt)) {
 		throw new ValidationError(promptField, "must be an object");
 	}
 
@@ -74,7 +86,7 @@ function validatePrompt(prompt: unknown, index: number): void {
 
 	// Validate type is a known Inquirer type
 	const validTypes = ["input", "number", "confirm", "list", "rawlist", "expand", "checkbox", "password", "editor"];
-	if (!validTypes.includes(prompt.type)) {
+	if (typeof prompt.type === "string" && !validTypes.includes(prompt.type)) {
 		throw new ValidationError(`${promptField}.type`, `must be one of: ${validTypes.join(", ")}`);
 	}
 
@@ -84,12 +96,12 @@ function validatePrompt(prompt: unknown, index: number): void {
 	}
 
 	// Validate choices for list-based types
-	if (["list", "rawlist", "expand", "checkbox"].includes(prompt.type)) {
+	if (typeof prompt.type === "string" && ["list", "rawlist", "expand", "checkbox"].includes(prompt.type)) {
 		if (!prompt.choices) {
 			throw new ValidationError(`${promptField}.choices`, `is required for type "${prompt.type}"`);
 		}
 		validateArray(prompt.choices, `${promptField}.choices`);
-		if (prompt.choices.length === 0) {
+		if (Array.isArray(prompt.choices) && prompt.choices.length === 0) {
 			throw new ValidationError(`${promptField}.choices`, "cannot be empty");
 		}
 	}
@@ -101,7 +113,7 @@ function validatePrompt(prompt: unknown, index: number): void {
 function validateBaseOperation(operation: unknown, index: number): void {
 	const opField = `operations[${index}]`;
 
-	if (!operation || typeof operation !== "object") {
+	if (!isObject(operation)) {
 		throw new ValidationError(opField, "must be an object");
 	}
 
@@ -111,7 +123,7 @@ function validateBaseOperation(operation: unknown, index: number): void {
 	}
 
 	const validTypes = ["create", "createAll", "append", "prepend", "forMany"];
-	if (!validTypes.includes(operation.type)) {
+	if (typeof operation.type === "string" && !validTypes.includes(operation.type)) {
 		throw new ValidationError(`${opField}.type`, `must be one of: ${validTypes.join(", ")}`);
 	}
 
@@ -132,7 +144,7 @@ function validateBaseOperation(operation: unknown, index: number): void {
 /**
  * Validates a single file operation (create, append, prepend)
  */
-function validateSingleFileOperation(operation: unknown, index: number): void {
+function validateSingleFileOperation(operation: ValidationObject, index: number): void {
 	const opField = `operations[${index}]`;
 
 	// Validate filePath
@@ -164,7 +176,7 @@ function validateSingleFileOperation(operation: unknown, index: number): void {
 /**
  * Validates a create operation
  */
-function validateCreateOperation(operation: unknown, index: number): void {
+function validateCreateOperation(operation: ValidationObject, index: number): void {
 	const opField = `operations[${index}]`;
 
 	validateSingleFileOperation(operation, index);
@@ -187,7 +199,7 @@ function validateCreateOperation(operation: unknown, index: number): void {
 /**
  * Validates an amend operation (append/prepend)
  */
-function validateAmendOperation(operation: unknown, index: number): void {
+function validateAmendOperation(operation: ValidationObject, index: number): void {
 	const opField = `operations[${index}]`;
 
 	validateSingleFileOperation(operation, index);
@@ -213,7 +225,7 @@ function validateAmendOperation(operation: unknown, index: number): void {
 /**
  * Validates a createAll operation
  */
-function validateCreateAllOperation(operation: unknown, index: number): void {
+function validateCreateAllOperation(operation: ValidationObject, index: number): void {
 	const opField = `operations[${index}]`;
 
 	// Validate required fields
@@ -253,7 +265,7 @@ function validateCreateAllOperation(operation: unknown, index: number): void {
 /**
  * Validates a forMany operation
  */
-function validateForManyOperation(operation: unknown, index: number): void {
+function validateForManyOperation(operation: ValidationObject, index: number): void {
 	const opField = `operations[${index}]`;
 
 	// Validate required fields
@@ -285,7 +297,7 @@ function validateForManyOperation(operation: unknown, index: number): void {
  * Registry of operation type validators.
  * Maps operation types to their validation functions.
  */
-const operationValidators: Record<string, (operation: unknown, index: number) => void> = {
+const operationValidators: Record<string, (operation: ValidationObject, index: number) => void> = {
 	create: validateCreateOperation,
 	append: validateAmendOperation,
 	prepend: validateAmendOperation,
@@ -300,9 +312,11 @@ function validateOperation(operation: unknown, index: number): void {
 	validateBaseOperation(operation, index);
 
 	// Type-specific validation using registry
-	const validator = operationValidators[operation.type];
-	if (validator) {
-		validator(operation, index);
+	if (isObject(operation) && typeof operation.type === "string") {
+		const validator = operationValidators[operation.type];
+		if (validator) {
+			validator(operation, index);
+		}
 	}
 }
 
@@ -317,7 +331,7 @@ export function validateGenerator(id: string, generator: unknown): void {
 		validateNonEmptyString(id, "generator id");
 
 		// Validate generator is an object
-		if (!generator || typeof generator !== "object") {
+		if (!isObject(generator)) {
 			throw new ValidationError("generator", "must be an object");
 		}
 
@@ -330,9 +344,11 @@ export function validateGenerator(id: string, generator: unknown): void {
 		// Validate prompts if present
 		if (generator.prompts !== undefined) {
 			validateArray(generator.prompts, "generator.prompts");
-			generator.prompts.forEach((prompt: unknown, index: number) => {
-				validatePrompt(prompt, index);
-			});
+			if (Array.isArray(generator.prompts)) {
+				generator.prompts.forEach((prompt: unknown, index: number) => {
+					validatePrompt(prompt, index);
+				});
+			}
 		}
 
 		// Validate operations
@@ -341,21 +357,23 @@ export function validateGenerator(id: string, generator: unknown): void {
 		}
 		validateArray(generator.operations, "generator.operations");
 
-		if (generator.operations.length === 0) {
-			throw new ValidationError("generator.operations", "cannot be empty");
-		}
-
-		// Validate each operation
-		generator.operations.forEach((operation: unknown, index: number) => {
-			validateOperation(operation, index);
-		});
-
-		// Cross-validate forMany operations reference existing generators
-		generator.operations.forEach((operation: unknown, index: number) => {
-			if (operation.type === "forMany" && operation.generatorId === id) {
-				logger.warn(`Warning: operations[${index}] references itself (${id}), this could cause infinite recursion`);
+		if (Array.isArray(generator.operations)) {
+			if (generator.operations.length === 0) {
+				throw new ValidationError("generator.operations", "cannot be empty");
 			}
-		});
+
+			// Validate each operation
+			generator.operations.forEach((operation: unknown, index: number) => {
+				validateOperation(operation, index);
+			});
+
+			// Cross-validate forMany operations reference existing generators
+			generator.operations.forEach((operation: unknown, index: number) => {
+				if (isObject(operation) && operation.type === "forMany" && operation.generatorId === id) {
+					logger.warn(`Warning: operations[${index}] references itself (${id}), this could cause infinite recursion`);
+				}
+			});
+		}
 	} catch (err) {
 		logger.error(`Generator "${id}" validation failed`);
 		throw err;

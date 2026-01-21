@@ -78,14 +78,18 @@ export async function forMany(operation: ForManyOperation, data: Record<string, 
 	// Process each item
 	for (let index = 0; index < items.length; index++) {
 		const item = items[index];
+		if (item === undefined) {
+			continue;
+		}
 		logger.info(`Processing item ${index + 1} of ${items.length}`);
 		logger.debug(`Original item data: ${JSON.stringify(item, null, 2)}`);
 
 		// Transform the item data if needed
-		let itemData = item;
+		let itemData: Record<string, unknown> = typeof item === "object" && item !== null ? (item as Record<string, unknown>) : {};
 		if (operation.transformItem) {
 			logger.info("Transforming item data");
-			itemData = operation.transformItem(item, index, data);
+			const transformed = operation.transformItem(item, index, data);
+			itemData = typeof transformed === "object" && transformed !== null ? (transformed as Record<string, unknown>) : {};
 			logger.debug(`Transformed item data: ${JSON.stringify(itemData, null, 2)}`);
 		}
 

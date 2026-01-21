@@ -2,6 +2,11 @@ import { logger } from "../../src/utils/logger";
 import { templates } from "../../src/utils/templates";
 
 describe("template processor", () => {
+	beforeEach(() => {
+		// Clear the cache before each test to ensure isolation
+		templates.clearCache();
+	});
+
 	describe("processTemplate", () => {
 		it("should process a template with Handlebars", () => {
 			const template = "Hello, {{name}}!";
@@ -47,6 +52,44 @@ describe("template processor", () => {
   ]
 }`,
 			);
+		});
+	});
+
+	describe("template caching", () => {
+		it("should cache compiled templates for reuse", () => {
+			const template = "Hello, {{name}}!";
+
+			// First call - should compile and cache
+			templates.process(template, { name: "World" });
+			expect(templates.getCacheSize()).toBe(1);
+
+			// Second call with same template - should use cache
+			templates.process(template, { name: "Universe" });
+			expect(templates.getCacheSize()).toBe(1);
+
+			// Different template - should add to cache
+			templates.process("Goodbye, {{name}}!", { name: "World" });
+			expect(templates.getCacheSize()).toBe(2);
+		});
+
+		it("should clear cache when clearCache is called", () => {
+			templates.process("Template {{one}}", { one: 1 });
+			templates.process("Template {{two}}", { two: 2 });
+			expect(templates.getCacheSize()).toBe(2);
+
+			templates.clearCache();
+			expect(templates.getCacheSize()).toBe(0);
+		});
+
+		it("should produce correct results with cached templates", () => {
+			const template = "{{greeting}}, {{name}}!";
+
+			const result1 = templates.process(template, { greeting: "Hello", name: "Alice" });
+			const result2 = templates.process(template, { greeting: "Hi", name: "Bob" });
+
+			expect(result1).toBe("Hello, Alice!");
+			expect(result2).toBe("Hi, Bob!");
+			expect(templates.getCacheSize()).toBe(1);
 		});
 	});
 });

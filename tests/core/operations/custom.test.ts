@@ -17,6 +17,7 @@ vi.mock("../../../src/utils/file-sys", () => ({
   fileSys: {
     readFromFile: vi.fn(),
     writeToFile: vi.fn(),
+    resolveSafePath: vi.fn(),
   },
 }));
 
@@ -107,6 +108,7 @@ describe("custom operations", () => {
 
     describe("replaceInFile", () => {
       it("should replace content in a file with string pattern", async () => {
+        vi.mocked(fileSys.resolveSafePath).mockReturnValue("/test/destination/test.txt");
         vi.mocked(fileSys.readFromFile).mockResolvedValue("Hello PLACEHOLDER world");
         vi.mocked(fileSys.writeToFile).mockResolvedValue(undefined);
 
@@ -120,11 +122,13 @@ describe("custom operations", () => {
 
         await custom(operation, {});
 
+        expect(fileSys.resolveSafePath).toHaveBeenCalledWith("test.txt", "/test/destination");
         expect(fileSys.readFromFile).toHaveBeenCalledWith("/test/destination/test.txt");
         expect(fileSys.writeToFile).toHaveBeenCalledWith("/test/destination/test.txt", "Hello beautiful world");
       });
 
       it("should replace content in a file with regex pattern", async () => {
+        vi.mocked(fileSys.resolveSafePath).mockReturnValue("/test/destination/test.txt");
         vi.mocked(fileSys.readFromFile).mockResolvedValue("foo 123 bar 456");
         vi.mocked(fileSys.writeToFile).mockResolvedValue(undefined);
 
@@ -142,6 +146,7 @@ describe("custom operations", () => {
       });
 
       it("should not write to file when no changes made", async () => {
+        vi.mocked(fileSys.resolveSafePath).mockReturnValue("/test/destination/test.txt");
         vi.mocked(fileSys.readFromFile).mockResolvedValue("Hello world");
         vi.mocked(fileSys.writeToFile).mockResolvedValue(undefined);
 
@@ -159,6 +164,25 @@ describe("custom operations", () => {
           "No changes made to file (pattern not found or replacement identical)",
         );
         expect(fileSys.writeToFile).not.toHaveBeenCalled();
+      });
+
+      it("should use resolveSafePath to prevent path traversal", async () => {
+        vi.mocked(fileSys.resolveSafePath).mockReturnValue("/test/destination/safe/path.txt");
+        vi.mocked(fileSys.readFromFile).mockResolvedValue("content");
+        vi.mocked(fileSys.writeToFile).mockResolvedValue(undefined);
+
+        const operation: CustomOperation = {
+          type: "custom",
+          name: "path-validation-test",
+          action: async (_data, context) => {
+            await context.replaceInFile("../../../etc/passwd", "root", "safe");
+          },
+        };
+
+        await custom(operation, {});
+
+        // Verify resolveSafePath is called with the potentially dangerous path
+        expect(fileSys.resolveSafePath).toHaveBeenCalledWith("../../../etc/passwd", "/test/destination");
       });
     });
   });

@@ -1,16 +1,15 @@
 import fs from "node:fs/promises";
 import Handlebars from "handlebars";
 import inquirer from "inquirer";
-import { configAPI } from "../../src/config-api";
-import { store } from "../../src/config-store";
-import { generatorRunner } from "../../src/core/generator-runner";
-import { operationDecorator } from "../../src/core/operations/operation-decorator";
-import { ops } from "../../src/core/operations/ops";
-import { fileSys } from "../../src/utils/file-sys";
-import { stringHelpers } from "../../src/utils/helpers/string-transformers";
-import { logger } from "../../src/utils/logger";
-import { templates } from "../../src/utils/templates";
-import { testData } from "../__fixtures__/test-data";
+import {configAPI} from "../../src/config-api";
+import {store} from "../../src/config-store";
+import {generatorRunner} from "../../src/core/generator-runner";
+import {operationDecorator} from "../../src/core/operations/operation-decorator";
+import {ops} from "../../src/core/operations/ops";
+import {stringHelpers} from "../../src/utils/helpers/string-transformers";
+import {logger} from "../../src/utils/logger";
+import {templates} from "../../src/utils/templates";
+import {testData} from "../__fixtures__/test-data";
 
 vi.mock("inquirer");
 
@@ -112,7 +111,9 @@ describe("runGenerator", () => {
 		);
 		store.setSelectedGenerator("failOpGen");
 
-		vi.spyOn(fileSys, "fileExists").mockResolvedValueOnce(true);
+		// Mock writeFile to throw EEXIST error (simulates atomic write failure when file exists)
+		const eexistError = Object.assign(new Error("File exists"), { code: "EEXIST" });
+		vi.spyOn(fs, "writeFile").mockRejectedValueOnce(eexistError);
 		vi.spyOn(generatorRunner, "run");
 		vi.spyOn(ops, "createAll");
 
@@ -167,7 +168,9 @@ describe("runGenerator", () => {
 		);
 		store.setSelectedGenerator("noFailGen");
 
-		vi.spyOn(fileSys, "fileExists").mockResolvedValueOnce(true);
+		// Mock writeFile to throw EEXIST error (simulates atomic write failure when file exists)
+		const eexistError = Object.assign(new Error("File exists"), { code: "EEXIST" });
+		vi.spyOn(fs, "writeFile").mockRejectedValueOnce(eexistError);
 		vi.spyOn(generatorRunner, "run");
 
 		await expect(generatorRunner.run()).resolves.toBeUndefined();

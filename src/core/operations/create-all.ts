@@ -17,13 +17,16 @@ import { templates } from "../../utils/templates";
  * 3. Process each template file and create the corresponding output file
  * 4. Handle existing files according to the skipIfExists/overwrite settings
  *
+ * Uses atomic file operations to prevent TOCTOU race conditions when checking
+ * for file existence.
+ *
  * @param {CreateAllOperation} operation - The createAll operation configuration
- * @param {Record<string, any>} data - The data for template processing
+ * @param {Record<string, unknown>} data - The data for template processing
  * @returns {Promise<void>}
  * @throws {GenobiError} If no template files match the glob pattern
  * @throws {FileExistsError} If a file already exists and neither skipIfExists nor overwrite is true
  */
-async function createAll(operation: CreateAllOperation, data: Record<string, any>): Promise<void> {
+async function createAll(operation: CreateAllOperation, data: Record<string, unknown>): Promise<void> {
 	// Process the destination path with template data
 	const destinationPath = fileSys.getTemplateProcessedPath(
 		operation.destinationPath,
@@ -86,19 +89,14 @@ async function createAll(operation: CreateAllOperation, data: Record<string, any
 			const filePath = fileSys.getTemplateProcessedPath(relativePath, data, destinationPath);
 			logger.info(`Creating file: ${filePath}`);
 
-			// Check if the file already exists and handle accordingly
-			const exists = await fileSys.fileExists(filePath);
-			if (exists) {
-				if (operation.overwrite) {
-					logger.warn(`File already exists: ${filePath}`);
-					logger.warn("It will be overwritten.");
-				} else if (operation.skipIfExists) {
+			// For skipIfExists, check first since we want to skip gracefully
+			if (operation.skipIfExists) {
+				const exists = await fileSys.fileExists(filePath);
+				if (exists) {
 					logger.warn(`File already exists: ${filePath}`);
 					logger.warn("This file will be skipped.");
 					logger.debug("Skipping due to skipIfExists=true");
 					continue;
-				} else {
-					throw new FileExistsError(filePath);
 				}
 			}
 
@@ -113,8 +111,24 @@ async function createAll(operation: CreateAllOperation, data: Record<string, any
 			logger.debug(`Processed content length: ${processedContent.length} characters`);
 
 			// Write the processed content to the output file
+			// - If overwrite is true, use normal write (will overwrite existing files)
+			// - Otherwise, use exclusive write to atomically fail if file exists
 			logger.info("Writing to file");
-			await fileSys.writeToFile(filePath, processedContent);
+
+			if (operation.overwrite) {
+				logger.debug("Using overwrite mode");
+				const exists = await fileSys.fileExists(filePath);
+				if (exists) {
+					logger.warn(`File already exists: ${filePath}`);
+					logger.warn("It will be overwritten.");
+				}
+				await fileSys.writeToFile(filePath, processedContent);
+			} else {
+				// Use atomic exclusive write - will throw FileExistsError if file exists
+				logger.debug("Using exclusive write mode for atomic create");
+				await fileSys.writeToFile(filePath, processedContent, { exclusive: true });
+			}
+
 			logger.success(`Created file: ${filePath}`);
 		} catch (err) {
 			// If haltOnError is true, rethrow the error

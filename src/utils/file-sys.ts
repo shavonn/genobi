@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { store } from "../config-store";
-import { MakeDirError, PathTraversalError, ReadError, WriteError } from "../errors";
+import { FileExistsError, MakeDirError, PathTraversalError, ReadError, WriteError } from "../errors";
 import { logger } from "./logger";
 import { templates } from "./templates";
 
@@ -95,22 +95,46 @@ async function ensureDirectoryExists(dirPath: string): Promise<void> {
 	}
 }
 
+/** Options for atomic file write operations */
+interface WriteOptions {
+	/**
+	 * If true, the write will fail if the file already exists.
+	 * Uses the 'wx' flag for atomic check-and-create.
+	 * @default false
+	 */
+	exclusive?: boolean;
+}
+
 /**
  * Writes content to a file.
  *
  * @param {string} filePath - The path of the file to write
  * @param {string} content - The content to write
+ * @param {WriteOptions} options - Write options
  * @returns {Promise<void>}
  * @throws {WriteError} If writing the file fails
+ * @throws {FileExistsError} If exclusive is true and the file already exists
  */
-async function writeToFile(filePath: string, content: string): Promise<void> {
+async function writeToFile(filePath: string, content: string, options: WriteOptions = {}): Promise<void> {
 	logger.debug(`Writing to file: ${filePath}`);
 	logger.debug(`Content length: ${content.length} characters`);
+	logger.debug(`Write options: exclusive=${options.exclusive ?? false}`);
 
 	try {
-		await fs.writeFile(filePath, content);
+		// Use 'wx' flag for exclusive write (fails if file exists) to prevent TOCTOU race conditions
+		// Use default flag for normal writes (creates or overwrites)
+		const flag = options.exclusive ? "wx" : undefined;
+		await fs.writeFile(filePath, content, { flag });
 		logger.debug(`Successfully wrote file: ${filePath}`);
 	} catch (err) {
+		const nodeErr = err as NodeJS.ErrnoException;
+
+		// Handle "file exists" error for exclusive writes
+		if (options.exclusive && nodeErr.code === "EEXIST") {
+			logger.debug(`File already exists (exclusive write failed): ${filePath}`);
+			throw new FileExistsError(filePath);
+		}
+
 		logger.error(`Error writing file: ${filePath}`);
 		logger.debug(`Error details: ${(err as Error).stack || JSON.stringify(err)}`);
 		throw new WriteError(filePath, err);

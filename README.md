@@ -368,14 +368,16 @@ For reusable custom operations, register them with `addOperation` and reference 
 
 ```javascript
 import { promisify } from "node:util";
-import { exec as execCallback } from "node:child_process";
+import { execFile as execFileCallback } from "node:child_process";
+import path from "node:path";
 
-const exec = promisify(execCallback);
+const execFile = promisify(execFileCallback);
 
 export default (genobi) => {
     // Register a reusable operation
     genobi.addOperation("format-files", async (data, context) => {
-        await exec(`prettier --write ${context.destinationPath}/${data.name}/**/*`);
+        const targetPath = path.join(context.destinationPath, data.name, "**/*");
+        await execFile("prettier", ["--write", targetPath]);
     });
 
     genobi.addGenerator("component", {
@@ -395,6 +397,8 @@ export default (genobi) => {
 ```
 
 > **Note**: Registered operation names cannot use reserved names: `create`, `createAll`, `append`, `prepend`, `forMany`, `custom`.
+
+> **Security**: When executing shell commands in custom operations, use `execFile` with argument arrays instead of `exec` with string interpolation. Never pass untrusted input directly into shell command strings, as this can enable command injection attacks.
 
 ## Custom Helpers
 

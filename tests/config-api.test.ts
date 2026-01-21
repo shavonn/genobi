@@ -6,11 +6,35 @@ import { fileSys } from "../src/utils/file-sys";
 import { logger } from "../src/utils/logger";
 import { validation } from "../src/utils/validation";
 
-// Mocks must be at top level
-vi.mock("../src/config-store");
-vi.mock("../src/utils/validation");
-vi.mock("../src/utils/file-sys");
-vi.mock("handlebars");
+// Mocks must be at top level with factory functions
+vi.mock("../src/config-store", () => ({
+	store: {
+		state: vi.fn(),
+		setGenerator: vi.fn(),
+		setHelper: vi.fn(),
+		setPartial: vi.fn(),
+		setConfigFilePath: vi.fn(),
+		setSelectionPrompt: vi.fn(),
+	},
+}));
+vi.mock("../src/utils/validation", () => ({
+	validation: {
+		validateGenerator: vi.fn(),
+		validateHelper: vi.fn(),
+		validatePartial: vi.fn(),
+		validatePartialFilePath: vi.fn(),
+	},
+}));
+vi.mock("../src/utils/file-sys", () => ({
+	fileSys: {
+		readFromFile: vi.fn(),
+	},
+}));
+vi.mock("handlebars", () => ({
+	default: {
+		registerHelper: vi.fn(),
+	},
+}));
 
 describe("configAPI", () => {
 	let api: ReturnType<typeof configAPI.get>;

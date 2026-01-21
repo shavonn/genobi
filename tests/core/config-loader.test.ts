@@ -7,11 +7,16 @@ import { logger } from "../../src/utils/logger";
 import { testData } from "../__fixtures__/test-data";
 import { getTmpDirPath } from "../test-utils";
 
-vi.mock("cosmiconfig", () => ({
-	cosmiconfig: vi.fn(),
-}));
+vi.mock("cosmiconfig", () => {
+	const mockFn = vi.fn();
+	return { cosmiconfig: mockFn };
+});
 
 describe("loadConfig", () => {
+	beforeEach(() => {
+		vi.mocked(cosmiconfig).mockReset();
+	});
+
 	it("should load config file and apply to config", async () => {
 		vi.mocked(cosmiconfig).mockReturnValueOnce({
 			search: () => {

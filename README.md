@@ -367,11 +367,15 @@ Example:
 For reusable custom operations, register them with `addOperation` and reference by name:
 
 ```javascript
+import { promisify } from "node:util";
+import { exec as execCallback } from "node:child_process";
+
+const exec = promisify(execCallback);
+
 export default (genobi) => {
     // Register a reusable operation
     genobi.addOperation("format-files", async (data, context) => {
-        const { exec } = await import("child_process");
-        exec(`prettier --write ${context.destinationPath}/${data.name}/**/*`);
+        await exec(`prettier --write ${context.destinationPath}/${data.name}/**/*`);
     });
 
     genobi.addGenerator("component", {

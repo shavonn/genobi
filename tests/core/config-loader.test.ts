@@ -7,7 +7,9 @@ import { logger } from "../../src/utils/logger";
 import { testData } from "../__fixtures__/test-data";
 import { getTmpDirPath } from "../test-utils";
 
-vi.mock("cosmiconfig");
+vi.mock("cosmiconfig", () => ({
+	cosmiconfig: vi.fn(),
+}));
 
 describe("loadConfig", () => {
 	it("should load config file and apply to config", async () => {

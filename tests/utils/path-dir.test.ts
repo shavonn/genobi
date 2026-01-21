@@ -94,4 +94,30 @@ describe("path and dir utils", () => {
       expect(result).toBe(getTmpDirPath("index.js"));
     });
   });
+
+  describe("resolveSafePath", () => {
+    it("should resolve a relative path within destination", () => {
+      const result = fileSys.resolveSafePath("src/file.js", store.state().destinationBasePath);
+
+      expect(result).toBe(getTmpDirPath("src/file.js"));
+    });
+
+    it("should throw PathTraversalError when path escapes destination directory", () => {
+      expect(() => {
+        fileSys.resolveSafePath("../../../etc/passwd", store.state().destinationBasePath);
+      }).toThrow(PathTraversalError);
+    });
+
+    it("should throw PathTraversalError for absolute paths outside destination", () => {
+      expect(() => {
+        fileSys.resolveSafePath("/etc/passwd", store.state().destinationBasePath);
+      }).toThrow(PathTraversalError);
+    });
+
+    it("should allow paths that normalize within the destination", () => {
+      const result = fileSys.resolveSafePath("src/../src/components/file.js", store.state().destinationBasePath);
+
+      expect(result).toBe(getTmpDirPath("src/components/file.js"));
+    });
+  });
 });

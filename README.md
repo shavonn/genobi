@@ -28,7 +28,7 @@ To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
 - [x] Operation for multi-gen
 - [x] Validation for api functions is implemented
 - [x] Custom operations are implemented
-- [ ] File path validation
+- [x] File path validation
 - [ ] More examples
 
 ***

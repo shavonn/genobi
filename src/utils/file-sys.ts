@@ -28,6 +28,21 @@ function validatePathWithinRoot(resolvedPath: string, rootPath: string): void {
 }
 
 /**
+ * Resolves a path relative to a root directory and validates it stays within bounds.
+ * Use this for plain paths that don't need template processing.
+ *
+ * @param {string} filePath - The file path to resolve
+ * @param {string} rootPath - The root directory to resolve relative paths from
+ * @returns {string} The resolved absolute path
+ * @throws {PathTraversalError} If the resolved path escapes the root directory
+ */
+function resolveSafePath(filePath: string, rootPath: string): string {
+  const resolvedPath = path.resolve(rootPath, filePath);
+  validatePathWithinRoot(resolvedPath, rootPath);
+  return resolvedPath;
+}
+
+/**
  * Processes a template path and resolves it relative to a root directory.
  * Validates that the resulting path stays within the root directory to prevent path traversal.
  *
@@ -171,6 +186,7 @@ const fileSys = {
   ensureDirectoryExists,
   fileExists,
   getTemplateProcessedPath,
+  resolveSafePath,
   writeToFile,
   readFromFile,
 };

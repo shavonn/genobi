@@ -1,4 +1,3 @@
-import path from "node:path";
 import { store } from "../../config-store.js";
 import { GenobiError } from "../../errors.js";
 import type { CustomOperation, OperationContext, TemplateData } from "../../types/operation.js";
@@ -25,7 +24,7 @@ function createContext(): OperationContext {
       success: logger.success,
     },
     replaceInFile: async (filePath: string, pattern: string | RegExp, replacement: string): Promise<void> => {
-      const fullPath = path.resolve(state.destinationBasePath, filePath);
+      const fullPath = fileSys.resolveSafePath(filePath, state.destinationBasePath);
       logger.debug(`Replacing content in file: ${fullPath}`);
       logger.debug(`Pattern: ${pattern}`);
 

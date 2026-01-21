@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import { store } from "../../src/config-store";
+import { PathTraversalError } from "../../src/errors";
 import { fileSys } from "../../src/utils/file-sys";
 import { getTmpDirPath, loadTestFiles } from "../test-utils";
 
@@ -55,6 +56,42 @@ describe("path and dir utils", () => {
 			const result = fileSys.getTemplateProcessedPath(template, data, store.state().destinationBasePath);
 
 			expect(result).toBe(getTmpDirPath("src/components/dropdown/dropdown.js"));
+		});
+
+		it("should throw PathTraversalError when path escapes destination directory", () => {
+			const template = "{{path}}/file.js";
+			const data = { path: "../../../etc" };
+
+			expect(() => {
+				fileSys.getTemplateProcessedPath(template, data, store.state().destinationBasePath);
+			}).toThrow(PathTraversalError);
+		});
+
+		it("should throw PathTraversalError for absolute paths outside destination", () => {
+			const template = "{{path}}";
+			const data = { path: "/etc/passwd" };
+
+			expect(() => {
+				fileSys.getTemplateProcessedPath(template, data, store.state().destinationBasePath);
+			}).toThrow(PathTraversalError);
+		});
+
+		it("should allow paths that resolve within the destination directory", () => {
+			const template = "src/../src/components/{{name}}.js";
+			const data = { name: "button" };
+
+			const result = fileSys.getTemplateProcessedPath(template, data, store.state().destinationBasePath);
+
+			expect(result).toBe(getTmpDirPath("src/components/button.js"));
+		});
+
+		it("should allow paths at the root of the destination directory", () => {
+			const template = "{{name}}.js";
+			const data = { name: "index" };
+
+			const result = fileSys.getTemplateProcessedPath(template, data, store.state().destinationBasePath);
+
+			expect(result).toBe(getTmpDirPath("index.js"));
 		});
 	});
 });

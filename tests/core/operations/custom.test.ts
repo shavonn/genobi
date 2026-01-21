@@ -141,7 +141,7 @@ describe("custom operations", () => {
         expect(fileSys.writeToFile).toHaveBeenCalledWith("/test/destination/test.txt", "foo NUM bar NUM");
       });
 
-      it("should log debug when no changes made", async () => {
+      it("should not write to file when no changes made", async () => {
         vi.mocked(fileSys.readFromFile).mockResolvedValue("Hello world");
         vi.mocked(fileSys.writeToFile).mockResolvedValue(undefined);
 
@@ -158,6 +158,7 @@ describe("custom operations", () => {
         expect(logger.debug).toHaveBeenCalledWith(
           "No changes made to file (pattern not found or replacement identical)",
         );
+        expect(fileSys.writeToFile).not.toHaveBeenCalled();
       });
     });
   });

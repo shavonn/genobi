@@ -34,6 +34,7 @@ function createContext(): OperationContext {
 
       if (content === newContent) {
         logger.debug("No changes made to file (pattern not found or replacement identical)");
+        return;
       }
 
       await fileSys.writeToFile(fullPath, newContent);

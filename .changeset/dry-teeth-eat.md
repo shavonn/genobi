@@ -1,0 +1,5 @@
+---
+"genobi": minor
+---
+
+Custom operations

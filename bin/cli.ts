@@ -3,5 +3,5 @@
 import { cli } from "../src/core/client-runner";
 
 (async () => {
-	await cli.run();
+  await cli.run();
 })();

@@ -12,34 +12,34 @@ import { logger } from "../../utils/logger.js";
  * @returns {OperationContext} The operation context
  */
 function createContext(): OperationContext {
-	const state = store.state();
+  const state = store.state();
 
-	return {
-		destinationPath: state.destinationBasePath,
-		configPath: state.configPath,
-		logger: {
-			info: logger.info,
-			warn: logger.warn,
-			error: logger.error,
-			debug: logger.debug,
-			success: logger.success,
-		},
-		replaceInFile: async (filePath: string, pattern: string | RegExp, replacement: string): Promise<void> => {
-			const fullPath = path.resolve(state.destinationBasePath, filePath);
-			logger.debug(`Replacing content in file: ${fullPath}`);
-			logger.debug(`Pattern: ${pattern}`);
+  return {
+    destinationPath: state.destinationBasePath,
+    configPath: state.configPath,
+    logger: {
+      info: logger.info,
+      warn: logger.warn,
+      error: logger.error,
+      debug: logger.debug,
+      success: logger.success,
+    },
+    replaceInFile: async (filePath: string, pattern: string | RegExp, replacement: string): Promise<void> => {
+      const fullPath = path.resolve(state.destinationBasePath, filePath);
+      logger.debug(`Replacing content in file: ${fullPath}`);
+      logger.debug(`Pattern: ${pattern}`);
 
-			const content = await fileSys.readFromFile(fullPath);
-			const newContent = content.replace(pattern, replacement);
+      const content = await fileSys.readFromFile(fullPath);
+      const newContent = content.replace(pattern, replacement);
 
-			if (content === newContent) {
-				logger.debug("No changes made to file (pattern not found or replacement identical)");
-			}
+      if (content === newContent) {
+        logger.debug("No changes made to file (pattern not found or replacement identical)");
+      }
 
-			await fileSys.writeToFile(fullPath, newContent);
-			logger.info(`Replaced content in: ${fullPath}`);
-		},
-	};
+      await fileSys.writeToFile(fullPath, newContent);
+      logger.info(`Replaced content in: ${fullPath}`);
+    },
+  };
 }
 
 /**
@@ -55,17 +55,17 @@ function createContext(): OperationContext {
  * @returns {Promise<void>}
  */
 async function custom(operation: CustomOperation, data: TemplateData): Promise<void> {
-	logger.info(`Running custom operation: ${operation.name}`);
+  logger.info(`Running custom operation: ${operation.name}`);
 
-	const context = createContext();
+  const context = createContext();
 
-	// Execute the action - handle both sync and async returns
-	const result = operation.action(data, context);
-	if (result instanceof Promise) {
-		await result;
-	}
+  // Execute the action - handle both sync and async returns
+  const result = operation.action(data, context);
+  if (result instanceof Promise) {
+    await result;
+  }
 
-	logger.success(`Custom operation completed: ${operation.name}`);
+  logger.success(`Custom operation completed: ${operation.name}`);
 }
 
 /**
@@ -82,22 +82,22 @@ async function custom(operation: CustomOperation, data: TemplateData): Promise<v
  * @throws {GenobiError} If the operation is not registered
  */
 async function registered(operationType: string, data: TemplateData): Promise<void> {
-	logger.info(`Running registered operation: ${operationType}`);
+  logger.info(`Running registered operation: ${operationType}`);
 
-	const handler = store.state().operations.get(operationType);
-	if (!handler) {
-		throw new GenobiError("UNKNOWN_OPERATION_TYPE", `Operation "${operationType}" is not registered`);
-	}
+  const handler = store.state().operations.get(operationType);
+  if (!handler) {
+    throw new GenobiError("UNKNOWN_OPERATION_TYPE", `Operation "${operationType}" is not registered`);
+  }
 
-	const context = createContext();
+  const context = createContext();
 
-	// Execute the handler - handle both sync and async returns
-	const result = handler(data, context);
-	if (result instanceof Promise) {
-		await result;
-	}
+  // Execute the handler - handle both sync and async returns
+  const result = handler(data, context);
+  if (result instanceof Promise) {
+    await result;
+  }
 
-	logger.success(`Registered operation completed: ${operationType}`);
+  logger.success(`Registered operation completed: ${operationType}`);
 }
 
 export { custom, registered };

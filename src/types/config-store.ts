@@ -7,60 +7,60 @@ import type { CustomOperationHandler } from "./operation";
  * This includes all settings, generators, helpers, and partials.
  */
 export interface ConfigStoreState {
-	/**
-	 * Whether debug logging is enabled.
-	 */
-	logDebug: boolean;
+  /**
+   * Whether debug logging is enabled.
+   */
+  logDebug: boolean;
 
-	/**
-	 * Whether verbose logging is enabled.
-	 */
-	logVerbose: boolean;
+  /**
+   * Whether verbose logging is enabled.
+   */
+  logVerbose: boolean;
 
-	/**
-	 * The directory containing the config file.
-	 */
-	configPath: string;
+  /**
+   * The directory containing the config file.
+   */
+  configPath: string;
 
-	/**
-	 * The full path to the config file.
-	 */
-	configFilePath: string;
+  /**
+   * The full path to the config file.
+   */
+  configFilePath: string;
 
-	/**
-	 * The base directory for resolving relative paths in operations.
-	 */
-	destinationBasePath: string;
+  /**
+   * The base directory for resolving relative paths in operations.
+   */
+  destinationBasePath: string;
 
-	/**
-	 * The prompt message displayed when selecting a generator.
-	 */
-	selectionPrompt: string;
+  /**
+   * The prompt message displayed when selecting a generator.
+   */
+  selectionPrompt: string;
 
-	/**
-	 * The ID of the currently selected generator.
-	 */
-	selectedGenerator: string;
+  /**
+   * The ID of the currently selected generator.
+   */
+  selectedGenerator: string;
 
-	/**
-	 * Map of all registered generators, keyed by ID.
-	 */
-	generators: ConfiguredGenerators;
+  /**
+   * Map of all registered generators, keyed by ID.
+   */
+  generators: ConfiguredGenerators;
 
-	/**
-	 * Map of all registered Handlebars helpers, keyed by name.
-	 */
-	helpers: ConfiguredHelpers;
+  /**
+   * Map of all registered Handlebars helpers, keyed by name.
+   */
+  helpers: ConfiguredHelpers;
 
-	/**
-	 * Map of all registered Handlebars partials, keyed by name.
-	 */
-	partials: ConfiguredPartials;
+  /**
+   * Map of all registered Handlebars partials, keyed by name.
+   */
+  partials: ConfiguredPartials;
 
-	/**
-	 * Map of all registered custom operations, keyed by name.
-	 */
-	operations: ConfiguredOperations;
+  /**
+   * Map of all registered custom operations, keyed by name.
+   */
+  operations: ConfiguredOperations;
 }
 
 /**

@@ -9,119 +9,119 @@ import { testFiles } from "../../__fixtures__/test-files";
 import { getTmpDirPath, loadTestFiles, writeTestFile } from "../../test-utils";
 
 describe("create", () => {
-	const mergedData = {
-		name: "page header",
-		...testData.themeData,
-	};
+  const mergedData = {
+    name: "page header",
+    ...testData.themeData,
+  };
 
-	beforeAll(async () => {
-		templates.registerComponents();
-	});
+  beforeAll(async () => {
+    templates.registerComponents();
+  });
 
-	it("should create file using templateFile", async () => {
-		const operation = operationDecorator.create(testData.makeCreateOperation());
-		const componentFilePath = getTmpDirPath("src/components/page-header/page-header.tsx");
-		const mergedData = {
-			name: "page header",
-			...testData.themeData,
-		};
+  it("should create file using templateFile", async () => {
+    const operation = operationDecorator.create(testData.makeCreateOperation());
+    const componentFilePath = getTmpDirPath("src/components/page-header/page-header.tsx");
+    const mergedData = {
+      name: "page header",
+      ...testData.themeData,
+    };
 
-		await ops.create(operation, mergedData);
+    await ops.create(operation, mergedData);
 
-		const fileResult = await fs.readFile(componentFilePath, "utf8");
-		expect(fileResult).toContain("PageHeader()");
-		expect(fileResult).toContain("denim-page-header");
-	});
+    const fileResult = await fs.readFile(componentFilePath, "utf8");
+    expect(fileResult).toContain("PageHeader(props)");
+    expect(fileResult).toContain("denim-page-header");
+  });
 
-	it("should create a file using templateStr", async () => {
-		const operation = operationDecorator.create(
-			testData.makeCreateOperation({
-				templateFilePath: undefined,
-				filePath: testFiles.componentCss.filePath,
-				templateStr: testFiles.componentCss.templateStr,
-			}),
-		);
-		const mergedData = {
-			name: "checkbox input",
-			...testData.themeData,
-		};
-		const cssFilePath = getTmpDirPath("src/components/checkbox-input/checkbox-input.css");
+  it("should create a file using templateStr", async () => {
+    const operation = operationDecorator.create(
+      testData.makeCreateOperation({
+        templateFilePath: undefined,
+        filePath: testFiles.componentCss.filePath,
+        templateStr: testFiles.componentCss.templateStr,
+      }),
+    );
+    const mergedData = {
+      name: "checkbox input",
+      ...testData.themeData,
+    };
+    const cssFilePath = getTmpDirPath("src/components/checkbox-input/checkbox-input.css");
 
-		await ops.create(operation, mergedData);
+    await ops.create(operation, mergedData);
 
-		const fileResult = await fs.readFile(cssFilePath, "utf8");
-		expect(fileResult).toContain(".checkbox-input {");
-		expect(fileResult).toContain("background-color: denim-600;");
-	});
+    const fileResult = await fs.readFile(cssFilePath, "utf8");
+    expect(fileResult).toContain(".checkbox-input {");
+    expect(fileResult).toContain("background-color: denim-600;");
+  });
 
-	it("should throw error if file already exists and skipIfExists is false", async () => {
-		const operation = operationDecorator.create(testData.makeCreateOperation());
+  it("should throw error if file already exists and skipIfExists is false", async () => {
+    const operation = operationDecorator.create(testData.makeCreateOperation());
 
-		await loadTestFiles({
-			"src/components/page-header/page-header.tsx": "page header",
-		});
+    await loadTestFiles({
+      "src/components/page-header/page-header.tsx": "page header",
+    });
 
-		// Uses atomic write with exclusive flag (wx) - throws FileExistsError atomically
-		// This prevents TOCTOU race conditions between checking file existence and writing
-		await expect(ops.create(operation, mergedData)).rejects.toThrow(/File already exists/);
-	});
+    // Uses atomic write with exclusive flag (wx) - throws FileExistsError atomically
+    // This prevents TOCTOU race conditions between checking file existence and writing
+    await expect(ops.create(operation, mergedData)).rejects.toThrow(/File already exists/);
+  });
 
-	it("should skip operation if file already exists and skipIfExists is true", async () => {
-		const operation = operationDecorator.create(
-			testData.makeCreateOperation({
-				skipIfExists: true,
-			}),
-		);
+  it("should skip operation if file already exists and skipIfExists is true", async () => {
+    const operation = operationDecorator.create(
+      testData.makeCreateOperation({
+        skipIfExists: true,
+      }),
+    );
 
-		vi.spyOn(fileSys, "fileExists");
-		vi.spyOn(content, "getSingleFileContent");
+    vi.spyOn(fileSys, "fileExists");
+    vi.spyOn(content, "getSingleFileContent");
 
-		await loadTestFiles({
-			"src/components/page-header/page-header.tsx": "page header",
-		});
+    await loadTestFiles({
+      "src/components/page-header/page-header.tsx": "page header",
+    });
 
-		await ops.create(operation, mergedData);
+    await ops.create(operation, mergedData);
 
-		expect(fileSys.fileExists).toHaveResolvedWith(true);
-		expect(content.getSingleFileContent).not.toHaveBeenCalled();
-	});
+    expect(fileSys.fileExists).toHaveResolvedWith(true);
+    expect(content.getSingleFileContent).not.toHaveBeenCalled();
+  });
 
-	it("should overwrite file if file already exists and overwrite is true", async () => {
-		const operation = operationDecorator.create(
-			testData.makeCreateOperation({
-				templateFilePath: undefined,
-				templateStr: testFiles.component.templateFileContent,
-				overwrite: true,
-			}),
-		);
-		const mergedData = {
-			name: "alert",
-			...testData.themeData,
-		};
-		const alertFilePath = getTmpDirPath("src/components/alert/alert.tsx");
+  it("should overwrite file if file already exists and overwrite is true", async () => {
+    const operation = operationDecorator.create(
+      testData.makeCreateOperation({
+        templateFilePath: undefined,
+        templateStr: testFiles.component.templateFileContent,
+        overwrite: true,
+      }),
+    );
+    const mergedData = {
+      name: "alert",
+      ...testData.themeData,
+    };
+    const alertFilePath = getTmpDirPath("src/components/alert/alert.tsx");
 
-		vi.spyOn(fileSys, "fileExists");
-		vi.spyOn(content, "getSingleFileContent");
+    vi.spyOn(fileSys, "fileExists");
+    vi.spyOn(content, "getSingleFileContent");
 
-		await writeTestFile("src/components/alert/alert.tsx", "to be overwritten as alert component");
+    await writeTestFile("src/components/alert/alert.tsx", "to be overwritten as alert component");
 
-		const existingFileResult = await fs.readFile(alertFilePath, "utf8");
-		expect(existingFileResult).toContain("overwritten");
+    const existingFileResult = await fs.readFile(alertFilePath, "utf8");
+    expect(existingFileResult).toContain("overwritten");
 
-		await ops.create(operation, mergedData);
+    await ops.create(operation, mergedData);
 
-		const newContentResult = await fs.readFile(alertFilePath, "utf8");
-		expect(newContentResult).not.toContain("overwritten");
+    const newContentResult = await fs.readFile(alertFilePath, "utf8");
+    expect(newContentResult).not.toContain("overwritten");
 
-		expect(fileSys.fileExists).toHaveResolvedWith(true);
-		expect(content.getSingleFileContent).toHaveBeenCalled();
-	});
+    expect(fileSys.fileExists).toHaveResolvedWith(true);
+    expect(content.getSingleFileContent).toHaveBeenCalled();
+  });
 
-	it("should throw error when writing file fails", async () => {
-		const operation = operationDecorator.create(testData.makeCreateOperation());
+  it("should throw error when writing file fails", async () => {
+    const operation = operationDecorator.create(testData.makeCreateOperation());
 
-		vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error("Simulated write error"));
+    vi.spyOn(fs, "writeFile").mockRejectedValueOnce(new Error("Simulated write error"));
 
-		await expect(ops.create(operation, mergedData)).rejects.toThrow();
-	});
+    await expect(ops.create(operation, mergedData)).rejects.toThrow();
+  });
 });

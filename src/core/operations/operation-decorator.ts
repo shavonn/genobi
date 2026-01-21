@@ -1,10 +1,10 @@
 import { UnknownOperationType } from "../../errors";
 import type {
-	AmendOperation,
-	CreateAllOperation,
-	CreateOperation,
-	ForManyOperation,
-	Operation,
+  AmendOperation,
+  CreateAllOperation,
+  CreateOperation,
+  ForManyOperation,
+  Operation,
 } from "../../types/operation";
 
 /**
@@ -14,13 +14,13 @@ import type {
  * @returns {Operation} The operation with default properties applied
  */
 export function OpDecorator(operation: Operation): Operation {
-	return Object.assign(
-		{
-			data: {},
-			haltOnError: true,
-		},
-		operation,
-	) as Operation;
+  return Object.assign(
+    {
+      data: {},
+      haltOnError: true,
+    },
+    operation,
+  ) as Operation;
 }
 
 /**
@@ -30,14 +30,14 @@ export function OpDecorator(operation: Operation): Operation {
  * @returns {CreateOperation} The operation with default properties applied
  */
 export function createDecorator(operation: CreateOperation): CreateOperation {
-	return Object.assign(
-		{
-			skipIfExists: false,
-			overwrite: false,
-			skip: false,
-		},
-		OpDecorator(operation),
-	) as CreateOperation;
+  return Object.assign(
+    {
+      skipIfExists: false,
+      overwrite: false,
+      skip: false,
+    },
+    OpDecorator(operation),
+  ) as CreateOperation;
 }
 
 /**
@@ -47,15 +47,15 @@ export function createDecorator(operation: CreateOperation): CreateOperation {
  * @returns {CreateAllOperation} The operation with default properties applied
  */
 export function createAllDecorator(operation: CreateAllOperation): CreateAllOperation {
-	return Object.assign(
-		{
-			skipIfExists: false,
-			overwrite: false,
-			skip: false,
-			verbose: true,
-		},
-		OpDecorator(operation),
-	) as unknown as CreateAllOperation;
+  return Object.assign(
+    {
+      skipIfExists: false,
+      overwrite: false,
+      skip: false,
+      verbose: true,
+    },
+    OpDecorator(operation),
+  ) as unknown as CreateAllOperation;
 }
 
 /**
@@ -65,13 +65,13 @@ export function createAllDecorator(operation: CreateAllOperation): CreateAllOper
  * @returns {AmendOperation} The operation with default properties applied
  */
 export function amendDecorator(operation: AmendOperation): AmendOperation {
-	return Object.assign(
-		{
-			unique: true,
-			separator: "\n",
-		},
-		OpDecorator(operation),
-	) as AmendOperation;
+  return Object.assign(
+    {
+      unique: true,
+      separator: "\n",
+    },
+    OpDecorator(operation),
+  ) as AmendOperation;
 }
 
 /**
@@ -81,18 +81,18 @@ export function amendDecorator(operation: AmendOperation): AmendOperation {
  * @returns {ForManyOperation} The operation with default properties applied
  */
 export function forManyDecorator(operation: ForManyOperation): ForManyOperation {
-	return Object.assign({}, OpDecorator(operation)) as ForManyOperation;
+  return Object.assign({}, OpDecorator(operation)) as ForManyOperation;
 }
 
 /**
  * Map of operation types to their decorator functions.
  */
 const operationDecorators = {
-	append: (operation: AmendOperation) => amendDecorator(operation),
-	prepend: (operation: AmendOperation) => amendDecorator(operation),
-	create: (operation: CreateOperation) => createDecorator(operation),
-	createAll: (operation: CreateAllOperation) => createAllDecorator(operation),
-	forMany: (operation: ForManyOperation) => forManyDecorator(operation),
+  append: (operation: AmendOperation) => amendDecorator(operation),
+  prepend: (operation: AmendOperation) => amendDecorator(operation),
+  create: (operation: CreateOperation) => createDecorator(operation),
+  createAll: (operation: CreateAllOperation) => createAllDecorator(operation),
+  forMany: (operation: ForManyOperation) => forManyDecorator(operation),
 };
 
 /**
@@ -102,7 +102,7 @@ const operationDecorators = {
  * @returns {boolean} True if the operation type is valid
  */
 function isValidOperationType(type: string): type is keyof typeof operationDecorators {
-	return type in operationDecorators;
+  return type in operationDecorators;
 }
 
 /**
@@ -113,54 +113,54 @@ function isValidOperationType(type: string): type is keyof typeof operationDecor
  * @throws {UnknownOperationType} If the operation type is not recognized
  */
 function decorateOperation(operation: Operation): Operation {
-	if (isValidOperationType(operation.type)) {
-		return operationDecorators[operation.type](operation as any);
-	}
-	throw new UnknownOperationType(operation.type);
+  if (isValidOperationType(operation.type)) {
+    return operationDecorators[operation.type](operation as any);
+  }
+  throw new UnknownOperationType(operation.type);
 }
 
 /**
  * Utilities for decorating operations with default values.
  */
 const operationDecorator = {
-	/**
-	 * Decorates an operation with default values based on its type.
-	 *
-	 * @param {Operation} operation - The operation to decorate
-	 * @returns {Operation} The decorated operation with default values
-	 */
-	decorate: decorateOperation,
+  /**
+   * Decorates an operation with default values based on its type.
+   *
+   * @param {Operation} operation - The operation to decorate
+   * @returns {Operation} The decorated operation with default values
+   */
+  decorate: decorateOperation,
 
-	/**
-	 * Decorates a create operation with default values.
-	 *
-	 * @param {CreateOperation} operation - The create operation to decorate
-	 * @returns {CreateOperation} The decorated operation
-	 */
-	create: createDecorator,
+  /**
+   * Decorates a create operation with default values.
+   *
+   * @param {CreateOperation} operation - The create operation to decorate
+   * @returns {CreateOperation} The decorated operation
+   */
+  create: createDecorator,
 
-	/**
-	 * Decorates a createAll operation with default values.
-	 *
-	 * @param {CreateAllOperation} operation - The createAll operation to decorate
-	 * @returns {CreateAllOperation} The decorated operation
-	 */
-	createAll: createAllDecorator,
+  /**
+   * Decorates a createAll operation with default values.
+   *
+   * @param {CreateAllOperation} operation - The createAll operation to decorate
+   * @returns {CreateAllOperation} The decorated operation
+   */
+  createAll: createAllDecorator,
 
-	/**
-	 * Decorates an amend operation (append/prepend) with default values.
-	 *
-	 * @param {AmendOperation} operation - The amend operation to decorate
-	 * @returns {AmendOperation} The decorated operation
-	 */
-	amend: amendDecorator,
+  /**
+   * Decorates an amend operation (append/prepend) with default values.
+   *
+   * @param {AmendOperation} operation - The amend operation to decorate
+   * @returns {AmendOperation} The decorated operation
+   */
+  amend: amendDecorator,
 
-	/**
-	 * Decorates a forMany operation with default values.
-	 *
-	 * @param {ForManyOperation} operation - The forMany operation to decorate
-	 * @returns {ForManyOperation} The decorated operation
-	 */
-	forMany: forManyDecorator,
+  /**
+   * Decorates a forMany operation with default values.
+   *
+   * @param {ForManyOperation} operation - The forMany operation to decorate
+   * @returns {ForManyOperation} The decorated operation
+   */
+  forMany: forManyDecorator,
 };
 export { operationDecorator };

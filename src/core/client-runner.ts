@@ -11,12 +11,12 @@ import { generatorRunner } from "./generator-runner";
  * CLI options parsed from command-line arguments.
  */
 interface CliOptions {
-	/** Enable debug logging for technical details */
-	debug?: boolean;
-	/** Custom destination directory for file operations */
-	destination?: string;
-	/** Enable verbose logging for progress information */
-	verbose?: boolean;
+  /** Enable debug logging for technical details */
+  debug?: boolean;
+  /** Custom destination directory for file operations */
+  destination?: string;
+  /** Enable verbose logging for progress information */
+  verbose?: boolean;
 }
 
 /**
@@ -33,95 +33,95 @@ interface CliOptions {
  * @returns {Promise<void>}
  */
 async function runCli(): Promise<void> {
-	// Create a new Commander instance
-	const program = new Command(pkg.name);
+  // Create a new Commander instance
+  const program = new Command(pkg.name);
 
-	// Configure the CLI program
-	program
-		.version(pkg.version)
-		.description(pkg.description)
-		.argument(
-			"[generator]",
-			"ID for selecting the generator to use. This ID corresponds to a generator defined in your configuration file.",
-		)
-		.option(
-			"-d, --destination <path>",
-			"The directory used as the reference point for resolving all relative paths. Usually your project root.",
-		)
-		.option("-v, --verbose", "Progress logs - what is happening (creation, modification, operation progress)")
-		.option("--debug", "Technical detail logs - how it's happening (internal details, data state, exact paths)");
+  // Configure the CLI program
+  program
+    .version(pkg.version)
+    .description(pkg.description)
+    .argument(
+      "[generator]",
+      "ID for selecting the generator to use. This ID corresponds to a generator defined in your configuration file.",
+    )
+    .option(
+      "-d, --destination <path>",
+      "The directory used as the reference point for resolving all relative paths. Usually your project root.",
+    )
+    .option("-v, --verbose", "Progress logs - what is happening (creation, modification, operation progress)")
+    .option("--debug", "Technical detail logs - how it's happening (internal details, data state, exact paths)");
 
-	// Parse command-line arguments
-	program.parse(process.argv);
+  // Parse command-line arguments
+  program.parse(process.argv);
 
-	// Extract the generator argument if provided
-	const [generatorArg] = program.args;
+  // Extract the generator argument if provided
+  const [generatorArg] = program.args;
 
-	// Extract options with proper typing
-	const { debug, destination, verbose } = program.opts<CliOptions>();
+  // Extract options with proper typing
+  const { debug, destination, verbose } = program.opts<CliOptions>();
 
-	// Set the selected generator if provided
-	if (generatorArg) {
-		logger.debug("Provided generator ID arg:", generatorArg);
-		store.setSelectedGenerator(generatorArg);
-	}
+  // Set the selected generator if provided
+  if (generatorArg) {
+    logger.debug("Provided generator ID arg:", generatorArg);
+    store.setSelectedGenerator(generatorArg);
+  }
 
-	// Log the destination if provided
-	if (destination) {
-		logger.debug("Provided destination option:", destination);
-	}
+  // Log the destination if provided
+  if (destination) {
+    logger.debug("Provided destination option:", destination);
+  }
 
-	// Enable debug logging if requested
-	if (debug) {
-		logger.debug("Debug logging enabled");
-		store.enableDebugLogging();
-	}
+  // Enable debug logging if requested
+  if (debug) {
+    logger.debug("Debug logging enabled");
+    store.enableDebugLogging();
+  }
 
-	// Enable verbose logging if requested
-	if (verbose) {
-		logger.debug("Verbose logging enabled");
-		store.enableVerboseLogging();
-	}
+  // Enable verbose logging if requested
+  if (verbose) {
+    logger.debug("Verbose logging enabled");
+    store.enableVerboseLogging();
+  }
 
-	// Run the main application flow
-	try {
-		// Load the configuration
-		await configLoader.load(destination);
+  // Run the main application flow
+  try {
+    // Load the configuration
+    await configLoader.load(destination);
 
-		// Resolve which generator to use
-		await generatorResolver.resolve();
+    // Resolve which generator to use
+    await generatorResolver.resolve();
 
-		// Run the selected generator
-		await generatorRunner.run();
-		logger.success("Done!");
-	} catch (err) {
-		// Log the error message
-		logger.error(`Error: ${common.getErrorMessage(err)}`);
+    // Run the selected generator
+    await generatorRunner.run();
+    logger.success("Done!");
+  } catch (err) {
+    // Log the error message
+    logger.error(`Error: ${common.getErrorMessage(err)}`);
 
-		// Log additional details about the error cause if available
-		if (err instanceof Error && err.cause) {
-			if (common.isErrorWithMessage(err.cause)) {
-				logger.error(`Caused by: ${err.cause.message}`);
-			}
-			if (common.isErrorWithStack(err.cause)) {
-				logger.debug(`Original error stack: ${err.cause.stack}`);
-			}
-		}
+    // Log additional details about the error cause if available
+    if (err instanceof Error && err.cause) {
+      if (common.isErrorWithMessage(err.cause)) {
+        logger.error(`Caused by: ${err.cause.message}`);
+      }
+      if (common.isErrorWithStack(err.cause)) {
+        logger.debug(`Original error stack: ${err.cause.stack}`);
+      }
+    }
 
-		// Exit with a non-zero status code to indicate failure
-		process.exit(1);
-	}
+    // Exit with a non-zero status code to indicate failure
+    process.exit(1);
+  }
 }
 
 /**
  * CLI interface for running Genobi.
  */
 const cli = {
-	/**
-	 * Runs the CLI application.
-	 *
-	 * @returns {Promise<void>}
-	 */
-	run: runCli,
+  /**
+   * Runs the CLI application.
+   *
+   * @returns {Promise<void>}
+   */
+  run: runCli,
 };
 export { cli };

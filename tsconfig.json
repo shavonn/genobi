@@ -1,21 +1,21 @@
 {
-	"compilerOptions": {
-		"target": "ES2022",
-		"lib": ["ES2022"],
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
-		"isolatedModules": true,
-		"emitDeclarationOnly": true,
-		"declaration": true,
-		"outDir": "dist",
-		"declarationDir": "dist/types",
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"strict": true,
-		"noUncheckedIndexedAccess": true,
-		"skipLibCheck": true,
-		"resolveJsonModule": true
-	},
-	"include": ["src", "bin"],
-	"exclude": ["node_modules", "dist"]
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "isolatedModules": true,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "outDir": "dist",
+    "declarationDir": "dist/types",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src", "bin"],
+  "exclude": ["node_modules", "dist"]
 }

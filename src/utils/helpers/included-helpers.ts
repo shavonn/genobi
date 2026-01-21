@@ -1,10 +1,10 @@
 import { registerStringHelpers } from "./string-transformers";
 
 function registerIncludedHelpers() {
-	registerStringHelpers();
+  registerStringHelpers();
 }
 
 const includedHelpers = {
-	register: registerIncludedHelpers,
+  register: registerIncludedHelpers,
 };
 export { includedHelpers };

@@ -13,44 +13,44 @@ import { logger } from "../utils/logger";
  * @returns {Promise<void>}
  */
 async function resolveGenerator(): Promise<void> {
-	// Start with the currently selected generator (if any)
-	let selectedGenerator: string = store.state().selectedGenerator;
+  // Start with the currently selected generator (if any)
+  let selectedGenerator: string = store.state().selectedGenerator;
 
-	// Validate the selected generator exists
-	if (selectedGenerator !== "") {
-		const generatorExists = store.state().generators.has(selectedGenerator);
-		if (!generatorExists) {
-			selectedGenerator = "";
-			logger.error(`Generator with ID "${store.state().selectedGenerator}" not found.`);
-		}
-	}
+  // Validate the selected generator exists
+  if (selectedGenerator !== "") {
+    const generatorExists = store.state().generators.has(selectedGenerator);
+    if (!generatorExists) {
+      selectedGenerator = "";
+      logger.error(`Generator with ID "${store.state().selectedGenerator}" not found.`);
+    }
+  }
 
-	// If no valid generator is selected, prompt the user to choose one
-	if (selectedGenerator === "") {
-		const { generator } = await inquirer.prompt([
-			{
-				type: "list",
-				name: "generator",
-				message: store.state().selectionPrompt,
-				choices: store.getGeneratorsList(),
-			},
-		]);
+  // If no valid generator is selected, prompt the user to choose one
+  if (selectedGenerator === "") {
+    const { generator } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "generator",
+        message: store.state().selectionPrompt,
+        choices: store.getGeneratorsList(),
+      },
+    ]);
 
-		store.setSelectedGenerator(generator);
-	}
+    store.setSelectedGenerator(generator);
+  }
 
-	logger.debug("Using selected generator:", store.state().selectedGenerator);
+  logger.debug("Using selected generator:", store.state().selectedGenerator);
 }
 
 /**
  * Utility for resolving which generator to use.
  */
 const generatorResolver = {
-	/**
-	 * Resolves which generator to use for the current operation.
-	 *
-	 * @returns {Promise<void>}
-	 */
-	resolve: resolveGenerator,
+  /**
+   * Resolves which generator to use for the current operation.
+   *
+   * @returns {Promise<void>}
+   */
+  resolve: resolveGenerator,
 };
 export { generatorResolver };

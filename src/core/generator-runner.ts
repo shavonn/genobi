@@ -1,6 +1,7 @@
 import inquirer from "inquirer";
 import { store } from "../config-store";
 import { GenobiError } from "../errors";
+import { common } from "../utils/common";
 import { stringHelpers } from "../utils/helpers/string-transformers";
 import { logger } from "../utils/logger";
 import { templates } from "../utils/templates";
@@ -89,15 +90,15 @@ async function runGenerator(): Promise<void> {
 			logger.info(`Running ${operation.type} operation`);
 			await operationHandler.handle(operation, data);
 			logger.info("Operation completed successfully");
-		} catch (err: any) {
+		} catch (err) {
 			logger.error(
 				`${stringHelpers.titleCase(stringHelpers.sentenceCase(operation.type))} Operation failed.`,
-				err.message,
+				common.getErrorMessage(err),
 			);
-			if (err.cause) {
-				logger.error(err.cause.message);
+			if (common.isErrorWithMessage(err) && err instanceof Error && err.cause) {
+				logger.error(common.getErrorMessage(err.cause));
 			}
-			logger.debug(`Error details: ${err.stack || "No stack trace available"}`);
+			logger.debug(`Error details: ${common.isErrorWithStack(err) ? err.stack : "No stack trace available"}`);
 
 			// If haltOnError is true, rethrow the error to stop execution
 			if (operation.haltOnError) {

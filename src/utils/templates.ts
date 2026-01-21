@@ -1,6 +1,7 @@
 import Handlebars from "handlebars";
 import { store } from "../config-store";
 import { GenobiError } from "../errors";
+import { common } from "./common";
 import { includedHelpers } from "./helpers/included-helpers";
 import { logger } from "./logger";
 
@@ -65,13 +66,14 @@ export function processTemplate(template: string, data: Record<string, any>): st
 
 		logger.debug(`Template processed successfully, result length: ${result.length} characters`);
 		return result;
-	} catch (err: any) {
-		logger.error(`Error processing template: ${err.message}`);
+	} catch (err) {
+		const message = common.getErrorMessage(err);
+		logger.error(`Error processing template: ${message}`);
 		logger.warn("Template:", template);
 		logger.warn("Data:", JSON.stringify(data, null, 2));
-		logger.debug(`Error details: ${err.stack || "No stack trace available"}`);
+		logger.debug(`Error details: ${common.isErrorWithStack(err) ? err.stack : "No stack trace available"}`);
 
-		throw new GenobiError("TEMPLATE_PROCESSING_ERROR", `Error processing template: ${err.message}`, err);
+		throw new GenobiError("TEMPLATE_PROCESSING_ERROR", `Error processing template: ${message}`, err);
 	}
 }
 

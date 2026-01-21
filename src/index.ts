@@ -9,6 +9,7 @@ import type {
 	CreateOperation,
 	Operation,
 	PrependOperation,
+	TemplateData,
 } from "./types/operation";
 
 export type {
@@ -24,4 +25,5 @@ export type {
 	CreateOperation,
 	CreateAllOperation,
 	PrependOperation,
+	TemplateData,
 };

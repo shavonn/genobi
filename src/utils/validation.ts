@@ -5,7 +5,7 @@ import { expectedPartialFileTypes } from "./resources/expected-partial-file-type
 /**
  * Validates that a value is a non-empty string
  */
-function validateNonEmptyString(value: any, fieldName: string): void {
+function validateNonEmptyString(value: unknown, fieldName: string): void {
 	if (typeof value !== "string") {
 		throw new ValidationError(fieldName, "must be a string");
 	}
@@ -17,7 +17,7 @@ function validateNonEmptyString(value: any, fieldName: string): void {
 /**
  * Validates that a value is a valid function
  */
-function validateFunction(value: any, fieldName: string): void {
+function validateFunction(value: unknown, fieldName: string): void {
 	if (typeof value !== "function") {
 		throw new ValidationError(fieldName, "must be a function");
 	}
@@ -26,7 +26,7 @@ function validateFunction(value: any, fieldName: string): void {
 /**
  * Validates that a value is an array
  */
-function validateArray(value: any, fieldName: string): void {
+function validateArray(value: unknown, fieldName: string): void {
 	if (!Array.isArray(value)) {
 		throw new ValidationError(fieldName, "must be an array");
 	}
@@ -35,7 +35,7 @@ function validateArray(value: any, fieldName: string): void {
 /**
  * Validates that a value is a boolean
  */
-function validateBoolean(value: any, fieldName: string): void {
+function validateBoolean(value: unknown, fieldName: string): void {
 	if (typeof value !== "boolean") {
 		throw new ValidationError(fieldName, "must be a boolean");
 	}
@@ -44,7 +44,7 @@ function validateBoolean(value: any, fieldName: string): void {
 /**
  * Validates that a value is an object (and not null or array)
  */
-function validateObject(value: any, fieldName: string): void {
+function validateObject(value: unknown, fieldName: string): void {
 	if (typeof value !== "object" || value === null || Array.isArray(value)) {
 		throw new ValidationError(fieldName, "must be an object");
 	}
@@ -53,7 +53,7 @@ function validateObject(value: any, fieldName: string): void {
 /**
  * Validates a single prompt configuration
  */
-function validatePrompt(prompt: any, index: number): void {
+function validatePrompt(prompt: unknown, index: number): void {
 	const promptField = `prompts[${index}]`;
 
 	if (!prompt || typeof prompt !== "object") {
@@ -98,7 +98,7 @@ function validatePrompt(prompt: any, index: number): void {
 /**
  * Validates a base operation
  */
-function validateBaseOperation(operation: any, index: number): void {
+function validateBaseOperation(operation: unknown, index: number): void {
 	const opField = `operations[${index}]`;
 
 	if (!operation || typeof operation !== "object") {
@@ -132,7 +132,7 @@ function validateBaseOperation(operation: any, index: number): void {
 /**
  * Validates a single file operation (create, append, prepend)
  */
-function validateSingleFileOperation(operation: any, index: number): void {
+function validateSingleFileOperation(operation: unknown, index: number): void {
 	const opField = `operations[${index}]`;
 
 	// Validate filePath
@@ -164,7 +164,7 @@ function validateSingleFileOperation(operation: any, index: number): void {
 /**
  * Validates a create operation
  */
-function validateCreateOperation(operation: any, index: number): void {
+function validateCreateOperation(operation: unknown, index: number): void {
 	const opField = `operations[${index}]`;
 
 	validateSingleFileOperation(operation, index);
@@ -187,7 +187,7 @@ function validateCreateOperation(operation: any, index: number): void {
 /**
  * Validates an amend operation (append/prepend)
  */
-function validateAmendOperation(operation: any, index: number): void {
+function validateAmendOperation(operation: unknown, index: number): void {
 	const opField = `operations[${index}]`;
 
 	validateSingleFileOperation(operation, index);
@@ -213,7 +213,7 @@ function validateAmendOperation(operation: any, index: number): void {
 /**
  * Validates a createAll operation
  */
-function validateCreateAllOperation(operation: any, index: number): void {
+function validateCreateAllOperation(operation: unknown, index: number): void {
 	const opField = `operations[${index}]`;
 
 	// Validate required fields
@@ -253,7 +253,7 @@ function validateCreateAllOperation(operation: any, index: number): void {
 /**
  * Validates a forMany operation
  */
-function validateForManyOperation(operation: any, index: number): void {
+function validateForManyOperation(operation: unknown, index: number): void {
 	const opField = `operations[${index}]`;
 
 	// Validate required fields
@@ -284,7 +284,7 @@ function validateForManyOperation(operation: any, index: number): void {
 /**
  * Validates an operation based on its type
  */
-function validateOperation(operation: any, index: number): void {
+function validateOperation(operation: unknown, index: number): void {
 	validateBaseOperation(operation, index);
 
 	// Type-specific validation
@@ -308,7 +308,7 @@ function validateOperation(operation: any, index: number): void {
 /**
  * Validates a generator configuration
  */
-export function validateGenerator(id: string, generator: any): void {
+export function validateGenerator(id: string, generator: unknown): void {
 	logger.info(`Validating generator: ${id}`);
 
 	try {
@@ -329,7 +329,7 @@ export function validateGenerator(id: string, generator: any): void {
 		// Validate prompts if present
 		if (generator.prompts !== undefined) {
 			validateArray(generator.prompts, "generator.prompts");
-			generator.prompts.forEach((prompt: any, index: number) => {
+			generator.prompts.forEach((prompt: unknown, index: number) => {
 				validatePrompt(prompt, index);
 			});
 		}
@@ -345,12 +345,12 @@ export function validateGenerator(id: string, generator: any): void {
 		}
 
 		// Validate each operation
-		generator.operations.forEach((operation: any, index: number) => {
+		generator.operations.forEach((operation: unknown, index: number) => {
 			validateOperation(operation, index);
 		});
 
 		// Cross-validate forMany operations reference existing generators
-		generator.operations.forEach((operation: any, index: number) => {
+		generator.operations.forEach((operation: unknown, index: number) => {
 			if (operation.type === "forMany" && operation.generatorId === id) {
 				logger.warn(`Warning: operations[${index}] references itself (${id}), this could cause infinite recursion`);
 			}
@@ -364,7 +364,7 @@ export function validateGenerator(id: string, generator: any): void {
 /**
  * Validates a helper function
  */
-export function validateHelper(name: string, helper: any): void {
+export function validateHelper(name: string, helper: unknown): void {
 	logger.info(`Validating helper: ${name}`);
 
 	try {
@@ -385,7 +385,7 @@ export function validateHelper(name: string, helper: any): void {
 /**
  * Validates a partial template
  */
-export function validatePartial(name: string, partial: any): void {
+export function validatePartial(name: string, partial: unknown): void {
 	logger.info(`Validating partial: ${name}`);
 
 	try {

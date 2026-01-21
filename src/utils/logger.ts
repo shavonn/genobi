@@ -6,9 +6,9 @@ import { store } from "../config-store";
  * Only outputs when debug logging is enabled.
  *
  * @param {string} msg - The message to log
- * @param {...any} args - Additional arguments to log
+ * @param {...unknown} args - Additional arguments to log
  */
-function logDebug(msg: string, ...args: any[]): void {
+function logDebug(msg: string, ...args: unknown[]): void {
 	if (store.state().logDebug) {
 		console.debug(chalk.cyanBright("[Debug]"), msg, ...args);
 	}
@@ -19,9 +19,9 @@ function logDebug(msg: string, ...args: any[]): void {
  * Always outputs regardless of log settings.
  *
  * @param {string} msg - The error message to log
- * @param {...any} args - Additional arguments to log
+ * @param {...unknown} args - Additional arguments to log
  */
-function logError(msg: string, ...args: any[]): void {
+function logError(msg: string, ...args: unknown[]): void {
 	console.error(chalk.red(msg), ...args);
 }
 
@@ -30,9 +30,9 @@ function logError(msg: string, ...args: any[]): void {
  * Only outputs when verbose logging is enabled.
  *
  * @param {string} msg - The info message to log
- * @param {...any} args - Additional arguments to log
+ * @param {...unknown} args - Additional arguments to log
  */
-function logInfo(msg: string, ...args: any[]): void {
+function logInfo(msg: string, ...args: unknown[]): void {
 	if (store.state().logVerbose) {
 		console.info(chalk.blue(msg), ...args);
 	}
@@ -43,9 +43,9 @@ function logInfo(msg: string, ...args: any[]): void {
  * Always outputs regardless of log settings.
  *
  * @param {string} msg - The success message to log
- * @param {...any} args - Additional arguments to log
+ * @param {...unknown} args - Additional arguments to log
  */
-function logSuccess(msg: string, ...args: any[]): void {
+function logSuccess(msg: string, ...args: unknown[]): void {
 	console.log(chalk.green(msg), ...args);
 }
 
@@ -54,9 +54,9 @@ function logSuccess(msg: string, ...args: any[]): void {
  * Always outputs regardless of log settings.
  *
  * @param {string} msg - The warning message to log
- * @param {...any} args - Additional arguments to log
+ * @param {...unknown} args - Additional arguments to log
  */
-function logWarn(msg: string, ...args: any[]): void {
+function logWarn(msg: string, ...args: unknown[]): void {
 	console.warn(chalk.yellow(msg), ...args);
 }
 

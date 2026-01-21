@@ -1,5 +1,37 @@
 # genobi
 
+## 0.7.1
+
+### Patch Changes
+
+- e092cde: Path Traversal Vulnerability Fix
+
+  - The fix validates that any template-processed path resolves within the destination base directory
+
+- fe75b3b: TOCTOU (time-of-check-time-of-use) Fix
+
+  - Added WriteOptions interface with exclusive flag. The writeToFile() function now supports { exclusive: true } which
+    uses the Node.js 'wx' flag for atomic file creation that fails if the file already exists.
+  - Updated to use atomic exclusive writes. When skipIfExists is false and overwrite is false, it uses { exclusive: true }
+    to atomically fail if the file exists, preventing race conditions.
+  - Same atomic write pattern applied for the createAll operation.
+  - Tests updated to properly spy on fileSys.fileExists and content.getSingleFileContent where needed, and fixed the test
+    that was incorrectly setting templateFilePath: undefined without providing a templateStr.
+
+- fe40cd7: Mutable Singleton State Fix
+
+  - Refactored store to support both singleton and isolated instances
+  - Wrapped store method calls in arrow functions to preserve this binding in api
+
+- c7f452d: CLI option type mismatch
+
+  - Added type safety for parsed CLI options
+  - Fixed -v --verbose <string> to -v, --verbose - The verbose option was incorrectly expecting a string value, but
+    enableVerboseLogging() takes no arguments. Changed to a boolean flag.
+  - Fixed option syntax - Changed -d --destination to -d, --destination (proper Commander.js short/long option separator
+    with comma)
+  - Added type annotation to program.opts() - Changed to program.opts<CliOptions>() for proper TypeScript type inference
+
 ## 0.7.0
 
 ### Minor Changes

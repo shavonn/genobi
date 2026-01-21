@@ -1,5 +1,4 @@
 import Handlebars from "handlebars";
-import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GeneratorConfig } from "../src";
 import { configAPI } from "../src/config-api";
 import { store } from "../src/config-store";
@@ -7,9 +6,15 @@ import { fileSys } from "../src/utils/file-sys";
 import { logger } from "../src/utils/logger";
 import { validation } from "../src/utils/validation";
 
+// Mocks must be at top level
+vi.mock("../src/config-store");
+vi.mock("../src/utils/validation");
+vi.mock("../src/utils/file-sys");
+vi.mock("handlebars");
+
 describe("configAPI", () => {
 	let api: ReturnType<typeof configAPI.get>;
-	let mockState: any;
+	let mockState: ReturnType<typeof store.state>;
 
 	beforeEach(() => {
 		// Reset all mocks
@@ -24,11 +29,9 @@ describe("configAPI", () => {
 			generators: new Map(),
 			helpers: new Map(),
 			partials: new Map(),
+			selectedGenerator: "",
+			debugLogging: false,
 		};
-
-		vi.mock("../src/config-store");
-		vi.mock("../src/utils/validation");
-		vi.mock("../src/utils/file-sys");
 
 		// Mock store methods
 		vi.mocked(store.state).mockReturnValue(mockState);
@@ -89,7 +92,6 @@ describe("configAPI", () => {
 		const validHelper = (str: string) => str.toUpperCase();
 
 		it("should add a valid helper", () => {
-			vi.mock("handlebars");
 			vi.mocked(validation.validateHelper).mockReturnValueOnce();
 
 			api.addHelper("uppercase", validHelper);

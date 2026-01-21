@@ -1,17 +1,21 @@
 import fs from "node:fs/promises";
 import Handlebars from "handlebars";
 import inquirer from "inquirer";
-import {configAPI} from "../../src/config-api";
-import {store} from "../../src/config-store";
-import {generatorRunner} from "../../src/core/generator-runner";
-import {operationDecorator} from "../../src/core/operations/operation-decorator";
-import {ops} from "../../src/core/operations/ops";
-import {stringHelpers} from "../../src/utils/helpers/string-transformers";
-import {logger} from "../../src/utils/logger";
-import {templates} from "../../src/utils/templates";
-import {testData} from "../__fixtures__/test-data";
+import { configAPI } from "../../src/config-api";
+import { store } from "../../src/config-store";
+import { generatorRunner } from "../../src/core/generator-runner";
+import { operationDecorator } from "../../src/core/operations/operation-decorator";
+import { ops } from "../../src/core/operations/ops";
+import { stringHelpers } from "../../src/utils/helpers/string-transformers";
+import { logger } from "../../src/utils/logger";
+import { templates } from "../../src/utils/templates";
+import { testData } from "../__fixtures__/test-data";
 
-vi.mock("inquirer");
+vi.mock("inquirer", () => ({
+	default: {
+		prompt: vi.fn(),
+	},
+}));
 
 describe("runGenerator", () => {
 	const input = { name: "text input" };

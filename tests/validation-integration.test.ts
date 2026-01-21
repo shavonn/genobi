@@ -1,5 +1,5 @@
 import path from "node:path";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ConfigAPI } from "../src";
 import { configAPI } from "../src/config-api";
 import { store } from "../src/config-store";

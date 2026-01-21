@@ -426,7 +426,7 @@ export class {{pascalCase name}} extends React.Component {
 			expect(() => {
 				// @ts-ignore should be missing prompts for validation
 				api.addGenerator("test", { description: "", operations: [] });
-			}).toThrow("Validation failed for generator.description: is required");
+			}).toThrow("Validation failed for generator.description: cannot be empty");
 
 			expect(() => {
 				api.addHelper("", () => {});

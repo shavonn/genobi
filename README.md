@@ -38,6 +38,7 @@ To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
 * [Genobi](#genobi)
     * [Why Genobi?](#why-genobi)
         * [TODO to major release version:](#todo-to-major-release-version)
+    * [Requirements](#requirements)
     * [Installation](#installation)
         * [Install Genobi globally:](#install-genobi-globally)
             * [Why would I install Genobi globally?](#why-would-i-install-genobi-globally)
@@ -66,6 +67,10 @@ To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
     * [License](#license)
 
 <!-- TOC -->
+
+## Requirements
+
+- Node.js >= 20.12.0
 
 ## Installation
 

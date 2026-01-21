@@ -2,6 +2,9 @@
   "name": "genobi",
   "version": "0.7.0",
   "description": "Flat text file generator and modifier configured with your templates, prompt input, and instructions.",
+  "engines": {
+    "node": ">=20.12.0"
+  },
   "scripts": {
     "dev": "ts-node bin/cli.ts",
     "build": "tsup --tsconfig tsconfig.json",

@@ -1,17 +1,41 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { store } from "../config-store";
-import { MakeDirError, ReadError, WriteError } from "../errors";
+import { MakeDirError, PathTraversalError, ReadError, WriteError } from "../errors";
 import { logger } from "./logger";
 import { templates } from "./templates";
 
 /**
+ * Validates that a resolved path stays within the specified root directory.
+ * Prevents path traversal attacks where template data could escape the destination.
+ *
+ * @param {string} resolvedPath - The fully resolved absolute path to validate
+ * @param {string} rootPath - The root directory that should contain the path
+ * @throws {PathTraversalError} If the resolved path escapes the root directory
+ */
+function validatePathWithinRoot(resolvedPath: string, rootPath: string): void {
+	const normalizedRoot = path.resolve(rootPath);
+	const normalizedTarget = path.resolve(resolvedPath);
+
+	// Check if the target path starts with the root path
+	// We need to ensure it's either the root itself or a proper subdirectory
+	const isWithinRoot = normalizedTarget === normalizedRoot || normalizedTarget.startsWith(normalizedRoot + path.sep);
+
+	if (!isWithinRoot) {
+		logger.error(`Path traversal attempt detected: "${resolvedPath}" escapes "${rootPath}"`);
+		throw new PathTraversalError(resolvedPath, rootPath);
+	}
+}
+
+/**
  * Processes a template path and resolves it relative to a root directory.
+ * Validates that the resulting path stays within the root directory to prevent path traversal.
  *
  * @param {string} templatePath - The template path with optional Handlebars expressions
  * @param {Record<string, any>} data - The data for template processing
  * @param {string} rootPath - The root directory to resolve relative paths from
  * @returns {string} The processed and resolved absolute path
+ * @throws {PathTraversalError} If the resolved path escapes the root directory
  */
 function getTemplateProcessedPath(templatePath: string, data: Record<string, any>, rootPath: string): string {
 	logger.debug(`Processing template path: ${templatePath}`);
@@ -20,6 +44,9 @@ function getTemplateProcessedPath(templatePath: string, data: Record<string, any
 
 	const resolvedPath = path.resolve(rootPath, processed);
 	logger.debug(`Resolved absolute path: ${resolvedPath}`);
+
+	// Validate that the resolved path doesn't escape the root directory
+	validatePathWithinRoot(resolvedPath, rootPath);
 
 	return resolvedPath;
 }

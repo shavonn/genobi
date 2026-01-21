@@ -132,3 +132,21 @@ export class UnknownOperationType extends GenobiError {
 		super("UNKNOWN_OPERATION_TYPE", `Unknown amendment operation type: ${type}.`);
 	}
 }
+
+/**
+ * Error thrown when a path attempts to escape the destination directory.
+ */
+export class PathTraversalError extends GenobiError {
+	/**
+	 * Creates a new path traversal error.
+	 *
+	 * @param {string} attemptedPath - The path that attempted to escape
+	 * @param {string} rootPath - The root directory that should contain all paths
+	 */
+	constructor(attemptedPath: string, rootPath: string) {
+		super(
+			"PATH_TRAVERSAL_ERROR",
+			`Path "${attemptedPath}" escapes the destination directory "${rootPath}". Paths must resolve within the destination base path.`,
+		);
+	}
+}

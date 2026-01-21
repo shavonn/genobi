@@ -48,4 +48,6 @@ export type ErrorName =
 	/** Invalid or empty array given for forMany operation */
 	| "INVALID_FOR_MANY_ITEMS"
 	/** When validation fails for a configuration field */
-	| "VALIDATION_ERROR";
+	| "VALIDATION_ERROR"
+	/** When a path attempts to escape the destination directory */
+	| "PATH_TRAVERSAL_ERROR";

@@ -17,7 +17,7 @@ runs:
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
-        node-version: '24.x'
+        node-version: '22.x'
         registry-url: ${{ inputs.package-registry }}
 
     - name: Install Dependencies

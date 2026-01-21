@@ -27,45 +27,45 @@ To put it simply, sometimes, I _am_ a Burger King, and I like to have it my way.
 - [x] Logs are improved
 - [x] Operation for multi-gen
 - [x] Validation for api functions is implemented
-- [ ] Custom operations are implemented
+- [x] Custom operations are implemented
 - [ ] File path validation
 - [ ] More examples
 
 ***
 
 <!-- TOC -->
-
 * [Genobi](#genobi)
-    * [Why Genobi?](#why-genobi)
-        * [TODO to major release version:](#todo-to-major-release-version)
-    * [Requirements](#requirements)
-    * [Installation](#installation)
-        * [Install Genobi globally:](#install-genobi-globally)
-            * [Why would I install Genobi globally?](#why-would-i-install-genobi-globally)
-        * [Install  as a dev dependency in your project:](#install--as-a-dev-dependency-in-your-project)
-    * [Usage](#usage)
-        * [Create a Config File](#create-a-config-file)
-        * [Run Genobi](#run-genobi)
-            * [Args](#args)
-            * [Options](#options)
-    * [Configuration](#configuration)
-        * [Config API](#config-api)
-    * [Generators](#generators)
-    * [Operations](#operations)
-        * [Create Operation](#create-operation)
-        * [CreateAll Operation](#createall-operation)
-        * [ForMany Operation](#formany-operation)
-        * [Append Operation](#append-operation)
-        * [Prepend Operation](#prepend-operation)
-    * [Custom Helpers](#custom-helpers)
-    * [Built-in Handlebars Helpers](#built-in-handlebars-helpers)
-        * [Basic String Transformers](#basic-string-transformers)
-        * [String Helpers with Additional Args](#string-helpers-with-additional-args)
-    * [Things to Know](#things-to-know)
-        * [Templates and Prompts](#templates-and-prompts)
-        * [Template File Size](#template-file-size)
-    * [License](#license)
-
+  * [Why Genobi?](#why-genobi)
+      * [TODO to major release version:](#todo-to-major-release-version)
+  * [Requirements](#requirements)
+  * [Installation](#installation)
+    * [Install Genobi globally:](#install-genobi-globally)
+      * [Why would I install Genobi globally?](#why-would-i-install-genobi-globally)
+    * [Install  as a dev dependency in your project:](#install--as-a-dev-dependency-in-your-project)
+  * [Usage](#usage)
+    * [Create a Config File](#create-a-config-file)
+    * [Run Genobi](#run-genobi)
+      * [Args](#args)
+      * [Options](#options)
+  * [Configuration](#configuration)
+    * [Config API](#config-api)
+  * [Generators](#generators)
+  * [Operations](#operations)
+    * [Create Operation](#create-operation)
+    * [CreateAll Operation](#createall-operation)
+    * [ForMany Operation](#formany-operation)
+    * [Append Operation](#append-operation)
+    * [Prepend Operation](#prepend-operation)
+    * [Custom Operation](#custom-operation)
+    * [Registered Operations](#registered-operations)
+  * [Custom Helpers](#custom-helpers)
+  * [Built-in Handlebars Helpers](#built-in-handlebars-helpers)
+    * [Basic String Transformers](#basic-string-transformers)
+    * [String Helpers with Additional Args](#string-helpers-with-additional-args)
+  * [Things to Know](#things-to-know)
+    * [Templates and Prompts](#templates-and-prompts)
+    * [Template File Size](#template-file-size)
+  * [License](#license)
 <!-- TOC -->
 
 ## Requirements
@@ -146,6 +146,9 @@ The Genobi API provides the following methods:
 | `addPartialFromFile`     | `(name: string, partialFilePath:string)`               | `void`                                        | Adds a custom Handlebars template partial from file          |
 | `getPartial`             | `(name: string)`                                       | `Template\| TemplateDelegate`                 | Returns a specific partial by name                           |
 | `getPartials`            | `()`                                                   | `Record<string, Template\| TemplateDelegate>` | Returns all registered partials                              |
+| `addOperation`           | `(name: string, handler: CustomOperationHandler)`      | `void`                                        | Registers a reusable custom operation                        |
+| `getOperation`           | `(name: string)`                                       | `CustomOperationHandler \| undefined`         | Returns a registered operation by name                       |
+| `getOperations`          | `()`                                                   | `Record<string, CustomOperationHandler>`      | Returns all registered operations                            |
 
 > **Note**: Handlebars helpers and partials docs can be found on [their website](https://handlebarsjs.com/).
 
@@ -320,6 +323,74 @@ Prepends content to an existing file.
 | `haltOnError`      | `boolean`                | Whether to stop execution on error                        | `true`     |
 
 > **Note**: Either `templateStr` or `templateFilePath` must be provided.
+
+### Custom Operation
+
+Executes a custom inline function for one-off operations that don't fit the built-in types.
+
+| Property      | Type                                                       | Description                                   | Default    |
+|---------------|------------------------------------------------------------|-----------------------------------------------|------------|
+| `type`        | `string`                                                   | Must be `"custom"`                            | *required* |
+| `name`        | `string`                                                   | Name for logging/error messages               | *required* |
+| `action`      | `(data: TemplateData, context: OperationContext) => void`  | Function to execute                           | *required* |
+| `data`        | `Record<string, any>`                                      | Additional data passed to action              | `{}`       |
+| `skip`        | `(data: any) => boolean`                                   | Function to determine if op should be skipped | -          |
+| `haltOnError` | `boolean`                                                  | Whether to stop execution on error            | `true`     |
+
+The `action` function receives two parameters:
+- `data`: Combined data from prompts and operation data
+- `context`: An object with utilities:
+  - `destinationPath`: Absolute path to the destination base directory
+  - `configPath`: Absolute path to the config file directory
+  - `logger`: Logger with `info`, `warn`, `error`, `debug`, and `success` methods
+  - `replaceInFile(filePath, pattern, replacement)`: Replace content in a file
+
+Example:
+
+```javascript
+{
+    type: "custom",
+    name: "add-timestamp",
+    action: async (data, context) => {
+        await context.replaceInFile(
+            `src/${data.name}.tsx`,
+            "// TIMESTAMP",
+            `// Created: ${new Date().toISOString()}`
+        );
+        context.logger.info("Timestamp added!");
+    }
+}
+```
+
+### Registered Operations
+
+For reusable custom operations, register them with `addOperation` and reference by name:
+
+```javascript
+export default (genobi) => {
+    // Register a reusable operation
+    genobi.addOperation("format-files", async (data, context) => {
+        const { exec } = await import("child_process");
+        exec(`prettier --write ${context.destinationPath}/${data.name}/**/*`);
+    });
+
+    genobi.addGenerator("component", {
+        description: "React component with formatting",
+        prompts: [{ type: "input", name: "name", message: "Component name?" }],
+        operations: [
+            {
+                type: "create",
+                filePath: "src/{{name}}.tsx",
+                templateStr: "export const {{name}} = () => <div />;"
+            },
+            // Use the registered operation by name as the type
+            { type: "format-files" }
+        ]
+    });
+};
+```
+
+> **Note**: Registered operation names cannot use reserved names: `create`, `createAll`, `append`, `prepend`, `forMany`, `custom`.
 
 ## Custom Helpers
 

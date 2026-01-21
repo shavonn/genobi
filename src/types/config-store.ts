@@ -1,5 +1,6 @@
 import type { HelperDelegate, Template, TemplateDelegate } from "handlebars";
 import type { GeneratorConfig } from "./generator";
+import type { CustomOperationHandler } from "./operation";
 
 /**
  * Represents the complete state of the configuration store.
@@ -55,6 +56,11 @@ export interface ConfigStoreState {
 	 * Map of all registered Handlebars partials, keyed by name.
 	 */
 	partials: ConfiguredPartials;
+
+	/**
+	 * Map of all registered custom operations, keyed by name.
+	 */
+	operations: ConfiguredOperations;
 }
 
 /**
@@ -71,3 +77,8 @@ export type ConfiguredHelpers = Map<string, HelperDelegate>;
  * Map of partial names to their templates.
  */
 export type ConfiguredPartials = Map<string, Template | TemplateDelegate>;
+
+/**
+ * Map of custom operation names to their handlers.
+ */
+export type ConfiguredOperations = Map<string, CustomOperationHandler>;

@@ -8,7 +8,7 @@ export type TemplateData = Record<string, unknown>;
  * Union type representing all possible operation types.
  * Note: BaseOperation is excluded to maintain a proper discriminated union.
  */
-export type Operation = AmendOperation | CreateOperation | CreateAllOperation | ForManyOperation;
+export type Operation = AmendOperation | CreateOperation | CreateAllOperation | ForManyOperation | CustomOperation;
 
 /**
  * Base interface for all operations.
@@ -233,4 +233,73 @@ export interface ForManyOperation extends BaseOperation {
 	 * @returns {TemplateData} The transformed data to pass to the generator
 	 */
 	transformItem?: (item: unknown, index: number, parentData: TemplateData) => TemplateData;
+}
+
+/**
+ * Context object passed to custom operation handlers.
+ * Provides utilities and information about the current execution context.
+ */
+export interface OperationContext {
+	/**
+	 * Absolute path to the destination base directory for generated files.
+	 */
+	destinationPath: string;
+
+	/**
+	 * Absolute path to the directory containing the config file.
+	 */
+	configPath: string;
+
+	/**
+	 * Logger instance for outputting messages.
+	 */
+	logger: {
+		info: (message: string) => void;
+		warn: (message: string) => void;
+		error: (message: string, details?: string) => void;
+		debug: (message: string) => void;
+		success: (message: string) => void;
+	};
+
+	/**
+	 * Utility function to replace content in a file.
+	 *
+	 * @param {string} filePath - Path to the file (relative to destination)
+	 * @param {string | RegExp} pattern - Pattern to match
+	 * @param {string} replacement - Replacement string
+	 * @returns {Promise<void>}
+	 */
+	replaceInFile: (filePath: string, pattern: string | RegExp, replacement: string) => Promise<void>;
+}
+
+/**
+ * Handler function signature for custom operations.
+ * Can return void or a Promise for async operations.
+ *
+ * @param {TemplateData} data - The merged data from prompts and operation data
+ * @param {OperationContext} context - Context object with utilities
+ * @returns {void | Promise<void>}
+ */
+export type CustomOperationHandler = (data: TemplateData, context: OperationContext) => void | Promise<void>;
+
+/**
+ * Interface for custom operations with inline action functions.
+ * Use this for one-off operations that don't need to be reused.
+ */
+export interface CustomOperation extends BaseOperation {
+	/**
+	 * The type of the operation, always "custom".
+	 */
+	type: "custom";
+
+	/**
+	 * A descriptive name for this operation, used in logging and error messages.
+	 */
+	name: string;
+
+	/**
+	 * The action function to execute.
+	 * Receives the merged data and a context object with utilities.
+	 */
+	action: CustomOperationHandler;
 }

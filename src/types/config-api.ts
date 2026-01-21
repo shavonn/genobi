@@ -1,5 +1,6 @@
 import type { HelperDelegate, Template, TemplateDelegate } from "handlebars";
 import type { GeneratorConfig } from "./generator";
+import type { CustomOperationHandler } from "./operation";
 
 /**
  * Configuration API Interface for Genobi.
@@ -127,4 +128,28 @@ export interface ConfigAPI {
 	 * @returns {Record<string, Template | TemplateDelegate>} An object containing all registered partials, keyed by name
 	 */
 	getPartials(): Record<string, Template | TemplateDelegate>;
+
+	/**
+	 * Adds a custom operation handler.
+	 * Custom operations can be used with `type: "operationName"` in generator configurations.
+	 *
+	 * @param {string} name - The name of the operation (used as the `type` in operations)
+	 * @param {CustomOperationHandler} handler - The operation handler function
+	 */
+	addOperation(name: string, handler: CustomOperationHandler): void;
+
+	/**
+	 * Returns a specific custom operation handler by name.
+	 *
+	 * @param {string} name - The name of the operation to retrieve
+	 * @returns {CustomOperationHandler | undefined} The operation handler or undefined if not found
+	 */
+	getOperation(name: string): CustomOperationHandler | undefined;
+
+	/**
+	 * Returns all registered custom operations.
+	 *
+	 * @returns {Record<string, CustomOperationHandler>} An object containing all registered operations, keyed by name
+	 */
+	getOperations(): Record<string, CustomOperationHandler>;
 }

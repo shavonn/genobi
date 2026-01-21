@@ -7,6 +7,7 @@ import {
 	partialFilePathSchema,
 	partialNameSchema,
 	partialSchema,
+	reservedOperationTypes,
 	validOperationTypes,
 } from "./schemas";
 
@@ -131,6 +132,35 @@ function validateOperationWithCustomErrors(operation: unknown, index: number): v
 		case "forMany":
 			validateForManyOperation(op, index);
 			break;
+		case "custom":
+			validateCustomOperation(op, index);
+			break;
+	}
+}
+
+/**
+ * Validates a custom operation (inline action)
+ */
+function validateCustomOperation(op: Record<string, unknown>, index: number): void {
+	const opField = `operations[${index}]`;
+
+	// Validate name
+	if (!("name" in op) || op.name === undefined) {
+		throw new ValidationError(`${opField}.name`, "is required");
+	}
+	if (typeof op.name !== "string") {
+		throw new ValidationError(`${opField}.name`, "must be a string");
+	}
+	if (op.name.trim().length === 0) {
+		throw new ValidationError(`${opField}.name`, "cannot be empty");
+	}
+
+	// Validate action
+	if (!("action" in op) || op.action === undefined) {
+		throw new ValidationError(`${opField}.action`, "is required");
+	}
+	if (typeof op.action !== "function") {
+		throw new ValidationError(`${opField}.action`, "must be a function");
 	}
 }
 
@@ -489,6 +519,36 @@ export function validatePartialFilePath(name: string, filePath: string): void {
 }
 
 /**
+ * Validates a custom operation registration (addOperation API)
+ */
+export function validateOperationRegistration(name: string, handler: unknown): void {
+	logger.info(`Validating operation registration: ${name}`);
+
+	try {
+		// Validate name
+		if (name.trim().length === 0) {
+			throw new ValidationError("operation name", "cannot be empty");
+		}
+
+		// Check against reserved/built-in types
+		if (reservedOperationTypes.includes(name as (typeof reservedOperationTypes)[number])) {
+			throw new ValidationError("operation name", `"${name}" is a reserved operation type`);
+		}
+
+		// Validate handler is a function
+		if (typeof handler !== "function") {
+			throw new ValidationError("operation handler", "must be a function");
+		}
+	} catch (err) {
+		if (err instanceof ValidationError) {
+			logger.error(`Operation "${name}" registration validation failed`);
+			throw err;
+		}
+		throw err;
+	}
+}
+
+/**
  * Validation utilities
  */
 export const validation = {
@@ -496,4 +556,5 @@ export const validation = {
 	validateHelper,
 	validatePartial,
 	validatePartialFilePath,
+	validateOperationRegistration,
 };

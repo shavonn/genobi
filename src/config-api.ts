@@ -1,14 +1,15 @@
 import path from "node:path";
-import type { HelperDelegate, Template, TemplateDelegate } from "handlebars";
+import type {HelperDelegate, Template, TemplateDelegate} from "handlebars";
 import Handlebars from "handlebars";
-import { store } from "./config-store";
-import { GenobiError } from "./errors";
-import type { ConfigAPI } from "./types/config-api";
-import type { GeneratorConfig } from "./types/generator";
-import { common } from "./utils/common";
-import { fileSys } from "./utils/file-sys";
-import { logger } from "./utils/logger";
-import { validation } from "./utils/validation";
+import {store} from "./config-store";
+import {GenobiError} from "./errors";
+import type {ConfigAPI} from "./types/config-api";
+import type {GeneratorConfig} from "./types/generator";
+import type {CustomOperationHandler} from "./types/operation";
+import {common} from "./utils/common";
+import {fileSys} from "./utils/file-sys";
+import {logger} from "./utils/logger";
+import {validation} from "./utils/validation";
 
 /**
  * Creates and returns the Genobi configuration API.
@@ -51,10 +52,10 @@ function configApi(): ConfigAPI {
 		getDestinationBasePath: (): string => store.state().destinationBasePath,
 
 		/**
-		 * Sets the prompt message displayed during generator selection.
-		 *
-		 * @param {string} message - The prompt message to display
-		 */
+         * Sets the prompt message displayed during generator selection.
+         *
+         * @param prompt
+         */
 		setSelectionPrompt: (prompt: string) => store.setSelectionPrompt(prompt),
 
 		/**
@@ -241,6 +242,50 @@ function configApi(): ConfigAPI {
 		 * @returns {Record<string, Template | TemplateDelegate>} An object containing all registered partials, keyed by name
 		 */
 		getPartials: (): Record<string, Template | TemplateDelegate> => Object.fromEntries(store.state().partials),
+
+		/**
+		 * Adds a custom operation handler.
+		 * Custom operations can be used with `type: "operationName"` in generator configurations.
+		 *
+		 * @param {string} name - The name of the operation (used as the `type` in operations)
+		 * @param {CustomOperationHandler} handler - The operation handler function
+		 * @throws {ValidationError} If validation fails
+		 */
+		addOperation: (name: string, handler: CustomOperationHandler): void => {
+			try {
+				// Validate the operation
+				validation.validateOperationRegistration(name, handler);
+
+				// Check if operation with this name already exists
+				if (store.state().operations.has(name)) {
+					logger.warn(`Operation "${name}" already exists and will be overwritten`);
+				}
+
+				// Store the operation
+				store.setOperation(name, handler);
+				logger.info(`Operation "${name}" registered successfully`);
+			} catch (err) {
+				logger.error(`Failed to add operation "${name}": ${common.getErrorMessage(err)}`);
+				throw err;
+			}
+		},
+
+		/**
+		 * Returns a specific custom operation handler by name.
+		 *
+		 * @param {string} name - The name of the operation to retrieve
+		 * @returns {CustomOperationHandler | undefined} The operation handler or undefined if not found
+		 */
+		getOperation: (name: string): CustomOperationHandler | undefined => {
+			return store.state().operations.get(name);
+		},
+
+		/**
+		 * Returns all registered custom operations.
+		 *
+		 * @returns {Record<string, CustomOperationHandler>} An object containing all registered operations, keyed by name
+		 */
+		getOperations: (): Record<string, CustomOperationHandler> => Object.fromEntries(store.state().operations),
 	};
 }
 

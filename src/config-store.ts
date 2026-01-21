@@ -4,10 +4,12 @@ import type {
 	ConfigStoreState,
 	ConfiguredGenerators,
 	ConfiguredHelpers,
+	ConfiguredOperations,
 	ConfiguredPartials,
 } from "./types/config-store";
 import type { SelectChoice } from "./types/general";
 import type { GeneratorConfig } from "./types/generator";
+import type { CustomOperationHandler } from "./types/operation";
 
 /** Default prompt message for generator selection */
 const DEFAULT_SELECTION_PROMPT = "Select from available generators:";
@@ -51,6 +53,8 @@ class ConfigStore {
 	#helpers: ConfiguredHelpers;
 	/** Map of all registered Handlebars partials */
 	#partials: ConfiguredPartials;
+	/** Map of all registered custom operations */
+	#operations: ConfiguredOperations;
 
 	/**
 	 * Creates a new ConfigStore instance with default values.
@@ -67,6 +71,7 @@ class ConfigStore {
 		this.#generators = new Map<string, GeneratorConfig>();
 		this.#helpers = new Map<string, HelperDelegate>();
 		this.#partials = new Map<string, Template | TemplateDelegate>();
+		this.#operations = new Map<string, CustomOperationHandler>();
 	}
 
 	/**
@@ -167,6 +172,16 @@ class ConfigStore {
 	}
 
 	/**
+	 * Adds or updates a custom operation in the store.
+	 *
+	 * @param {string} name - The name of the operation
+	 * @param {CustomOperationHandler} handler - The operation handler function
+	 */
+	setOperation(name: string, handler: CustomOperationHandler): void {
+		this.#operations.set(name, handler);
+	}
+
+	/**
 	 * Returns a snapshot of the current store state.
 	 *
 	 * @returns {ConfigStoreState} The current state of the configuration store
@@ -183,12 +198,13 @@ class ConfigStore {
 			generators: this.#generators,
 			helpers: this.#helpers,
 			partials: this.#partials,
+			operations: this.#operations,
 		};
 	}
 
 	/**
 	 * Resets the store to its default state.
-	 * Clears all generators, helpers, partials, and other settings.
+	 * Clears all generators, helpers, partials, operations, and other settings.
 	 */
 	resetDefault(): void {
 		this.#logDebug = false;
@@ -201,6 +217,7 @@ class ConfigStore {
 		this.#generators = new Map<string, GeneratorConfig>();
 		this.#helpers = new Map<string, HelperDelegate>();
 		this.#partials = new Map<string, Template | TemplateDelegate>();
+		this.#operations = new Map<string, CustomOperationHandler>();
 	}
 }
 

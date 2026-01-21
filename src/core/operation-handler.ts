@@ -1,12 +1,15 @@
-import { UnknownOperationType } from "../errors";
+import {store} from "../config-store.js";
+import {UnknownOperationType} from "../errors.js";
 import type {
 	AmendOperation,
 	CreateAllOperation,
 	CreateOperation,
+	CustomOperation,
 	ForManyOperation,
 	Operation,
-} from "../types/operation";
-import { ops } from "./operations/ops";
+} from "../types/operation.js";
+import * as customOps from "./operations/custom.js";
+import {ops} from "./operations/ops.js";
 
 /**
  * Map of operation types to their handler functions.
@@ -51,20 +54,39 @@ const operationHandlers = {
 	 * @param {Record<string, any>} data - Data for template processing
 	 */
 	forMany: (operation: ForManyOperation, data: Record<string, any>) => ops.forMany(operation, data),
+
+	/**
+	 * Handler for custom operations.
+	 *
+	 * @param {CustomOperation} operation - The custom operation configuration
+	 * @param {Record<string, any>} data - Data for template processing
+	 */
+	custom: (operation: CustomOperation, data: Record<string, any>) => customOps.custom(operation, data),
 };
 
 /**
- * Type guard to check if an operation type is valid.
+ * Checks if an operation type is a built-in type.
  *
  * @param {string} type - The operation type to check
- * @returns {boolean} True if the operation type is valid
+ * @returns {boolean} True if the operation type is built-in
  */
-function isValidOperationType(type: string): type is keyof typeof operationHandlers {
+function isBuiltInType(type: string): type is keyof typeof operationHandlers {
 	return type in operationHandlers;
 }
 
 /**
+ * Checks if an operation type is a registered custom operation.
+ *
+ * @param {string} type - The operation type to check
+ * @returns {boolean} True if the operation type is registered
+ */
+function isRegisteredType(type: string): boolean {
+	return store.state().operations.has(type);
+}
+
+/**
  * Handles an operation by dispatching it to the appropriate handler function.
+ * Supports both built-in operations and registered custom operations.
  *
  * @param {Operation} operation - The operation to handle
  * @param {Record<string, any>} data - Data for template processing
@@ -72,9 +94,16 @@ function isValidOperationType(type: string): type is keyof typeof operationHandl
  * @throws {UnknownOperationType} If the operation type is not recognized
  */
 function handleOperation(operation: Operation, data: Record<string, any>): Promise<any> {
-	if (isValidOperationType(operation.type)) {
+	// Handle built-in operation types
+	if (isBuiltInType(operation.type)) {
 		return operationHandlers[operation.type](operation as any, data);
 	}
+
+	// Handle registered custom operations
+	if (isRegisteredType(operation.type)) {
+		return customOps.registered(operation.type, data);
+	}
+
 	throw new UnknownOperationType(operation.type);
 }
 

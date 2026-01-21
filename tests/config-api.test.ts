@@ -13,6 +13,7 @@ vi.mock("../src/config-store", () => ({
 		setGenerator: vi.fn(),
 		setHelper: vi.fn(),
 		setPartial: vi.fn(),
+		setOperation: vi.fn(),
 		setConfigFilePath: vi.fn(),
 		setSelectionPrompt: vi.fn(),
 	},
@@ -23,6 +24,7 @@ vi.mock("../src/utils/validation", () => ({
 		validateHelper: vi.fn(),
 		validatePartial: vi.fn(),
 		validatePartialFilePath: vi.fn(),
+		validateOperationRegistration: vi.fn(),
 	},
 }));
 vi.mock("../src/utils/file-sys", () => ({
@@ -53,6 +55,7 @@ describe("configAPI", () => {
 			generators: new Map(),
 			helpers: new Map(),
 			partials: new Map(),
+			operations: new Map(),
 			selectedGenerator: "",
 			debugLogging: false,
 		};
@@ -225,6 +228,39 @@ describe("configAPI", () => {
 		});
 	});
 
+	describe("addOperation", () => {
+		const validHandler = () => {};
+
+		it("should add a valid operation", () => {
+			vi.mocked(validation.validateOperationRegistration).mockReturnValueOnce();
+
+			api.addOperation("my-operation", validHandler);
+
+			expect(validation.validateOperationRegistration).toHaveBeenCalledWith("my-operation", validHandler);
+			expect(store.setOperation).toHaveBeenCalledWith("my-operation", validHandler);
+			expect(logger.info).toHaveBeenCalledWith('Operation "my-operation" registered successfully');
+		});
+
+		it("should warn when overwriting existing operation", () => {
+			mockState.operations.set("existing", validHandler);
+			vi.mocked(validation.validateOperationRegistration).mockReturnValueOnce();
+
+			api.addOperation("existing", validHandler);
+
+			expect(logger.warn).toHaveBeenCalledWith('Operation "existing" already exists and will be overwritten');
+		});
+
+		it("should log and rethrow validation errors", () => {
+			const validationError = new Error("Invalid operation");
+			vi.mocked(validation.validateOperationRegistration).mockImplementation(() => {
+				throw validationError;
+			});
+
+			expect(() => api.addOperation("bad", "not a function" as any)).toThrow(validationError);
+			expect(logger.error).toHaveBeenCalledWith('Failed to add operation "bad": Invalid operation');
+		});
+	});
+
 	describe("getter methods", () => {
 		beforeEach(() => {
 			// Add some test data
@@ -234,6 +270,8 @@ describe("configAPI", () => {
 			mockState.helpers.set("helper2", () => "test2");
 			mockState.partials.set("partial1", "<div>1</div>");
 			mockState.partials.set("partial2", "<div>2</div>");
+			mockState.operations.set("operation1", () => {});
+			mockState.operations.set("operation2", async () => {});
 		});
 
 		it("should get config file path", () => {
@@ -299,6 +337,22 @@ describe("configAPI", () => {
 				partial1: "<div>1</div>",
 				partial2: "<div>2</div>",
 			});
+		});
+
+		it("should get an operation by name", () => {
+			const operation = api.getOperation("operation1");
+			expect(operation).toBeDefined();
+			expect(typeof operation).toBe("function");
+		});
+
+		it("should return undefined for non-existent operation", () => {
+			const operation = api.getOperation("non-existent");
+			expect(operation).toBeUndefined();
+		});
+
+		it("should get all operations", () => {
+			const operations = api.getOperations();
+			expect(Object.keys(operations)).toEqual(["operation1", "operation2"]);
 		});
 	});
 

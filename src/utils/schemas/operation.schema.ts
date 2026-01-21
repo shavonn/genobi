@@ -133,8 +133,14 @@ export const operationSchema = z.union([
 ]);
 
 /**
- * Valid operation types for external reference
+ * Valid built-in operation types for external reference.
+ * Note: Custom registered operations are not included here as they are validated at runtime.
  */
-export const validOperationTypes = ["create", "createAll", "append", "prepend", "forMany"] as const;
+export const validOperationTypes = ["create", "createAll", "append", "prepend", "forMany", "custom"] as const;
+
+/**
+ * Reserved operation type names that cannot be used for registered operations.
+ */
+export const reservedOperationTypes = ["create", "createAll", "append", "prepend", "forMany", "custom"] as const;
 
 export type OperationConfig = z.infer<typeof operationSchema>;

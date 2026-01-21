@@ -498,5 +498,115 @@ describe("validation", () => {
 				);
 			});
 		});
+
+		describe("custom operation", () => {
+			it("should validate a valid custom operation", () => {
+				const generator = {
+					description: "Test",
+					operations: [
+						{
+							type: "custom",
+							name: "my-custom-op",
+							action: () => {},
+						},
+					],
+				};
+
+				expect(() => validation.validateGenerator("test", generator)).not.toThrow();
+			});
+
+			it("should throw for missing name", () => {
+				const generator = {
+					description: "Test",
+					operations: [
+						{
+							type: "custom",
+							action: () => {},
+						},
+					],
+				};
+
+				expect(() => validation.validateGenerator("test", generator)).toThrow(
+					"Validation failed for operations[0].name: is required",
+				);
+			});
+
+			it("should throw for empty name", () => {
+				const generator = {
+					description: "Test",
+					operations: [
+						{
+							type: "custom",
+							name: "",
+							action: () => {},
+						},
+					],
+				};
+
+				expect(() => validation.validateGenerator("test", generator)).toThrow(
+					"Validation failed for operations[0].name: cannot be empty",
+				);
+			});
+
+			it("should throw for missing action", () => {
+				const generator = {
+					description: "Test",
+					operations: [
+						{
+							type: "custom",
+							name: "my-op",
+						},
+					],
+				};
+
+				expect(() => validation.validateGenerator("test", generator)).toThrow(
+					"Validation failed for operations[0].action: is required",
+				);
+			});
+
+			it("should throw for non-function action", () => {
+				const generator = {
+					description: "Test",
+					operations: [
+						{
+							type: "custom",
+							name: "my-op",
+							action: "not a function",
+						},
+					],
+				};
+
+				expect(() => validation.validateGenerator("test", generator)).toThrow(
+					"Validation failed for operations[0].action: must be a function",
+				);
+			});
+		});
+	});
+
+	describe("validateOperationRegistration", () => {
+		it("should validate a valid operation registration", () => {
+			expect(() => validation.validateOperationRegistration("my-operation", () => {})).not.toThrow();
+		});
+
+		it("should throw for empty operation name", () => {
+			expect(() => validation.validateOperationRegistration("", () => {})).toThrow(
+				"Validation failed for operation name: cannot be empty",
+			);
+		});
+
+		it("should throw for reserved operation type names", () => {
+			const reservedNames = ["create", "createAll", "append", "prepend", "forMany", "custom"];
+			reservedNames.forEach((name) => {
+				expect(() => validation.validateOperationRegistration(name, () => {})).toThrow(
+					`Validation failed for operation name: "${name}" is a reserved operation type`,
+				);
+			});
+		});
+
+		it("should throw for non-function handler", () => {
+			expect(() => validation.validateOperationRegistration("my-op", "not a function")).toThrow(
+				"Validation failed for operation handler: must be a function",
+			);
+		});
 	});
 });

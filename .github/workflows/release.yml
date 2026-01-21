@@ -26,7 +26,7 @@ jobs:
 
       - name: Capture New Release Version
         run: |
-          pnpm changeset status --output=release.json
+          bun changeset status --output=release.json
           echo "NEW_VERSION=$(jq -r '.releases | map(.name+"@"+.newVersion) | join(",")' release.json)" >> "$GITHUB_ENV"
           rm release.json
 
@@ -34,7 +34,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm publish-package
+          publish: bun publish-package
           title: "Release version ${{env.NEW_VERSION}}"
           commit: "Update version ${{env.NEW_VERSION}}"
         env:

@@ -1,5 +1,5 @@
 name: Setup
-description: Setup pnpm, Node and install packages
+description: Setup bun, Node and install packages
 inputs:
   package-registry: # id of input
     description: 'PACKAGE_REGISTRY'
@@ -9,19 +9,17 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
+    - name: Set up Bun
+      uses: oven-sh/setup-bun@v2
       with:
-        version: 10.10.0
-        run_install: false
-        package_json_file: '/home/runner/work/genobi/package.json'
+        bun-version: latest
 
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
-        node-version: '22.x'
+        node-version: '24.x'
         registry-url: ${{ inputs.package-registry }}
 
     - name: Install Dependencies
       shell: bash
-      run: pnpm install --frozen-lockfile
+      run: bun i

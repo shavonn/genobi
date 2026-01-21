@@ -1,6 +1,6 @@
 {
   "name": "genobi",
-  "version": "0.8.0",
+  "version": "1.0.0",
   "description": "Flat text file generator and modifier configured with your templates, prompt input, and instructions.",
   "engines": {
     "node": ">=20.12.0"
